@@ -18,6 +18,8 @@ Protótipo estático para planejar várias viagens, organizar um roteiro, descob
 - Encontrar 94 sugestões de atrações em 21 destinos de teste: Rio de Janeiro, Paraty, Gramado, Canela, Florianópolis, Curitiba, São Paulo, Foz do Iguaçu, Salvador, Recife, Olinda, Fortaleza, Brasília, Belo Horizonte, Bonito, Manaus, Porto Alegre, João Pessoa, Natal, Búzios e Aquiraz.
 - Descobrir algumas ideias de eventos sazonais, sem datas presumidas.
 - Abrir buscas da atração no Google Maps e no Tripadvisor para conferir informações atuais.
+- Ver, em 74 das 94 atrações, dados de fontes abertas: foto real com autor e licença (Wikimedia Commons), resumo e link da Wikipedia, site oficial (Wikidata) e coordenadas.
+- Ver no roteiro a distância em linha reta entre paradas consecutivas que têm coordenadas.
 
 ## Executar
 
@@ -40,7 +42,13 @@ O protótipo inclui um catálogo editorial fixo de pontos turísticos conhecidos
 - [Turismo de Bonito](https://www.turismo.bonito.ms.gov.br/) e [Rio da Prata](https://www.riodaprata.com.br/)
 - [Amazonastur](https://www.amazonastur.am.gov.br/) e [Secretaria de Cultura do Amazonas](https://cultura.am.gov.br/)
 
-Os cartões não exibem notas nem quantidades de avaliações inventadas. Preços são apresentados como **“Consulte valor”**, horários avisam que podem variar, e as imagens são ilustrativas. Use os links de busca do Google Maps e Tripadvisor no cartão para verificar avaliações, fotos, horários e preços atualizados. As opções de eventos são sazonais e não indicam que haverá programação nas datas da viagem.
+Os cartões não exibem notas nem quantidades de avaliações inventadas. Preços são apresentados como **“Consulte valor”**, horários avisam que podem variar, e as imagens sem crédito de foto são ilustrativas. Use os links de busca do Google Maps e Tripadvisor no cartão para verificar avaliações, fotos, horários e preços atualizados. As opções de eventos são sazonais e não indicam que haverá programação nas datas da viagem.
+
+### Fontes abertas (Wikipedia, Wikidata, Wikimedia Commons)
+
+O arquivo `dados/fontes-abertas.js` é gerado por `node ferramentas/gerar-fontes-abertas.mjs` (Node 18+ e internet). O script lê o catálogo do `script.js`, procura a página de cada atração na Wikipedia em português e só aceita o resultado se a coordenada estiver a até 60 km da cidade (ou, sem coordenada, se o texto citar a cidade). Fotos só entram com licença livre identificada (domínio público, CC0, CC BY, CC BY-SA), e o cartão mostra autor e licença com link para a página da foto. O resumo da Wikipedia aparece com crédito e licença CC BY-SA 4.0. Rode o script de novo quando o catálogo mudar; atrações sem correspondência confiável continuam com a imagem ilustrativa.
+
+Essas fontes não têm notas, preços nem horários, então o app continua sem esses dados. A distância do roteiro é calculada em linha reta pelas coordenadas e não representa trajeto nem tempo de deslocamento.
 
 ## APIs e integração futura
 
@@ -76,3 +84,5 @@ As viagens e despesas ficam neste navegador e não são sincronizadas entre disp
 - `index.html`: estrutura e telas do app.
 - `styles.css`: identidade visual e layout responsivo.
 - `script.js`: catálogo de demonstração, filtros, roteiro e armazenamento local.
+- `dados/fontes-abertas.js`: dados gerados de Wikipedia, Wikidata e Commons (não editar à mão).
+- `ferramentas/gerar-fontes-abertas.mjs`: script que gera o arquivo acima.

@@ -468,6 +468,24 @@ function getActivity(id) {
   return activities.find((activity) => activity.id === id);
 }
 
+// Dados de fontes abertas gerados por ferramentas/gerar-fontes-abertas.mjs (opcional).
+const openData = window.OPEN_DATA?.activities || {};
+
+function getOpenData(id) {
+  return openData[id] || null;
+}
+
+function safeUrl(value) {
+  return /^https?:\/\//i.test(value || "") ? value : "";
+}
+
+function distanceKm([lat1, lon1], [lat2, lon2]) {
+  const rad = (value) => (value * Math.PI) / 180;
+  const a = Math.sin(rad(lat2 - lat1) / 2) ** 2
+    + Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(rad(lon2 - lon1) / 2) ** 2;
+  return 6371 * 2 * Math.asin(Math.sqrt(a));
+}
+
 function getTripActivities(trip, key = "saved") {
   return (trip?.[key] || []).map((item) => ({ ...item, activity: getActivity(item.id) })).filter((item) => item.activity);
 }
@@ -853,13 +871,23 @@ function renderDiscovery() {
     return;
   }
   const activity = ideas[0];
+  const open = getOpenData(activity.id);
+  const photo = open?.photo && safeUrl(open.photo.url) ? open.photo : null;
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${activity.name}, ${activity.city}, Brasil`)}`;
   const tripadvisorUrl = `https://www.tripadvisor.com/Search?q=${encodeURIComponent(`${activity.name} ${activity.city}`)}`;
+  const wikipediaUrl = safeUrl(open?.wikipedia?.url);
+  const websiteUrl = safeUrl(open?.website);
+  const photoCredit = photo
+    ? `<a class="photo-credit" href="${escapeHtml(safeUrl(photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(photo.author)} · ${escapeHtml(photo.license)} · Wikimedia Commons</a>`
+    : '<span class="photo-credit">Imagem ilustrativa</span>';
+  const moreAbout = open?.wikipedia?.extract
+    ? `<details class="activity-more"><summary>Mais sobre este lugar</summary><p>${escapeHtml(open.wikipedia.extract)}</p><small>Texto: <a href="${escapeHtml(wikipediaUrl)}" target="_blank" rel="noopener noreferrer">Wikipedia</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a></small></details>`
+    : "";
   elements.activityStage.innerHTML = `<article class="activity-card" data-activity-id="${escapeHtml(activity.id)}">
-    <div class="activity-photo"><img src="${escapeHtml(activity.image)}" alt="Imagem ilustrativa de ${escapeHtml(activity.name)}" draggable="false"><span class="photo-tag">${escapeHtml(activity.category)}</span></div>
-    <div class="activity-info"><p class="activity-location">⌖ ${escapeHtml(activity.city)}</p><h3>${escapeHtml(activity.name)}</h3><p class="activity-description">${escapeHtml(activity.description)}</p>
+    <div class="activity-photo"><img src="${escapeHtml(photo?.url || activity.image)}" alt="${photo ? "Foto de" : "Imagem ilustrativa de"} ${escapeHtml(activity.name)}" draggable="false"><span class="photo-tag">${escapeHtml(activity.category)}</span>${photoCredit}</div>
+    <div class="activity-info"><p class="activity-location">⌖ ${escapeHtml(activity.city)}</p><h3>${escapeHtml(activity.name)}</h3><p class="activity-description">${escapeHtml(activity.description)}</p>${moreAbout}
       <div class="activity-facts"><div class="activity-fact"><span class="fact-icon">◷</span><span>${escapeHtml(activity.schedule)}</span></div><div class="activity-fact"><span class="fact-icon">⌖</span><span>${escapeHtml(activity.city)} · Brasil</span></div></div>
-      <div class="rating-line">Consulte avaliações atualizadas nos sites de viagem.</div><div class="activity-source-links"><a href="${mapsUrl}" target="_blank" rel="noopener noreferrer">Google Maps ↗</a><a href="${tripadvisorUrl}" target="_blank" rel="noopener noreferrer">Tripadvisor ↗</a></div>
+      <div class="rating-line">Consulte avaliações atualizadas nos sites de viagem.</div><div class="activity-source-links">${websiteUrl ? `<a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener noreferrer">Site oficial ↗</a>` : ""}${wikipediaUrl ? `<a href="${escapeHtml(wikipediaUrl)}" target="_blank" rel="noopener noreferrer">Wikipedia ↗</a>` : ""}<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer">Google Maps ↗</a><a href="${tripadvisorUrl}" target="_blank" rel="noopener noreferrer">Tripadvisor ↗</a></div>
       <div class="activity-bottom"><span class="activity-cost-label">VALOR<strong class="activity-cost">${escapeHtml(formatActivityPrice(activity))}</strong></span><button class="save-small" data-save-activity="${escapeHtml(activity.id)}" type="button">Quero conhecer →</button></div>
     </div></article>`;
   addImageFallbacks(elements.activityStage);
@@ -998,7 +1026,7 @@ function attachSwipeHandlers(card) {
   };
 
   card.addEventListener("pointerdown", (event) => {
-    if (busy || pointerId !== null || event.target.closest("button, a")) return;
+    if (busy || pointerId !== null || event.target.closest("button, a, summary")) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
     event.preventDefault();
     pointerId = event.pointerId;
@@ -1059,13 +1087,20 @@ function renderItinerary() {
     const destination = trip.destinations.find((item) => item.startDate <= date && item.endDate >= date);
     const events = trip.itinerary.filter((event) => event.date === date);
     const saved = getTripActivities(trip).filter((item) => item.date === date)
-      .map(({ id, date: itemDate, time, activity }) => ({ id, date: itemDate, time: time || "09:00", title: activity.name, city: activity.city, image: activity.image, type: "activity", cost: activity.cost }));
+      .map(({ id, date: itemDate, time, activity }) => ({ id, date: itemDate, time: time || "09:00", title: activity.name, city: activity.city, image: activity.image, type: "activity", cost: activity.cost, coordinates: getOpenData(id)?.coordinates }));
     const schedule = [...events, ...saved].sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+    // Distância em linha reta até a parada anterior com coordenadas (não é trajeto nem tempo de deslocamento).
+    let previousPoint = null;
+    schedule.forEach((item) => {
+      if (!item.coordinates) return;
+      if (previousPoint) item.distance = distanceKm(previousPoint, item.coordinates);
+      previousPoint = item.coordinates;
+    });
     return `<section class="itinerary-day" data-drop-date="${date}">
       <header class="itinerary-day-heading"><span class="day-date"><strong>${parseLocalDate(date).getUTCDate()}</strong><small>${escapeHtml(formatDate(date, { month: "short" }).replace(".", ""))}</small></span><div><h3>${escapeHtml(formatDate(date, { weekday: "long" }))}</h3><p>${escapeHtml(destination?.name || "Dia livre")} · ${schedule.length} ${schedule.length === 1 ? "parada" : "paradas"}</p></div><button type="button" class="add-day-item" data-add-day="${date}">+ incluir</button></header>
       <div class="itinerary-day-items">${schedule.length ? schedule.map((item) => `<article class="itinerary-item" draggable="true" data-item-id="${escapeHtml(item.id)}" data-item-type="${item.type}">
         <span class="drag-handle" aria-hidden="true">⠿</span>${item.image ? `<img src="${escapeHtml(item.image)}" alt="">` : '<span class="manual-event-icon">◷</span>'}
-        <div class="planner-activity-info"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.city || item.category || "Compromisso manual")}</span></div>
+        <div class="planner-activity-info"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.city || item.category || "Compromisso manual")}</span>${item.distance !== undefined ? `<span class="planner-distance">≈ ${escapeHtml(item.distance.toLocaleString("pt-BR", { maximumFractionDigits: 1 }))} km em linha reta da parada anterior</span>` : ""}</div>
         <label class="visually-hidden" for="day-${escapeHtml(item.id)}">Dia de ${escapeHtml(item.title)}</label><select id="day-${escapeHtml(item.id)}" class="itinerary-day-select" data-day-id="${escapeHtml(item.id)}" data-day-type="${item.type}">${dayOptions.replace(`value="${date}"`, `value="${date}" selected`)}</select>
         <label class="visually-hidden" for="time-${escapeHtml(item.id)}">Horário de ${escapeHtml(item.title)}</label><input id="time-${escapeHtml(item.id)}" type="time" value="${escapeHtml(item.time || "09:00")}" data-time-id="${escapeHtml(item.id)}" data-time-type="${item.type}">
         <button class="remove-activity" type="button" data-remove-itinerary="${escapeHtml(item.id)}" data-item-type="${item.type}" aria-label="Remover ${escapeHtml(item.title)}">×</button></article>`).join("") : '<p class="day-empty">Um espaço em branco também faz parte de uma boa viagem.</p>'}</div>
