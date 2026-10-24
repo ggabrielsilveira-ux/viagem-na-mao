@@ -9,7 +9,7 @@ Protótipo estático para planejar várias viagens, organizar um roteiro, descob
 - Registrar transporte, carro alugado, acompanhantes, crianças, idosos e interesses como natureza, cultura, gastronomia, aventura e compras.
 - Ver uma página inicial com mensagens de gratidão, 10 paisagens inspiradoras e 10 versículos em rotação a cada 15 segundos, várias viagens e contagem regressiva.
 - Explorar cartões, descartar ideias, guardar em “Talvez depois” ou adicionar atividades ao roteiro com botões, setas do teclado (← passar, → curtir, ↓ talvez) ou arrastando o cartão (direita, esquerda e para baixo).
-- Organizar compromissos por dia e horário, arrastar paradas entre dias ou criar compromissos manuais.
+- Organizar compromissos por dia e horário, arrastar paradas entre dias (ou escolher o dia na lista, que também funciona no celular) ou criar compromissos manuais.
 - Usar uma sugestão automática local para distribuir atividades guardadas; ela não usa IA, trânsito ou dados de distância.
 - Registrar despesas de transporte, hospedagem, alimentação, atrações, compras, seguro e outros.
 - Informar moeda e cotação manual, ocultar valores e consultar orçamento, gastos e previsão.

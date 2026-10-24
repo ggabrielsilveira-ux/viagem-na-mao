@@ -311,6 +311,7 @@ function readStoredState() {
     const value = JSON.parse(stored);
     if (Array.isArray(value.trips)) {
       initial.trips = value.trips.map(migrateTrip);
+      initial.trips.forEach(realignItineraryDates);
       initial.currentTripId = value.currentTripId || initial.trips[0]?.id || null;
       initial.hideAmounts = Boolean(value.hideAmounts);
       initial.displayCurrency = value.displayCurrency || "BRL";
@@ -427,13 +428,13 @@ function getBrasiliaDateKey(date = new Date()) {
   return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
-function getCountdown(dateString) {
+function getCountdown(dateString, endDateString = dateString) {
   const travelDate = parseLocalDate(dateString);
   const today = parseLocalDate(getBrasiliaDateKey());
   if (!travelDate || !today) return "Defina as datas";
   const days = Math.round((Date.UTC(travelDate.getUTCFullYear(), travelDate.getUTCMonth(), travelDate.getUTCDate())
     - Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())) / 86400000);
-  if (days < 0) return "Viagem concluída";
+  if (days < 0) return (endDateString || "") >= getBrasiliaDateKey() ? "Viagem em andamento" : "Viagem concluída";
   if (days === 0) return "É hoje! Boa viagem";
   return `Faltam ${days} ${days === 1 ? "dia" : "dias"}`;
 }
@@ -540,7 +541,7 @@ function renderHome() {
         <span class="trip-card-destination">${escapeHtml(destination)}</span>
         <strong>${escapeHtml(trip.name || "Minha viagem")}</strong>
         <span class="trip-card-date">${trip.startDate ? `${escapeHtml(formatDate(trip.startDate))} — ${escapeHtml(formatDate(trip.endDate, { day: "numeric", month: "short", year: "numeric" }))}` : "Datas a definir"}</span>
-        <span class="trip-countdown">${escapeHtml(getCountdown(trip.startDate))}</span>
+        <span class="trip-countdown">${escapeHtml(getCountdown(trip.startDate, trip.endDate))}</span>
       </button>
       <div class="trip-card-finance"><span>PREVISÃO / LANÇADO</span><strong>${displayAmounts ? escapeHtml(formatCurrency(forecast, "BRL")) : "••••••"}</strong><small>Orçamento ${displayAmounts && budget ? escapeHtml(formatCurrency(budget, "BRL")) : displayAmounts ? "não definido" : "••••••"}</small></div>
     </article>`;
@@ -614,7 +615,7 @@ function renderTripHeader() {
   document.querySelector("#trip-cover-dates").textContent = trip.startDate
     ? `${formatDate(trip.startDate)} — ${formatDate(trip.endDate, { day: "numeric", month: "long", year: "numeric" })}`
     : "Datas a definir";
-  document.querySelector("#trip-cover-countdown").textContent = getCountdown(trip.startDate);
+  document.querySelector("#trip-cover-countdown").textContent = getCountdown(trip.startDate, trip.endDate);
   addImageFallbacks(document.querySelector("#trip-view"));
 }
 
@@ -746,6 +747,20 @@ function validateTrip(trip) {
   return "";
 }
 
+// Depois de mudar datas ou cidades, traz para dentro da viagem os itens que ficariam invisíveis no roteiro.
+function realignItineraryDates(trip) {
+  if (!trip.startDate || !trip.endDate) return;
+  trip.saved.forEach((item) => {
+    const activity = getActivity(item.id);
+    const stays = activity ? trip.destinations.filter((place) => activityMatchesCity(activity, place.name)) : [];
+    const ranges = stays.length ? stays : [{ startDate: trip.startDate, endDate: trip.endDate }];
+    if (!ranges.some((range) => item.date && item.date >= range.startDate && item.date <= range.endDate)) item.date = ranges[0].startDate;
+  });
+  trip.itinerary.forEach((event) => {
+    if (!event.date || event.date < trip.startDate || event.date > trip.endDate) event.date = trip.startDate;
+  });
+}
+
 function saveTrip(event) {
   event.preventDefault();
   const existing = editingTripId ? state.trips.find((trip) => trip.id === editingTripId) : null;
@@ -772,6 +787,7 @@ function saveTrip(event) {
     announce(message);
     return;
   }
+  realignItineraryDates(trip);
   const previous = existing ? { ...existing } : null;
   if (existing) Object.assign(existing, trip);
   else state.trips.push(trip);
@@ -830,6 +846,8 @@ function renderDiscovery() {
   document.querySelector("#maybe-preview-list").innerHTML = trip.maybe.length
     ? getTripActivities(trip, "maybe").map(({ activity }) => `<button class="preview-item maybe-item" type="button" data-maybe-save="${escapeHtml(activity.id)}"><img class="preview-thumb" src="${escapeHtml(activity.image)}" alt=""><span><strong>${escapeHtml(activity.name)}</strong><small>${escapeHtml(activity.city)} · tocar para curtir</small></span></button>`).join("")
     : '<p class="preview-empty">Ainda não há ideias para rever.</p>';
+  addImageFallbacks(document.querySelector("#saved-preview-list"));
+  addImageFallbacks(document.querySelector("#maybe-preview-list"));
   if (!ideas.length) {
     elements.activityStage.innerHTML = '<div class="empty-state"><span class="empty-illustration">✳</span><h3>Você explorou todas as ideias deste filtro.</h3><p>Troque de cidade ou revise as ideias em “Talvez depois”.</p></div>';
     return;
@@ -901,10 +919,14 @@ function attachSwipeHandlers(card) {
     '<span class="swipe-badge badge-like" aria-hidden="true">QUERO ♥</span>'
     + '<span class="swipe-badge badge-skip" aria-hidden="true">PASSAR ×</span>'
     + '<span class="swipe-badge badge-maybe" aria-hidden="true">TALVEZ ♡</span>');
+  const FLICK_DISTANCE = 40;
+  const FLICK_SPEED = 0.3; // px por ms
+  let pointerId = null;
   let startX = null;
   let startY = null;
   let dx = 0;
   let dy = 0;
+  let samples = [];
   let busy = false;
 
   const intentFor = (x, y) => {
@@ -964,28 +986,48 @@ function attachSwipeHandlers(card) {
 
   activeSwipe = { card, commit };
 
+  // Velocidade do fim do gesto, para aceitar um "peteleco" rápido mesmo sem arrastar até o limite.
+  const releaseSpeed = (mode) => {
+    const recent = samples.filter((sample) => samples[samples.length - 1].t - sample.t <= 100);
+    if (recent.length < 2) return 0;
+    const first = recent[0];
+    const last = recent[recent.length - 1];
+    const elapsed = Math.max(1, last.t - first.t);
+    if (mode === "maybe") return (last.y - first.y) / elapsed;
+    return Math.abs(last.x - first.x) / elapsed;
+  };
+
   card.addEventListener("pointerdown", (event) => {
-    if (busy || event.target.closest("button, a")) return;
+    if (busy || pointerId !== null || event.target.closest("button, a")) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    event.preventDefault();
+    pointerId = event.pointerId;
     startX = event.clientX;
     startY = event.clientY;
+    samples = [{ x: startX, y: startY, t: event.timeStamp }];
     card.classList.add("is-dragging");
     card.setPointerCapture(event.pointerId);
   });
   card.addEventListener("pointermove", (event) => {
-    if (startX === null || busy) return;
+    if (event.pointerId !== pointerId || busy) return;
     dx = event.clientX - startX;
     dy = event.clientY - startY;
+    samples.push({ x: event.clientX, y: event.clientY, t: event.timeStamp });
+    if (samples.length > 12) samples.shift();
     paint();
   });
-  card.addEventListener("pointerup", () => {
-    if (startX === null) return;
-    startX = null;
+  card.addEventListener("pointerup", (event) => {
+    if (event.pointerId !== pointerId) return;
+    pointerId = null;
     const { mode, progress } = paint();
-    if (mode && progress >= 1) commit(mode);
+    const distance = mode === "maybe" ? dy : Math.abs(dx);
+    const flick = distance >= FLICK_DISTANCE && releaseSpeed(mode) >= FLICK_SPEED;
+    if (mode && (progress >= 1 || flick)) commit(mode);
     else reset();
   });
-  card.addEventListener("pointercancel", () => {
-    startX = null;
+  card.addEventListener("pointercancel", (event) => {
+    if (event.pointerId !== pointerId) return;
+    pointerId = null;
     if (!busy) reset();
   });
 }
@@ -1009,9 +1051,10 @@ function renderItinerary() {
     container.innerHTML = '<div class="planner-empty"><strong>Defina as datas da viagem para montar seu roteiro.</strong><span>Depois, adicione compromissos manualmente ou guarde atrações na aba Descobrir.</span></div>';
     return;
   }
-  document.querySelector("#manual-event-date").innerHTML = days
+  const dayOptions = days
     .map((date) => `<option value="${date}">${escapeHtml(formatDate(date, { weekday: "short", day: "numeric", month: "short" }))}</option>`)
     .join("");
+  document.querySelector("#manual-event-date").innerHTML = dayOptions;
   container.innerHTML = days.map((date) => {
     const destination = trip.destinations.find((item) => item.startDate <= date && item.endDate >= date);
     const events = trip.itinerary.filter((event) => event.date === date);
@@ -1019,10 +1062,11 @@ function renderItinerary() {
       .map(({ id, date: itemDate, time, activity }) => ({ id, date: itemDate, time: time || "09:00", title: activity.name, city: activity.city, image: activity.image, type: "activity", cost: activity.cost }));
     const schedule = [...events, ...saved].sort((a, b) => (a.time || "").localeCompare(b.time || ""));
     return `<section class="itinerary-day" data-drop-date="${date}">
-      <header class="itinerary-day-heading"><span class="day-date"><strong>${parseLocalDate(date).getDate()}</strong><small>${escapeHtml(formatDate(date, { month: "short" }).replace(".", ""))}</small></span><div><h3>${escapeHtml(formatDate(date, { weekday: "long" }))}</h3><p>${escapeHtml(destination?.name || "Dia livre")} · ${schedule.length} ${schedule.length === 1 ? "parada" : "paradas"}</p></div><button type="button" class="add-day-item" data-add-day="${date}">+ incluir</button></header>
+      <header class="itinerary-day-heading"><span class="day-date"><strong>${parseLocalDate(date).getUTCDate()}</strong><small>${escapeHtml(formatDate(date, { month: "short" }).replace(".", ""))}</small></span><div><h3>${escapeHtml(formatDate(date, { weekday: "long" }))}</h3><p>${escapeHtml(destination?.name || "Dia livre")} · ${schedule.length} ${schedule.length === 1 ? "parada" : "paradas"}</p></div><button type="button" class="add-day-item" data-add-day="${date}">+ incluir</button></header>
       <div class="itinerary-day-items">${schedule.length ? schedule.map((item) => `<article class="itinerary-item" draggable="true" data-item-id="${escapeHtml(item.id)}" data-item-type="${item.type}">
         <span class="drag-handle" aria-hidden="true">⠿</span>${item.image ? `<img src="${escapeHtml(item.image)}" alt="">` : '<span class="manual-event-icon">◷</span>'}
         <div class="planner-activity-info"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.city || item.category || "Compromisso manual")}</span></div>
+        <label class="visually-hidden" for="day-${escapeHtml(item.id)}">Dia de ${escapeHtml(item.title)}</label><select id="day-${escapeHtml(item.id)}" class="itinerary-day-select" data-day-id="${escapeHtml(item.id)}" data-day-type="${item.type}">${dayOptions.replace(`value="${date}"`, `value="${date}" selected`)}</select>
         <label class="visually-hidden" for="time-${escapeHtml(item.id)}">Horário de ${escapeHtml(item.title)}</label><input id="time-${escapeHtml(item.id)}" type="time" value="${escapeHtml(item.time || "09:00")}" data-time-id="${escapeHtml(item.id)}" data-time-type="${item.type}">
         <button class="remove-activity" type="button" data-remove-itinerary="${escapeHtml(item.id)}" data-item-type="${item.type}" aria-label="Remover ${escapeHtml(item.title)}">×</button></article>`).join("") : '<p class="day-empty">Um espaço em branco também faz parte de uma boa viagem.</p>'}</div>
     </section>`;
@@ -1040,8 +1084,13 @@ function renderItinerary() {
     day.addEventListener("drop", (event) => {
       event.preventDefault();
       day.classList.remove("is-drop-target");
-      const data = JSON.parse(event.dataTransfer.getData("text/plain"));
-      moveItineraryItem(data.id, data.type, day.dataset.dropDate);
+      let data;
+      try {
+        data = JSON.parse(event.dataTransfer.getData("text/plain"));
+      } catch (error) {
+        return;
+      }
+      if (data?.id) moveItineraryItem(data.id, data.type, day.dataset.dropDate);
     });
   });
 }
@@ -1051,9 +1100,11 @@ function moveItineraryItem(id, type, date) {
   const item = type === "activity" ? trip.saved.find((saved) => saved.id === id) : trip.itinerary.find((event) => event.id === id);
   if (!item) return;
   if (type === "activity") {
-    const destination = trip.destinations.find((entry) => activityMatchesCity(getActivity(id), entry.name));
-    if (destination && (date < destination.startDate || date > destination.endDate)) {
-      showFeedback(`Esta atração é de ${destination.name}; escolha um dia durante essa parada.`);
+    const stays = trip.destinations.filter((entry) => activityMatchesCity(getActivity(id), entry.name));
+    if (stays.length && !stays.some((stay) => date >= stay.startDate && date <= stay.endDate)) {
+      const message = `Esta atração é de ${stays[0].name}; escolha um dia durante essa parada.`;
+      showFeedback(message);
+      announce(message);
       renderItinerary();
       return;
     }
@@ -1209,9 +1260,14 @@ document.querySelector("#manual-event-form").addEventListener("submit", (event) 
   event.preventDefault();
   const trip = getCurrentTrip();
   const data = new FormData(event.currentTarget);
+  const title = String(data.get("title")).trim();
+  if (!title) {
+    announce("Dê um nome para o compromisso.");
+    return;
+  }
   trip.itinerary.push({
     id: `evento-${Date.now()}`,
-    title: String(data.get("title")).trim(),
+    title,
     category: String(data.get("category")),
     date: String(data.get("date")),
     time: String(data.get("time") || "09:00"),
@@ -1243,6 +1299,11 @@ document.querySelector("#itinerary-content").addEventListener("click", (event) =
   }
 });
 document.querySelector("#itinerary-content").addEventListener("change", (event) => {
+  const daySelect = event.target.closest("[data-day-id]");
+  if (daySelect) {
+    moveItineraryItem(daySelect.dataset.dayId, daySelect.dataset.dayType, daySelect.value);
+    return;
+  }
   const input = event.target.closest("[data-time-id]");
   if (!input) return;
   const trip = getCurrentTrip();
@@ -1265,13 +1326,18 @@ document.querySelector("#expense-form").addEventListener("submit", (event) => {
   const data = new FormData(event.currentTarget);
   const amount = Number(data.get("amount"));
   const exchangeRate = Number(data.get("exchangeRate"));
+  const description = String(data.get("description")).trim();
+  if (!description) {
+    announce("Descreva a despesa.");
+    return;
+  }
   if (!(amount > 0) || !(exchangeRate > 0)) {
     announce("Informe um valor e uma cotação maiores que zero.");
     return;
   }
   trip.expenses.push({
     id: `despesa-${Date.now()}`,
-    description: String(data.get("description")).trim(),
+    description,
     category: String(data.get("category")),
     amount,
     currency: String(data.get("currency")),
@@ -1316,7 +1382,7 @@ document.querySelectorAll("[data-checklist]").forEach((input) => input.addEventL
 }));
 document.addEventListener("keydown", (event) => {
   if (activeView !== "trip" || activeTab !== "discover" || event.altKey || event.ctrlKey || event.metaKey) return;
-  if (event.target.closest("input, select, textarea, button, a, [contenteditable='true']")) return;
+  if (event.target.closest("input, select, textarea, [contenteditable='true']")) return;
   if (!currentActivityId) return;
   if (event.key === "ArrowLeft") triggerSwipe("skip");
   if (event.key === "ArrowRight") triggerSwipe("like");

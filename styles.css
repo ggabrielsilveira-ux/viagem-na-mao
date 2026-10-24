@@ -2298,7 +2298,7 @@ h1 span {
 
 .itinerary-item {
   display: grid;
-  grid-template-columns: 20px 45px minmax(120px, 1fr) 95px 30px;
+  grid-template-columns: 20px 45px minmax(120px, 1fr) 118px 95px 30px;
   align-items: center;
   gap: 11px;
   padding: 11px 17px;
@@ -2336,7 +2336,8 @@ h1 span {
   background: #edf2e8;
 }
 
-.itinerary-item input[type="time"] {
+.itinerary-item input[type="time"],
+.itinerary-day-select {
   min-height: 34px;
   padding: 0 7px;
   border: 1px solid var(--line);
@@ -2814,6 +2815,16 @@ h1 span {
     padding: 10px 9px;
   }
 
+  .itinerary-day-select {
+    grid-row: 2;
+    grid-column: 3 / 5;
+  }
+
+  .itinerary-item .remove-activity {
+    grid-row: 1;
+    grid-column: 5;
+  }
+
   .itinerary-item > img,
   .manual-event-icon {
     width: 39px;
@@ -2924,18 +2935,16 @@ h1 span {
   }
 }
 
-/* Swipe: cartão acompanha o arraste e mostra a intenção */
+/* Swipe: cartão acompanha o arraste e mostra a intenção.
+   touch-action: none no cartão inteiro para o gesto para baixo ("talvez") não virar rolagem da página. */
 .activity-card {
-  touch-action: pan-y;
-  cursor: grab;
-}
-
-.activity-card .activity-photo {
   touch-action: none;
+  cursor: grab;
 }
 
 .activity-card.is-dragging {
   cursor: grabbing;
+  user-select: none;
   transition: none;
   will-change: transform;
 }
