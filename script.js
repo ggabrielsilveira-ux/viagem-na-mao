@@ -486,6 +486,93 @@ function distanceKm([lat1, lon1], [lat2, lon2]) {
   return 6371 * 2 * Math.asin(Math.sqrt(a));
 }
 
+// Tempo de carro e a pé entre paradas, pelo OSRM do servidor público da FOSSGIS
+// (uso não comercial, no máximo 1 requisição por segundo, sem trânsito).
+// Resultados ficam em uma chave separada do localStorage para não pedir o mesmo trecho de novo.
+const ROUTE_CACHE_KEY = "viagem-na-mao-rotas-v1";
+const ROUTE_INTERVAL_MS = 1100;
+const routeCache = (() => {
+  try {
+    return JSON.parse(window.localStorage.getItem(ROUTE_CACHE_KEY)) || {};
+  } catch (error) {
+    return {};
+  }
+})();
+const routeQueue = [];
+const routeFailed = new Set();
+let routeRunning = false;
+
+const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+function routeKey(from, to) {
+  return `${from[0]},${from[1]};${to[0]},${to[1]}`;
+}
+
+async function fetchRoute(profile, from, to) {
+  const url = `https://routing.openstreetmap.de/routed-${profile}/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=false`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`OSRM respondeu ${response.status}`);
+  const data = await response.json();
+  if (data.code !== "Ok" || !data.routes?.length) throw new Error(`OSRM: ${data.code}`);
+  return data.routes[0];
+}
+
+function formatDuration(seconds) {
+  const minutes = Math.max(1, Math.round(seconds / 60));
+  if (minutes < 60) return `${minutes} min`;
+  const rest = minutes % 60;
+  return `${Math.floor(minutes / 60)} h${rest ? ` ${rest} min` : ""}`;
+}
+
+function routeText(key, straightKm) {
+  const straight = `≈ ${straightKm.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} km em linha reta`;
+  const route = routeCache[key];
+  if (route) return `Da parada anterior: ${formatDuration(route.car)} de carro · ${formatDuration(route.foot)} a pé (sem trânsito)`;
+  if (routeFailed.has(key)) return `${straight} da parada anterior · tempo indisponível`;
+  return `${straight} da parada anterior · calculando tempo…`;
+}
+
+function paintRoutes(key) {
+  document.querySelectorAll(`[data-route="${key}"]`).forEach((element) => {
+    element.textContent = routeText(key, Number(element.dataset.straightKm));
+  });
+}
+
+async function runRouteQueue() {
+  if (routeRunning) return;
+  routeRunning = true;
+  while (routeQueue.length) {
+    const key = routeQueue.shift();
+    const [from, to] = key.split(";").map((point) => point.split(",").map(Number));
+    try {
+      const car = await fetchRoute("car", from, to);
+      await wait(ROUTE_INTERVAL_MS);
+      const foot = await fetchRoute("foot", from, to);
+      routeCache[key] = { car: Math.round(car.duration), foot: Math.round(foot.duration) };
+      try {
+        window.localStorage.setItem(ROUTE_CACHE_KEY, JSON.stringify(routeCache));
+      } catch (error) {
+        console.warn("Não foi possível guardar o tempo de deslocamento.", error);
+      }
+    } catch (error) {
+      console.warn("Não foi possível calcular o tempo de deslocamento.", error);
+      routeFailed.add(key);
+    }
+    paintRoutes(key);
+    await wait(ROUTE_INTERVAL_MS);
+  }
+  routeRunning = false;
+}
+
+function requestRoutes(container) {
+  container.querySelectorAll("[data-route]").forEach((element) => {
+    const key = element.dataset.route;
+    if (routeCache[key] || routeFailed.has(key) || routeQueue.includes(key)) return;
+    routeQueue.push(key);
+  });
+  runRouteQueue();
+}
+
 function getTripActivities(trip, key = "saved") {
   return (trip?.[key] || []).map((item) => ({ ...item, activity: getActivity(item.id) })).filter((item) => item.activity);
 }
@@ -1089,24 +1176,28 @@ function renderItinerary() {
     const saved = getTripActivities(trip).filter((item) => item.date === date)
       .map(({ id, date: itemDate, time, activity }) => ({ id, date: itemDate, time: time || "09:00", title: activity.name, city: activity.city, image: activity.image, type: "activity", cost: activity.cost, coordinates: getOpenData(id)?.coordinates }));
     const schedule = [...events, ...saved].sort((a, b) => (a.time || "").localeCompare(b.time || ""));
-    // Distância em linha reta até a parada anterior com coordenadas (não é trajeto nem tempo de deslocamento).
+    // Trecho desde a parada anterior com coordenadas; o tempo de carro e a pé é preenchido depois pelo OSRM.
     let previousPoint = null;
     schedule.forEach((item) => {
       if (!item.coordinates) return;
-      if (previousPoint) item.distance = distanceKm(previousPoint, item.coordinates);
+      if (previousPoint) {
+        item.distance = distanceKm(previousPoint, item.coordinates);
+        item.routeKey = routeKey(previousPoint, item.coordinates);
+      }
       previousPoint = item.coordinates;
     });
     return `<section class="itinerary-day" data-drop-date="${date}">
       <header class="itinerary-day-heading"><span class="day-date"><strong>${parseLocalDate(date).getUTCDate()}</strong><small>${escapeHtml(formatDate(date, { month: "short" }).replace(".", ""))}</small></span><div><h3>${escapeHtml(formatDate(date, { weekday: "long" }))}</h3><p>${escapeHtml(destination?.name || "Dia livre")} · ${schedule.length} ${schedule.length === 1 ? "parada" : "paradas"}</p></div><button type="button" class="add-day-item" data-add-day="${date}">+ incluir</button></header>
       <div class="itinerary-day-items">${schedule.length ? schedule.map((item) => `<article class="itinerary-item" draggable="true" data-item-id="${escapeHtml(item.id)}" data-item-type="${item.type}">
         <span class="drag-handle" aria-hidden="true">⠿</span>${item.image ? `<img src="${escapeHtml(item.image)}" alt="">` : '<span class="manual-event-icon">◷</span>'}
-        <div class="planner-activity-info"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.city || item.category || "Compromisso manual")}</span>${item.distance !== undefined ? `<span class="planner-distance">≈ ${escapeHtml(item.distance.toLocaleString("pt-BR", { maximumFractionDigits: 1 }))} km em linha reta da parada anterior</span>` : ""}</div>
+        <div class="planner-activity-info"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.city || item.category || "Compromisso manual")}</span>${item.routeKey ? `<span class="planner-distance" data-route="${escapeHtml(item.routeKey)}" data-straight-km="${item.distance}">${escapeHtml(routeText(item.routeKey, item.distance))}</span>` : ""}</div>
         <label class="visually-hidden" for="day-${escapeHtml(item.id)}">Dia de ${escapeHtml(item.title)}</label><select id="day-${escapeHtml(item.id)}" class="itinerary-day-select" data-day-id="${escapeHtml(item.id)}" data-day-type="${item.type}">${dayOptions.replace(`value="${date}"`, `value="${date}" selected`)}</select>
         <label class="visually-hidden" for="time-${escapeHtml(item.id)}">Horário de ${escapeHtml(item.title)}</label><input id="time-${escapeHtml(item.id)}" type="time" value="${escapeHtml(item.time || "09:00")}" data-time-id="${escapeHtml(item.id)}" data-time-type="${item.type}">
         <button class="remove-activity" type="button" data-remove-itinerary="${escapeHtml(item.id)}" data-item-type="${item.type}" aria-label="Remover ${escapeHtml(item.title)}">×</button></article>`).join("") : '<p class="day-empty">Um espaço em branco também faz parte de uma boa viagem.</p>'}</div>
     </section>`;
   }).join("");
   addImageFallbacks(container);
+  requestRoutes(container);
   container.querySelectorAll(".itinerary-item").forEach((item) => {
     item.addEventListener("dragstart", (event) => {
       event.dataTransfer.setData("text/plain", JSON.stringify({ id: item.dataset.itemId, type: item.dataset.itemType }));

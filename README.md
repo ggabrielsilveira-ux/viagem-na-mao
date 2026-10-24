@@ -19,7 +19,7 @@ Protótipo estático para planejar várias viagens, organizar um roteiro, descob
 - Descobrir algumas ideias de eventos sazonais, sem datas presumidas.
 - Abrir buscas da atração no Google Maps e no Tripadvisor para conferir informações atuais.
 - Ver, em 74 das 94 atrações, dados de fontes abertas: foto real com autor e licença (Wikimedia Commons), resumo e link da Wikipedia, site oficial (Wikidata) e coordenadas.
-- Ver no roteiro a distância em linha reta entre paradas consecutivas que têm coordenadas.
+- Ver no roteiro o tempo de carro e a pé entre paradas consecutivas que têm coordenadas, calculado pelo OSRM (servidor público da FOSSGIS, dados OpenStreetMap, sem trânsito). Enquanto calcula ou se o serviço falhar, mostra a distância em linha reta.
 
 ## Executar
 
@@ -48,7 +48,11 @@ Os cartões não exibem notas nem quantidades de avaliações inventadas. Preço
 
 O arquivo `dados/fontes-abertas.js` é gerado por `node ferramentas/gerar-fontes-abertas.mjs` (Node 18+ e internet). O script lê o catálogo do `script.js`, procura a página de cada atração na Wikipedia em português e só aceita o resultado se a coordenada estiver a até 60 km da cidade (ou, sem coordenada, se o texto citar a cidade). Fotos só entram com licença livre identificada (domínio público, CC0, CC BY, CC BY-SA), e o cartão mostra autor e licença com link para a página da foto. O resumo da Wikipedia aparece com crédito e licença CC BY-SA 4.0. Rode o script de novo quando o catálogo mudar; atrações sem correspondência confiável continuam com a imagem ilustrativa.
 
-Essas fontes não têm notas, preços nem horários, então o app continua sem esses dados. A distância do roteiro é calculada em linha reta pelas coordenadas e não representa trajeto nem tempo de deslocamento.
+Essas fontes não têm notas, preços nem horários, então o app continua sem esses dados.
+
+### Tempos de deslocamento (OSRM)
+
+O roteiro consulta `routing.openstreetmap.de` (perfis `routed-car` e `routed-foot`) direto do navegador, uma requisição por vez com intervalo de 1,1 s, e guarda os resultados na chave `viagem-na-mao-rotas-v1` do `localStorage` (separada dos dados das viagens). O servidor é gratuito para **uso não comercial** e sem garantia de disponibilidade ([termos](https://routing.openstreetmap.de/about.html)); antes de cobrar assinatura, troque por uma instância própria do OSRM, por um serviço pago ou pela Routes API via backend. Os tempos não consideram trânsito.
 
 ## APIs e integração futura
 
@@ -75,7 +79,7 @@ Sem esses acessos, o app pode abrir buscas externas para consulta, mas não deve
 
 ## Limites desta versão
 
-Esta demonstração não consulta nem copia automaticamente dados desses sites. A sugestão de roteiro usa regras simples locais e não é gerada por IA. Não calcula rotas, distâncias ou trânsito. Cotação de moedas é informada manualmente; não há taxa de câmbio ao vivo. O guia pré-viagem é geral e não substitui orientação oficial ou profissional. O link/cupom Nomad está sujeito às condições do parceiro e não tem benefício validado pelo protótipo.
+Esta demonstração não consulta nem copia automaticamente dados de Google ou Tripadvisor. A sugestão de roteiro usa regras simples locais e não é gerada por IA nem otimiza a ordem das paradas. Os tempos de carro e a pé vêm do OSRM público (teste não comercial) e não consideram trânsito. Cotação de moedas é informada manualmente; não há taxa de câmbio ao vivo. O guia pré-viagem é geral e não substitui orientação oficial ou profissional. O link/cupom Nomad está sujeito às condições do parceiro e não tem benefício validado pelo protótipo.
 
 As viagens e despesas ficam neste navegador e não são sincronizadas entre dispositivos. A estimativa combina despesas lançadas com preço conhecido das atividades salvas; não precifica itens marcados “Consulte valor” nem inclui despesas futuras ainda não registradas. Os valores são tratados em reais para consolidação; para outras moedas, o usuário fornece a cotação manual. A data e o relógio da interface usam o fuso `America/Sao_Paulo` e formato de 24 horas nesta versão.
 
