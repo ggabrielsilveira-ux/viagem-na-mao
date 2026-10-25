@@ -83,6 +83,8 @@ img { display: block; max-width: 100%; }
 .app {
   position: relative;
   width: 100%;
+  /* A animação de entrada desliza a tela; clip evita rolagem lateral sem quebrar o sticky. */
+  overflow-x: clip;
   max-width: 520px;
   min-height: 100dvh;
   margin: 0 auto;
