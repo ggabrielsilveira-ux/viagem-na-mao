@@ -781,3 +781,5 @@ a.photo-credit:hover { text-decoration: underline; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
 }
+.unconfirmed { margin: 10px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.unconfirmed li + li { margin-top: 6px; }

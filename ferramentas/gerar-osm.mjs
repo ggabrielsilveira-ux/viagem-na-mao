@@ -99,11 +99,19 @@ async function fetchCity(name, center) {
   const file = join(CACHE_DIR, `${normalize(name).replace(/ /g, "-")}.json`);
   if (existsSync(file)) return JSON.parse(readFileSync(file, "utf8"));
   for (let attempt = 0; attempt < 4; attempt++) {
-    const response = await fetch(OVERPASS, {
-      method: "POST",
-      body: new URLSearchParams({ data: overpassQuery(center) }),
-      headers: { "User-Agent": USER_AGENT }
-    });
+    let response;
+    try {
+      response = await fetch(OVERPASS, {
+        method: "POST",
+        body: new URLSearchParams({ data: overpassQuery(center) }),
+        headers: { "User-Agent": USER_AGENT }
+      });
+    } catch (error) {
+      // Queda de conexão (ECONNRESET, tempo esgotado): espera e tenta de novo.
+      console.warn(`${name}: falha de rede (${error.cause?.code || error.message}); esperando para tentar de novo.`);
+      await sleep(30000 * (attempt + 1));
+      continue;
+    }
     if (response.ok) {
       const data = await response.json();
       mkdirSync(CACHE_DIR, { recursive: true });

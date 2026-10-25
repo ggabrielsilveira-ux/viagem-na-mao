@@ -1687,14 +1687,16 @@ function buildChecklist(trip, groups) {
     const info = guide[country];
     const slug = slugify(country);
     if (info?.visto?.exigido) items.push({ id: `visto-${slug}`, title: `Visto para ${country}`, detail: info.visto.resumo });
-    if (info?.autorizacaoEletronica) items.push({ id: `autorizacao-${slug}`, title: `Autorização eletrônica · ${country}`, detail: info.autorizacaoEletronica });
+    if (info?.preEmbarque) items.push({ id: `autorizacao-${slug}`, title: info.preEmbarque.titulo, detail: `${info.preEmbarque.obrigatorio ? "Obrigatório. " : "Recomendado. "}${info.autorizacaoEletronica || ""}` });
     if (info?.tomadas) items.push({ id: `adaptador-${slug}`, title: `Adaptador de tomada · ${country}`, detail: info.tomadas });
     if (info?.moeda?.codigo && info.moeda.codigo !== "BRL") items.push({ id: `moeda-${info.moeda.codigo}`, title: `Dinheiro ou cartão em ${info.moeda.nome}`, detail: `Moeda local: ${info.moeda.nome} (${info.moeda.codigo}).` });
   });
   const mandatoryInsurance = foreign.filter(({ country }) => guide[country]?.seguro?.obrigatorio).map(({ country }) => country);
   if (foreign.length) items.push({ id: "seguro", title: "Seguro viagem", detail: mandatoryInsurance.length ? `Obrigatório em: ${mandatoryInsurance.join(", ")}.` : "Recomendado: despesas médicas no exterior podem ser muito caras." });
-  const yellowFever = groups.some(({ country }) => /febre amarela/i.test(guide[country]?.saude || ""));
-  if (yellowFever) items.push({ id: "vacina-febre-amarela", title: "Vacina de febre amarela e certificado (CIVP)", detail: "Veja no guia de cada país se é exigido ou recomendado." });
+  const yellowFeverRequired = groups.filter(({ country }) => guide[country]?.febreAmarela === "exigida").map(({ country }) => country);
+  const yellowFeverAdvised = groups.filter(({ country }) => guide[country]?.febreAmarela === "recomendada").map(({ country }) => country);
+  if (yellowFeverRequired.length) items.push({ id: "vacina-febre-amarela", title: "Certificado de febre amarela (CIVP)", detail: `Exigido em: ${yellowFeverRequired.join(", ")}. Tome a vacina pelo menos 10 dias antes e emita o certificado no gov.br.` });
+  else if (yellowFeverAdvised.length) items.push({ id: "vacina-febre-amarela", title: "Vacina de febre amarela", detail: `Recomendada para algumas regiões de: ${yellowFeverAdvised.join(", ")}. Veja o guia do país.` });
   if (trip.rentalCar && foreign.length) items.push({ id: "cnh-internacional", title: "Permissão Internacional para Dirigir (PID)", detail: "Emitida pelo Detran do seu estado; confirme se o país exige." });
   if (trip.children) items.push({ id: "autorizacao-menores", title: "Autorização de viagem para menores", detail: "Necessária quando a criança viaja sem um dos pais. Veja as regras do CNJ e da Polícia Federal." });
   if (trip.seniors) items.push({ id: "medicamentos", title: "Medicamentos de uso contínuo e receitas", detail: "Leve na bagagem de mão, com receita, de preferência em inglês para o exterior." });
@@ -1703,7 +1705,8 @@ function buildChecklist(trip, groups) {
   items.push({ id: "copias-documentos", title: "Cópias digitais dos documentos", detail: "Guarde fotos do passaporte, reservas e seguro na nuvem." });
   items.push({ id: "enderecos", title: "Endereços e reservas salvos offline", detail: "Hospedagens, contatos e mapas offline das cidades." });
   items.push({ id: "ritmo", title: "Revisar o ritmo do roteiro", detail: "Pausas, deslocamentos e atividades que pedem reserva." });
-  return items;
+  const seen = new Set();
+  return items.filter((item) => !seen.has(item.id) && seen.add(item.id));
 }
 
 function renderGuide() {
@@ -1735,7 +1738,7 @@ function renderGuide() {
           ${infoItem("id-card", "Documentos", info.documentos)}
           ${infoItem("calendar", "Validade do passaporte", info.validadePassaporte)}
           ${infoItem("flag", "Visto", visa, Boolean(info.visto?.exigido))}
-          ${infoItem("shield-check", "Autorização eletrônica", info.autorizacaoEletronica, true)}
+          ${infoItem("shield-check", "Autorização eletrônica e formulários", info.autorizacaoEletronica, Boolean(info.preEmbarque?.obrigatorio))}
           ${infoItem("list-checks", "Pode ser pedido na imigração", info.comprovantes)}
         </div></div>
         <div class="card"><div class="card-head"><h2>${icon("syringe")} Saúde e seguro</h2></div><div class="info-list">
@@ -1747,11 +1750,13 @@ function renderGuide() {
           ${infoItem("plug", "Tomadas", info.tomadas)}
           ${infoItem("languages", "Idioma", info.idioma)}
           ${infoItem("phone", "Emergência", info.emergencia)}
-          ${infoItem("car", "Trânsito", info.direcao ? `Dirige-se do lado ${info.direcao}.` : null)}
+          ${infoItem("car", "Trânsito", info.direcao ? `Dirige-se pela ${info.direcao}.` : null)}
           ${infoItem("coffee", "Gorjeta", info.gorjeta)}
         </div>
         ${info.fontes?.length ? `<div class="sources">${info.fontes.slice(0, 6).map((source) => `<a href="${escapeHtml(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.titulo)} ↗</a>`).join("")}</div>` : ""}
         </div>
+        ${info.naoConfirmado?.length ? `<details class="card disclosure"><summary>${icon("info")} Pontos ainda não confirmados <span>${info.naoConfirmado.length}</span>${icon("chevron-down", "chevron")}</summary>
+          <ul class="unconfirmed">${info.naoConfirmado.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}</ul></details>` : ""}
       </section>`;
     }).join("")}
     <div class="card" id="checklist-card">
