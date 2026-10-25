@@ -173,8 +173,8 @@ img { display: block; max-width: 100%; }
 /* Início */
 .hero {
   position: relative;
-  height: min(62dvh, 560px);
-  min-height: 420px;
+  height: min(74dvh, 660px);
+  min-height: 480px;
   overflow: hidden;
   color: #fff;
   background: #1c2a24;
@@ -187,14 +187,13 @@ img { display: block; max-width: 100%; }
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transform: scale(1.04);
-  transition: opacity 1400ms ease, transform 12s linear;
+  transition: opacity 1600ms ease;
 }
-.hero-img.is-active { opacity: 1; transform: scale(1); }
+.hero-img.is-active { opacity: 1; }
 .hero-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(10, 18, 14, 0.45) 0%, rgba(10, 18, 14, 0) 26%, rgba(10, 18, 14, 0) 45%, rgba(10, 18, 14, 0.78) 100%);
+  background: linear-gradient(180deg, rgba(10, 18, 14, 0.32) 0%, rgba(10, 18, 14, 0) 18%, rgba(10, 18, 14, 0) 58%, rgba(10, 18, 14, 0.62) 100%);
 }
 .hero-top {
   position: absolute;
@@ -220,21 +219,18 @@ img { display: block; max-width: 100%; }
   line-height: 0.8;
 }
 .brand-mark span { color: #c8e6a0; }
-.clock { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: 999px; background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(8px); font-size: 12px; font-weight: 600; }
-.clock .icon { width: 14px; height: 14px; }
 .hero-copy { position: absolute; right: 22px; bottom: 86px; left: 22px; }
-.hero-kicker { margin-bottom: 12px; color: #d9efc3; font-size: 12px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+.hero-kicker { margin-bottom: 8px; color: rgba(255, 255, 255, 0.82); font-size: 10px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
 .hero-quote {
-  font-family: var(--font-serif);
-  font-size: clamp(25px, 7vw, 32px);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.3px;
-  line-height: 1.22;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+  max-width: 340px;
+  color: rgba(255, 255, 255, 0.91);
+  font-family: Georgia, serif;
+  font-size: 16px;
+  line-height: 1.55;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45);
   transition: opacity 600ms ease;
 }
-.hero-place { display: flex; align-items: center; gap: 6px; margin-top: 14px; color: rgba(255, 255, 255, 0.85); font-size: 13px; font-weight: 600; }
+.hero-place { display: flex; align-items: center; gap: 6px; margin-top: 10px; color: rgba(255, 255, 255, 0.85); font-size: 12px; font-weight: 600; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5); }
 .hero-place .icon { width: 15px; height: 15px; }
 .hero-controls { position: absolute; right: 18px; bottom: 22px; left: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .hero-dots { display: flex; gap: 6px; }
@@ -318,6 +314,8 @@ img { display: block; max-width: 100%; }
 /* Viagem */
 .trip-body { padding-bottom: calc(var(--tab-h) + 40px + var(--safe-bottom)); }
 .tab-panel { display: grid; gap: 14px; animation: screen-in 220ms ease; }
+/* Sem isso, faixas com rolagem lateral alargam a grade e a página inteira. */
+.tab-panel > * { min-width: 0; }
 
 .tab-bar {
   position: fixed;

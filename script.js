@@ -2361,12 +2361,6 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-function updateClock() {
-  $("#brazil-clock").textContent = new Intl.DateTimeFormat("pt-BR", {
-    timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", hour12: false
-  }).format(new Date());
-}
-
 // ---------------------------------------------------------------------------
 // Início do app
 // ---------------------------------------------------------------------------
@@ -2376,7 +2370,5 @@ renderInspiration();
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   window.setInterval(() => { if (route.screen === "home" && !document.hidden) changeInspiration(1); }, INSPIRATION_INTERVAL_MS);
 }
-updateClock();
-window.setInterval(updateClock, 30000);
 window.history.replaceState({ ...route }, "");
 render();
