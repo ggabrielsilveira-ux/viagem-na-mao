@@ -1007,6 +1007,10 @@ function render({ scroll = true } = {}) {
   if (route.screen === "deck") renderDeck();
   if (route.screen === "retro") renderRetro();
   if (route.screen === "form") renderWizard();
+  if (route.screen === "trip" && reopenEditSheet) {
+    reopenEditSheet = false;
+    openEditSheet();
+  }
 }
 
 function openTrip(id) {
@@ -1577,6 +1581,8 @@ let sheetGuard = null;
 
 function openSheet(html, onReady) {
   sheetGuard = null;
+  sheet.style.transform = "";
+  document.documentElement.classList.add("sheet-open");
   sheetContent.innerHTML = html;
   hydrateIcons(sheetContent);
   addImageFallbacks(sheetContent);
@@ -1592,6 +1598,50 @@ function closeSheet({ force = false } = {}) {
   sheet.close();
   return true;
 }
+
+sheet.addEventListener("close", () => {
+  document.documentElement.classList.remove("sheet-open");
+  sheet.style.transform = "";
+});
+
+// Arrastar para baixo fecha: pela barrinha ou pelo conteúdo quando ele está no topo.
+(() => {
+  let drag = null;
+  const ignore = (target) => target.closest("input, textarea, select, .h-scroll, .photo-picker, .album-preview, .memory-gallery, .share-photos, .retro-edit-photos");
+  sheet.addEventListener("touchstart", (event) => {
+    if (event.touches.length !== 1 || event.target === sheet || ignore(event.target)) return;
+    const fromHandle = Boolean(event.target.closest(".sheet-handle"));
+    drag = { startY: event.touches[0].clientY, startTime: Date.now(), dy: 0, active: fromHandle, fromHandle };
+  }, { passive: true });
+  sheet.addEventListener("touchmove", (event) => {
+    if (!drag) return;
+    const dy = event.touches[0].clientY - drag.startY;
+    if (!drag.active) {
+      // No conteúdo, só começa a arrastar se ele já estiver no topo e o gesto for para baixo.
+      if (dy > 8 && sheetContent.scrollTop <= 0) drag.active = true;
+      else if (dy < -4 || sheetContent.scrollTop > 0) { drag = null; return; }
+      else return;
+    }
+    event.preventDefault();
+    drag.dy = Math.max(0, dy);
+    sheet.style.transition = "none";
+    sheet.style.transform = `translateY(${drag.dy}px)`;
+  }, { passive: false });
+  const finish = () => {
+    if (!drag) return;
+    const { dy, startTime, active } = drag;
+    drag = null;
+    if (!active) return;
+    sheet.style.transition = "transform 200ms ease";
+    const fast = dy > 40 && dy / Math.max(1, Date.now() - startTime) > 0.5;
+    if ((dy > Math.min(140, sheet.offsetHeight * 0.3) || fast) && closeSheet()) return;
+    sheet.style.transform = "";
+  };
+  sheet.addEventListener("touchend", finish);
+  sheet.addEventListener("touchcancel", finish);
+  // Toques no fundo escuro não rolam a tela de trás.
+  sheet.addEventListener("touchmove", (event) => { if (event.target === sheet) event.preventDefault(); }, { passive: false });
+})();
 
 sheet.addEventListener("cancel", (event) => {
   if (!sheetGuard) return;
@@ -2894,12 +2944,16 @@ function startNewTrip() {
 }
 
 // Com `only`, edita só uma parte (e a divisão de noites, quando ela precisar ser refeita).
+// Depois de editar só uma parte, o menu "Editar viagem" reabre para editar outra.
+let reopenEditSheet = false;
+
 function editTrip(only = null) {
   const trip = getCurrentTrip();
   if (!trip) return;
   wizard = {
     step: 0,
     only,
+    originalNights: trip.startDate && trip.endDate ? daysBetween(trip.startDate, trip.endDate) : 0,
     editingId: trip.id,
     month: (trip.startDate || getBrasiliaDateKey()).slice(0, 7),
     focus: "start",
@@ -2932,7 +2986,9 @@ function editTrip(only = null) {
 
 function wizardSteps() {
   if (wizard.only) {
-    const needsSplit = ["cities", "dates"].includes(wizard.only) && wizard.data.cities.length > 1;
+    // Nas datas, a divisão de noites só aparece se o total de noites mudou.
+    const multi = wizard.data.cities.length > 1;
+    const needsSplit = multi && (wizard.only === "cities" || (wizard.only === "dates" && totalNights() !== wizard.originalNights));
     return needsSplit ? [wizard.only, "split"] : [wizard.only];
   }
   const steps = ["cities", "dates"];
@@ -2978,10 +3034,7 @@ function renderWizard() {
   const steps = wizardSteps();
   wizard.step = Math.min(wizard.step, steps.length - 1);
   const step = steps[wizard.step];
-  const titles = { cities: "Destinos", dates: "Datas", split: "Dias por cidade", people: "Quem vai", interests: "Interesses", budget: "Orçamento" };
   $("#wizard-title").textContent = wizard.editingId ? "Editar viagem" : "Nova viagem";
-  $("#wizard-step-label").textContent = `Etapa ${wizard.step + 1} de ${steps.length} · ${titles[step]}`;
-  $("#wizard-progress").style.width = `${((wizard.step + 1) / steps.length) * 100}%`;
   $("#form-status").textContent = wizard.step === 0 ? storageNotice : "";
   const body = $("#wizard-body");
   ({ cities: renderCitiesStep, dates: renderDatesStep, split: renderSplitStep, people: renderPeopleStep, interests: renderInterestsStep, budget: renderBudgetStep })[step](body);
@@ -2992,6 +3045,10 @@ function renderWizard() {
 function updateWizardNext() {
   const steps = wizardSteps();
   const step = steps[wizard.step];
+  // O número de etapas pode mudar (ex.: datas que exigem refazer a divisão de noites).
+  const titles = { cities: "Destinos", dates: "Datas", split: "Dias por cidade", people: "Quem vai", interests: "Interesses", budget: "Orçamento" };
+  $("#wizard-step-label").textContent = `Etapa ${wizard.step + 1} de ${steps.length} · ${titles[step]}`;
+  $("#wizard-progress").style.width = `${((wizard.step + 1) / steps.length) * 100}%`;
   const last = wizard.step === steps.length - 1;
   const button = $("#wizard-next");
   button.disabled = !stepIsValid(step);
@@ -3287,13 +3344,19 @@ function saveWizard() {
     return;
   }
   const wasEditing = Boolean(wizard.editingId);
+  reopenEditSheet = Boolean(wizard.only);
   wizard = null;
   selectedDay = null;
   toast(wasEditing ? "Viagem atualizada" : "Viagem criada!");
-  navigate({ screen: "trip", tab: "about" }, { replace: true });
+  // Editando, volta para a tela da viagem que já está no histórico (sem duplicá-la).
+  if (wasEditing && (window.history.state?.depth || 0) > 0) {
+    route.tab = "about";
+    window.history.back();
+  } else navigate({ screen: "trip", tab: "about" }, { replace: true });
 }
 
 function exitWizard() {
+  reopenEditSheet = Boolean(wizard?.only);
   wizard = null;
   goBack();
 }

@@ -1065,3 +1065,9 @@ img.is-missing { visibility: hidden; }
 
 /* Resumo: cartão de reflexão no lugar da frase simples */
 #trip-message .spotlight-text { font-size: 19px; }
+
+/* Janela de baixo: tela de trás travada e área maior para arrastar */
+html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: none; }
+.sheet-content { overscroll-behavior: contain; }
+.sheet-handle { position: relative; cursor: grab; touch-action: none; }
+.sheet-handle::after { position: absolute; inset: -14px -60px; content: ""; }
