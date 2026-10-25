@@ -39,7 +39,7 @@ const CITIES = [
   ["Santos", "Santos (São Paulo)", "Brasil"], ["Campinas", "Campinas", "Brasil"], ["Balneário Camboriú", "Balneário Camboriú", "Brasil"],
   ["Blumenau", "Blumenau", "Brasil"], ["Bento Gonçalves", "Bento Gonçalves (Rio Grande do Sul)", "Brasil"], ["Vitória", "Vitória (Espírito Santo)", "Brasil"],
   ["Jericoacoara", "Jijoca de Jericoacoara", "Brasil"], ["Fernando de Noronha", "Fernando de Noronha", "Brasil"], ["Porto de Galinhas", "Porto de Galinhas", "Brasil"],
-  ["Barreirinhas", "Barreirinhas", "Brasil"], ["Alter do Chão", "Alter do Chão", "Brasil"], ["Maragogi", "Maragogi", "Brasil"],
+  ["Barreirinhas", "Barreirinhas", "Brasil"], ["Alter do Chão", "Alter do Chão (Santarém)", "Brasil"], ["Maragogi", "Maragogi", "Brasil"],
   ["Teresina", "Teresina", "Brasil"], ["Palmas", "Palmas (Tocantins)", "Brasil"], ["Joinville", "Joinville", "Brasil"],
   ["Lisboa", "Lisboa", "Portugal"], ["Porto", "Porto", "Portugal"], ["Buenos Aires", "Buenos Aires", "Argentina"],
   ["Santiago", "Santiago (Chile)", "Chile"], ["Bariloche", "San Carlos de Bariloche", "Argentina"], ["Montevidéu", "Montevidéu", "Uruguai"],

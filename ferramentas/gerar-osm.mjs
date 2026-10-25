@@ -118,8 +118,15 @@ async function fetchCity(name, center) {
     }
     if (response.ok) {
       const data = await response.json();
+      // Resposta vazia ou com aviso (tempo esgotado no servidor) não vira cache: tenta de novo.
+      if (!data.elements?.length || data.remark) {
+        console.warn(`${name}: Overpass respondeu vazio${data.remark ? ` (${data.remark})` : ""}; esperando para tentar de novo.`);
+        await sleep(30000 * (attempt + 1));
+        continue;
+      }
       mkdirSync(CACHE_DIR, { recursive: true });
-      writeFileSync(file, JSON.stringify(data.elements));
+      // Outro processo (ex.: extrair-pbf.mjs) pode ter gravado o cache enquanto a consulta rodava.
+      if (!existsSync(file)) writeFileSync(file, JSON.stringify(data.elements));
       await sleep(PAUSE_MS);
       return data.elements;
     }
