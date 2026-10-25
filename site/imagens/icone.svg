@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Ícone Viagem na Mão">
+  <defs><clipPath id="heart"><path d="M256 148C222 97 144 89 108 133C43 216 111 312 256 416C401 312 469 216 404 133C368 89 290 97 256 148Z"/></clipPath></defs>
+  <rect width="512" height="512" rx="108" fill="#15563F"/>
+  <g clip-path="url(#heart)">
+    <rect x="0" y="0" width="256" height="512" fill="#56D7AE"/>
+    <rect x="256" y="0" width="256" height="512" fill="#FF8068"/>
+    <circle cx="171" cy="185" r="28" fill="#15563F"/>
+    <circle cx="341" cy="185" r="28" fill="#15563F"/>
+    <path d="M220 438C194 387 207 337 244 304C282 271 326 276 348 230" fill="none" stroke="#FFFDF5" stroke-width="39" stroke-linecap="round"/>
+  </g>
+</svg>

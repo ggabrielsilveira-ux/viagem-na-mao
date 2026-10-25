@@ -123,6 +123,7 @@ As viagens, despesas e memórias ficam neste navegador e não são sincronizadas
 - `dados/osm-lugares.js` e `ferramentas/gerar-osm.mjs`: lugares do OpenStreetMap (gerado, não editar à mão).
 - `dados/guia-paises.js`: regras de entrada e informações práticas por país.
 - `dados/mensagens.js`: biblioteca de mensagens por contexto (pode ser editada à mão).
+- `site/`: site de divulgação (viagemnamao.com) com lista de espera, política de privacidade e termos. Publicado pela Vercel com a pasta `site` como raiz; a função `site/api/lista-espera.js` grava os e-mails no Supabase usando as variáveis `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY`, configuradas só no painel da Vercel. A tabela é criada com `ferramentas/supabase-lista-espera.sql`.
 - `manifest.webmanifest` e `marca/`: instalação na tela inicial e arquivos da marca.
 - `musicas/` e `ferramentas/baixar-musicas.mjs`: trechos de 36 s das músicas livres do vídeo (Kevin MacLeod, incompetech.com, CC BY 3.0, baixadas do Wikimedia Commons).
 - `icones.js`: ícones Lucide usados no app.

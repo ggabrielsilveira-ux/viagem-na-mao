@@ -1,0 +1,135 @@
+/* Viagem na Mão — site de divulgação */
+:root {
+  --verde: #15563F;
+  --verde-2: #1f6b50;
+  --menta: #56D7AE;
+  --coral: #FF8068;
+  --creme: #FFFDF5;
+  --fundo: #f5f3ee;
+  --tinta: #15201b;
+  --tinta-2: #3c4842;
+  --suave: #6b746e;
+  --linha: #e6e1d7;
+  --sombra: 0 18px 50px rgba(21, 32, 27, 0.16);
+  --fonte: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fonte-titulo: "Manrope", "DM Sans", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; color: var(--tinta); background: var(--fundo); font-family: var(--fonte); font-size: 17px; line-height: 1.55; }
+img { display: block; max-width: 100%; }
+a { color: var(--verde-2); }
+h1, h2, h3 { margin: 0; font-family: var(--fonte-titulo); letter-spacing: -0.02em; line-height: 1.12; }
+p { margin: 0; }
+main { overflow-x: clip; }
+
+/* Topo */
+.topo { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 16px; max-width: 1120px; margin: 0 auto; padding: 14px 20px; background: rgba(245, 243, 238, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.marca { display: inline-flex; align-items: center; gap: 10px; color: var(--verde); font-family: var(--fonte-titulo); font-size: 22px; font-weight: 800; text-decoration: none; }
+.marca img { border-radius: 10px; }
+.na { color: #2fb88c; }
+.mao { color: var(--coral); }
+.topo-links { display: flex; align-items: center; gap: 22px; }
+.topo-links a:not(.botao) { color: var(--tinta-2); font-weight: 700; text-decoration: none; }
+@media (max-width: 640px) { .topo-links a:not(.botao) { display: none; } }
+
+/* Botões */
+.botao { display: inline-flex; min-height: 52px; align-items: center; justify-content: center; padding: 0 24px; border: 0; border-radius: 999px; color: #fff; background: var(--verde); box-shadow: 0 10px 24px rgba(21, 86, 63, 0.28); font: 700 16px var(--fonte); text-decoration: none; cursor: pointer; }
+.botao:hover { background: var(--verde-2); }
+.botao-claro { color: var(--verde); background: #fff; box-shadow: inset 0 0 0 1.5px var(--linha); }
+.botao-claro:hover { background: var(--creme); }
+.botao-pequeno { min-height: 42px; padding: 0 18px; font-size: 15px; box-shadow: none; }
+.botao:disabled { opacity: 0.6; cursor: wait; }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: 1.05fr 0.95fr; align-items: center; gap: 40px; max-width: 1120px; margin: 0 auto; padding: 40px 20px 60px; }
+.selo { display: inline-block; margin-bottom: 18px; padding: 6px 14px; border-radius: 999px; color: var(--verde); background: #ddf6ec; font-size: 14px; font-weight: 700; }
+.hero h1 { font-size: clamp(38px, 6vw, 62px); font-weight: 800; }
+.hero h1 span { color: var(--verde-2); }
+.hero-sub { margin-top: 18px; max-width: 540px; color: var(--tinta-2); font-size: 19px; }
+.hero-acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.hero-nota { margin-top: 14px; color: var(--suave); font-size: 14px; }
+.hero-telas { position: relative; display: flex; justify-content: center; min-height: 560px; }
+.celular { width: min(280px, 72vw); margin: 0; overflow: hidden; border: 10px solid #15201b; border-radius: 40px; background: #15201b; box-shadow: var(--sombra); aspect-ratio: 390 / 844; }
+.celular img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.hero-telas .celular { position: relative; z-index: 2; transform: rotate(3deg); }
+.hero-telas .celular-atras { position: absolute; z-index: 1; top: 40px; left: calc(50% - 250px); opacity: 0.95; transform: rotate(-7deg) scale(0.9); }
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; padding-top: 20px; text-align: left; }
+  .hero-telas { min-height: 0; }
+  .hero-telas .celular-atras { display: none; }
+  .hero-telas .celular { transform: none; }
+}
+
+/* Frase */
+.frase { padding: 40px 20px; background: var(--verde); text-align: center; }
+.frase p { color: var(--creme); font-family: Georgia, serif; font-size: clamp(24px, 4vw, 36px); }
+
+/* Recursos */
+.recursos, .como { max-width: 1120px; margin: 0 auto; padding: 70px 20px 20px; }
+.recursos > h2, .como > h2, .lista h2 { font-size: clamp(30px, 4.5vw, 44px); font-weight: 800; text-align: center; }
+.secao-sub { margin: 10px auto 40px; max-width: 560px; color: var(--suave); text-align: center; }
+.recurso { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 56px; max-width: 900px; margin: 0 auto 60px; }
+.recurso-invertido { grid-template-columns: 1fr auto; }
+.recurso-invertido .celular { order: 2; }
+.recurso .celular { width: min(260px, 70vw); }
+.recurso h3 { margin: 12px 0 10px; font-size: clamp(24px, 3.4vw, 32px); font-weight: 800; }
+.recurso p { color: var(--tinta-2); font-size: 18px; }
+.recurso-tag { display: inline-block; padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.tag-menta { color: #1f8f68; background: #ddf6ec; }
+.tag-coral { color: #c9472f; background: #ffe7e1; }
+@media (max-width: 760px) {
+  .recurso, .recurso-invertido { grid-template-columns: 1fr; gap: 24px; justify-items: center; text-align: center; }
+  .recurso-invertido .celular { order: 0; }
+}
+
+/* Como funciona */
+.passos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 36px 0 0; padding: 0; list-style: none; }
+.passos li { padding: 26px 22px; border: 1px solid var(--linha); border-radius: 24px; background: #fff; }
+.passos span { display: grid; width: 44px; height: 44px; margin-bottom: 14px; place-items: center; border-radius: 50%; color: var(--verde); background: linear-gradient(135deg, var(--menta) 50%, var(--coral) 50%); font: 800 20px var(--fonte-titulo); }
+.passos h3 { margin-bottom: 6px; font-size: 21px; }
+.passos p { color: var(--tinta-2); }
+@media (max-width: 760px) { .passos { grid-template-columns: 1fr; } }
+
+/* Lista de espera */
+.lista { padding: 70px 20px 80px; }
+.lista-caixa { max-width: 620px; margin: 0 auto; padding: 40px 28px; border-radius: 32px; color: var(--creme); background: linear-gradient(160deg, var(--verde) 0%, #104431 100%); box-shadow: var(--sombra); }
+.lista-caixa > p { margin: 12px auto 26px; max-width: 480px; color: rgba(255, 253, 245, 0.85); text-align: center; }
+#form-lista { display: grid; gap: 14px; }
+.campo { display: grid; gap: 6px; font-size: 14px; font-weight: 700; }
+.campo input { min-height: 52px; padding: 0 16px; border: 0; border-radius: 14px; color: var(--tinta); background: #fff; font: 500 16px var(--fonte); }
+.campo input:focus, .consentimento input:focus { outline: 3px solid var(--menta); outline-offset: 2px; }
+.armadilha { position: absolute; left: -9999px; }
+.consentimento { display: flex; align-items: flex-start; gap: 10px; color: rgba(255, 253, 245, 0.9); font-size: 14px; line-height: 1.45; }
+.consentimento input { width: 20px; height: 20px; flex: none; margin-top: 1px; accent-color: var(--menta); }
+.consentimento a { color: var(--menta); }
+#form-lista .botao { margin-top: 4px; color: var(--verde); background: var(--creme); box-shadow: none; }
+.form-status { min-height: 22px; color: var(--creme); font-weight: 700; text-align: center; }
+.form-status.erro { color: #ffd2c8; }
+
+/* Rodapé */
+.rodape { display: grid; gap: 14px; justify-items: center; padding: 40px 20px 50px; border-top: 1px solid var(--linha); text-align: center; }
+.marca-rodape { font-size: 18px; }
+.rodape nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; }
+.rodape nav a { color: var(--tinta-2); font-weight: 700; }
+.rodape-nota { max-width: 560px; color: var(--suave); font-size: 13px; }
+
+/* Páginas de texto (privacidade e termos) */
+.texto { max-width: 760px; margin: 0 auto; padding: 30px 20px 70px; }
+.texto h1 { font-size: clamp(32px, 5vw, 44px); font-weight: 800; }
+.texto .atualizado { margin: 8px 0 30px; color: var(--suave); }
+.texto h2 { margin: 34px 0 10px; font-size: 22px; }
+.texto p, .texto li { color: var(--tinta-2); }
+.texto p + p { margin-top: 12px; }
+.texto ul { padding-left: 22px; }
+.texto li + li { margin-top: 6px; }
+.marca span, .botao { white-space: nowrap; }
+@media (max-width: 420px) {
+  .topo { padding: 12px 16px; }
+  .marca { gap: 8px; font-size: 19px; }
+  .marca img { width: 34px; height: 34px; }
+  .botao-pequeno { min-height: 38px; padding: 0 14px; font-size: 14px; }
+  .hero-acoes .botao { width: 100%; }
+}
