@@ -15,7 +15,8 @@ import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const USER_AGENT = "ViagemNaMao/0.1 (prototipo nao comercial; https://github.com/ggabrielsilveira-ux/viagem-na-mao)";
-const OVERPASS = "https://overpass-api.de/api/interpreter";
+// Instância principal e espelho público; alterna entre elas a cada tentativa.
+const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter"];
 const CACHE_DIR = join(ROOT, "ferramentas", ".cache", "osm");
 const NEAR_KM = 50;
 const PAUSE_MS = 5000;
@@ -101,7 +102,7 @@ async function fetchCity(name, center) {
   for (let attempt = 0; attempt < 4; attempt++) {
     let response;
     try {
-      response = await fetch(OVERPASS, {
+      response = await fetch(OVERPASS[attempt % OVERPASS.length], {
         method: "POST",
         body: new URLSearchParams({ data: overpassQuery(center) }),
         headers: { "User-Agent": USER_AGENT }
@@ -122,7 +123,8 @@ async function fetchCity(name, center) {
     console.warn(`${name}: Overpass respondeu ${response.status}; esperando para tentar de novo.`);
     await sleep(30000 * (attempt + 1));
   }
-  throw new Error(`Não consegui consultar ${name} no Overpass.`);
+  console.warn(`${name}: não consegui consultar o Overpass; pulando (rode de novo depois para completar).`);
+  return null;
 }
 
 function kindOf(tags) {
@@ -191,8 +193,10 @@ async function main() {
   const knownNames = new Set(cityData.places.map((place) => `${normalize(place.city)}|${normalize(place.name)}`));
 
   const places = new Map();
+  const skipped = [];
   for (const city of cityData.cities) {
     const elements = await fetchCity(city.name, city.coordinates);
+    if (!elements) { skipped.push(city.name); continue; }
     const seenNames = new Set();
     const groups = {};
     const candidates = elements
@@ -253,6 +257,7 @@ async function main() {
     + "// Dados © colaboradores do OpenStreetMap (https://www.openstreetmap.org/copyright), licença ODbL.\n"
     + `window.OSM_DATA = ${JSON.stringify({ generatedAt: new Date().toISOString().slice(0, 10), places: output })};\n`);
   console.log(`\n${output.length} lugares do OpenStreetMap (${output.filter((place) => place.openingHours).length} com horário, ${output.filter((place) => place.photo).length} com foto).`);
+  if (skipped.length) console.log(`Cidades sem dados do OSM nesta rodada (${skipped.length}): ${skipped.join(", ")}`);
 }
 
 main().catch((error) => {
