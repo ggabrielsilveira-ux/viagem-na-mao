@@ -7,7 +7,8 @@
 //   node ferramentas/extrair-pbf.mjs                  baixa cada extrato necessário, extrai e apaga o .pbf
 //   node ferramentas/extrair-pbf.mjs arquivo.osm.pbf Cidade [Cidade ...]
 //                                                     usa um .pbf já baixado para as cidades indicadas
-// Variáveis: PBF_DIR (pasta dos downloads; padrão ferramentas/.cache/pbf — a pasta do projeto fica no OneDrive,
+// Variáveis: CAMADA=aperto (pontos úteis da seção "Na Hora do Aperto": água, banheiro, recarga e saúde,
+// gravados em ferramentas/.cache/aperto/; depois rode node ferramentas/gerar-aperto.mjs), PBF_DIR (pasta dos downloads; padrão ferramentas/.cache/pbf — a pasta do projeto fica no OneDrive,
 // então para extratos grandes vale apontar para fora dele), MANTER_PBF=1 (não apaga o .pbf depois de extrair).
 //
 // Não usa dependências: lê o formato PBF direto (protobuf + zlib do Node), em streaming, bloco a bloco.
@@ -23,13 +24,14 @@ import zlib from "node:zlib";
 import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const APERTO = process.env.CAMADA === "aperto";
 // OSM_CACHE_DIR permite gravar em outra pasta (útil para comparar com o cache vindo do Overpass).
-const CACHE_DIR = resolve(process.env.OSM_CACHE_DIR || join(ROOT, "ferramentas", ".cache", "osm"));
+const CACHE_DIR = resolve(process.env.OSM_CACHE_DIR || join(ROOT, "ferramentas", ".cache", APERTO ? "aperto" : "osm"));
 const PBF_DIR = resolve(process.env.PBF_DIR || join(ROOT, "ferramentas", ".cache", "pbf"));
 const USER_AGENT = "ViagemNaMao/0.1 (prototipo nao comercial; https://github.com/ggabrielsilveira-ux/viagem-na-mao)";
 
 // Mesmas consultas de overpassQuery() em gerar-osm.mjs: [raio em km, teste das tags].
-const CLAUSES = [
+const CLAUSES_LUGARES = [
   [15, (t) => /^(attraction|viewpoint|museum|gallery|zoo|theme_park|aquarium)$/.test(t.tourism || "") && t.name],
   [25, (t) => t.natural === "beach" && t.name],
   [50, (t) => t.natural === "waterfall" && t.name],
@@ -39,8 +41,20 @@ const CLAUSES = [
   [15, (t) => t.shop === "mall" && t.name],
   [50, (t) => /^(park|nature_reserve)$/.test(t.leisure || "") && t.name && t.wikidata]
 ];
-const INTEREST_KEYS = new Set(["tourism", "natural", "amenity", "shop", "leisure"]);
-const MAX_KM = 50;
+// "Na Hora do Aperto": pontos úteis perto do centro, com ou sem nome.
+const APERTO_KM = 10;
+const drinkable = (t) => t.drinking_water === "yes";
+const publicAccess = (t) => !/^(private|no|customers|permissive_staff)$/.test(t.access || "");
+const CLAUSES_APERTO = [
+  [APERTO_KM, (t) => t.amenity === "drinking_water" && t.drinking_water !== "no"],
+  [APERTO_KM, (t) => (t.amenity === "fountain" || t.amenity === "water_point" || t.man_made === "water_tap") && drinkable(t)],
+  [APERTO_KM, (t) => t.amenity === "toilets" && publicAccess(t)],
+  [APERTO_KM, (t) => t.amenity === "device_charging_station" && publicAccess(t)],
+  [APERTO_KM, (t) => t.amenity === "pharmacy" || t.amenity === "hospital"]
+];
+const CLAUSES = APERTO ? CLAUSES_APERTO : CLAUSES_LUGARES;
+const INTEREST_KEYS = new Set(APERTO ? ["amenity", "man_made"] : ["tourism", "natural", "amenity", "shop", "leisure"]);
+const MAX_KM = APERTO ? APERTO_KM : 50;
 // Em relações grandes (parques, reservas) guarda só 1 a cada N nós das vias membro: basta para centro e distância.
 const RELATION_NODE_STEP = 5;
 

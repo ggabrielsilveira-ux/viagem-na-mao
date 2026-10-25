@@ -2669,9 +2669,9 @@ function renderGuide() {
     ${groups.map((group) => {
       const info = guide[group.country];
       const cities = group.destinations.map((destination) => destination.name).join(" · ");
-      const weatherSlots = group.destinations.map((destination, index) => getCityInfo(destination.name) && destination.startDate
+      const weatherSlots = group.destinations.map((destination, index) => (getCityInfo(destination.name) && destination.startDate
         ? `<div class="card"><div class="card-head"><h2>${icon("cloud-sun")} Clima · ${escapeHtml(destination.name)}</h2></div><div data-weather="${escapeHtml(destination.name)}|${destination.startDate}|${destination.endDate}"><p class="muted">Carregando clima…</p></div></div>`
-        : "").join("");
+        : "") + apertoSlot(destination)).join("");
       if (!info) {
         return `<section class="guide-country"><h3 class="guide-country-title">${escapeHtml(group.country)} <small>${escapeHtml(cities)}</small></h3>${weatherSlots}
           <div class="card">${infoItem("info", "Guia ainda não disponível", "Ainda não reunimos as regras de entrada deste país. Consulte o Portal Consular do Itamaraty e o consulado do país no Brasil.", true)}<div class="sources"><a href="https://www.gov.br/mre/pt-br/assuntos/portal-consular" target="_blank" rel="noopener noreferrer">Portal Consular ↗</a></div></div></section>`;
@@ -2718,6 +2718,146 @@ function renderGuide() {
     const [name, start, end] = slot.dataset.weather.split("|");
     renderWeather(slot, getCityInfo(name), start, end);
   });
+  container.querySelectorAll("[data-aperto]").forEach(setupAperto);
+}
+
+// ---------------------------------------------------------------------------
+// Na Hora do Aperto: água, banheiro, recarga e saúde perto do centro, da hospedagem ou de onde a pessoa está.
+// Dados do OpenStreetMap em dados/aperto/<cidade>.js (ferramentas/gerar-aperto.mjs), carregados sob demanda.
+// ---------------------------------------------------------------------------
+
+const APERTO_KINDS = [
+  { id: "agua", label: "Água", icon: "droplet", generic: "Água potável" },
+  { id: "banheiro", label: "Banheiro", icon: "toilet", generic: "Banheiro público" },
+  { id: "recarga", label: "Recarga", icon: "battery-charging", generic: "Ponto de recarga de celular" },
+  { id: "farmacia", label: "Farmácia", icon: "pill", generic: "Farmácia" },
+  { id: "hospital", label: "Hospital", icon: "hospital", generic: "Hospital" }
+];
+const apertoView = new Map();
+
+function apertoSlot(destination) {
+  if (!getCityInfo(destination.name)) return "";
+  return `<div class="card aperto" data-aperto="${escapeHtml(destination.name)}"><div class="card-head"><h2>${icon("map-pin")} Na Hora do Aperto · ${escapeHtml(destination.name)}</h2></div><div class="aperto-body"><p class="muted">Carregando pontos úteis…</p></div></div>`;
+}
+
+function loadAperto(slug) {
+  if (window.APERTO?.[slug]) return Promise.resolve(window.APERTO[slug]);
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = `dados/aperto/${slug}.js?v=1`;
+    script.onload = () => (window.APERTO?.[slug] ? resolve(window.APERTO[slug]) : reject(new Error("sem dados")));
+    script.onerror = () => { script.remove(); reject(new Error("sem dados")); };
+    document.head.append(script);
+  });
+}
+
+function formatMeters(km) {
+  return km < 1 ? `${Math.max(10, Math.round((km * 1000) / 10) * 10)} m` : `${km.toLocaleString("pt-BR", { maximumFractionDigits: km < 10 ? 1 : 0 })} km`;
+}
+
+function apertoReferences(trip, cityName) {
+  const city = getCityInfo(cityName);
+  const destination = trip.destinations.find((item) => sameCity(item.name, cityName));
+  const refs = [{ id: "centro", label: "Centro da cidade", coordinates: city.coordinates }];
+  (destination?.lodgings || []).filter((lodging) => lodging.coordinates).forEach((lodging) => {
+    refs.push({ id: lodging.id, label: `Hospedagem: ${lodging.name || lodging.address || "sem nome"}`, coordinates: lodging.coordinates });
+  });
+  refs.push({ id: "aqui", label: "Onde estou agora" });
+  return refs;
+}
+
+async function setupAperto(card) {
+  const cityName = card.dataset.aperto;
+  const body = $(".aperto-body", card);
+  let data;
+  try {
+    data = await loadAperto(slugify(getCityInfo(cityName).name));
+  } catch {
+    body.innerHTML = '<p class="muted">Ainda não temos pontos úteis mapeados para esta cidade.</p>';
+    return;
+  }
+  const view = apertoView.get(cityName) || { kind: "agua", ref: "centro", here: null, limit: 5, note: "" };
+  apertoView.set(cityName, view);
+  const draw = () => renderAperto(card, cityName, data, view);
+  card.addEventListener("click", (event) => {
+    const kind = event.target.closest("[data-aperto-kind]");
+    if (kind) { view.kind = kind.dataset.apertoKind; view.limit = 5; draw(); }
+    if (event.target.closest("[data-aperto-more]")) { view.limit += 10; draw(); }
+  });
+  card.addEventListener("change", (event) => {
+    if (!event.target.matches("[data-aperto-ref]")) return;
+    view.ref = event.target.value;
+    view.limit = 5;
+    view.note = "";
+    if (view.ref !== "aqui") { draw(); return; }
+    if (!navigator.geolocation) { view.ref = "centro"; view.note = "Este aparelho não informa a localização. Mostrando a partir do centro."; draw(); return; }
+    view.note = "Buscando sua localização…";
+    draw();
+    navigator.geolocation.getCurrentPosition((position) => {
+      view.here = [position.coords.latitude, position.coords.longitude];
+      view.note = "";
+      draw();
+    }, () => {
+      view.ref = "centro";
+      view.note = "Não foi possível usar sua localização (permissão negada ou sinal fraco). Mostrando a partir do centro.";
+      draw();
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  });
+  draw();
+}
+
+function renderAperto(card, cityName, data, view) {
+  const trip = getCurrentTrip();
+  const city = getCityInfo(cityName);
+  const refs = apertoReferences(trip, cityName);
+  if (!refs.some((ref) => ref.id === view.ref)) view.ref = "centro";
+  let origin = refs.find((ref) => ref.id === view.ref)?.coordinates || null;
+  let note = view.note;
+  if (view.ref === "aqui" && view.here) {
+    origin = view.here;
+    if (distanceKm(view.here, city.coordinates) > 25) {
+      origin = city.coordinates;
+      note = `Você está a ${formatMeters(distanceKm(view.here, city.coordinates))} desta cidade. Mostrando a partir do centro.`;
+    }
+  }
+  const counts = Object.fromEntries(APERTO_KINDS.map((kind) => [kind.id, 0]));
+  data.pontos.forEach(([, , kind]) => { counts[kind] = (counts[kind] || 0) + 1; });
+  const kind = APERTO_KINDS.find((item) => item.id === view.kind) || APERTO_KINDS[0];
+  const nearest = origin
+    ? data.pontos.filter((point) => point[2] === kind.id).map((point) => ({ point, km: distanceKm(origin, [point[0], point[1]]) })).sort((a, b) => a.km - b.km)
+    : [];
+  const shown = nearest.slice(0, view.limit);
+  const isBrazil = (city.country || "Brasil") === "Brasil";
+  const item = ({ point: [lat, lon, , name, extra = {}], km }) => {
+    const tags = [];
+    if (extra.p === "no") tags.push("Gratuito"); else if (extra.p === "yes") tags.push("Pago");
+    if (extra.a === "yes") tags.push("Acessível para cadeira de rodas"); else if (extra.a === "limited") tags.push("Acessibilidade limitada");
+    if (extra.e === "yes") tags.push("Pronto-socorro");
+    if (extra.t === "yes") tags.push("Fraldário");
+    const directions = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&travelmode=walking`;
+    return `<li class="aperto-item"><span class="aperto-icon">${icon(kind.icon)}</span><div><strong>${escapeHtml(name || kind.generic)}</strong>
+      <small>a ${formatMeters(km)} em linha reta${tags.length ? ` · ${escapeHtml(tags.join(" · "))}` : ""}</small>
+      ${extra.h ? `<small>Horário informado no mapa: ${escapeHtml(extra.h)}</small>` : ""}</div>
+      <a class="btn btn-secondary btn-sm" href="${directions}" target="_blank" rel="noopener noreferrer" aria-label="Como chegar a ${escapeHtml(name || kind.generic)}">${icon("navigation")} Ir</a></li>`;
+  };
+  let list = "";
+  if (origin && shown.length) {
+    list = `<ul class="aperto-list">${shown.map(item).join("")}</ul>`
+      + (nearest[0].km > 3 ? '<p class="aperto-note">O mais próximo fica a mais de 3 km. O mapa colaborativo pode estar incompleto nesta região.</p>' : "")
+      + (nearest.length > shown.length ? `<button type="button" class="btn btn-secondary btn-sm aperto-more" data-aperto-more>Mostrar mais (${nearest.length - shown.length})</button>` : "");
+  } else if (origin) {
+    list = `<p class="muted">Nenhum ponto de ${escapeHtml(kind.label.toLowerCase())} mapeado num raio de ${data.raioKm} km do centro da cidade.</p>`;
+  }
+  $(".aperto-body", card).innerHTML = `
+    <p class="aperto-intro">Água, banheiro, recarga e saúde mais perto, para quando a necessidade aperta.</p>
+    <div class="chips aperto-kinds" role="group" aria-label="Tipo de ponto">${APERTO_KINDS.map((item) => `<button type="button" class="chip${item.id === kind.id ? " is-active" : ""}${counts[item.id] ? "" : " is-empty"}" data-aperto-kind="${item.id}" aria-pressed="${item.id === kind.id}">${icon(item.icon)} ${item.label} <span class="aperto-count">${counts[item.id] || 0}</span></button>`).join("")}</div>
+    <label class="field aperto-ref">Perto de
+      <select data-aperto-ref>${refs.map((ref) => `<option value="${escapeHtml(ref.id)}"${ref.id === view.ref ? " selected" : ""}>${escapeHtml(ref.label)}</option>`).join("")}</select>
+    </label>
+    ${note ? `<p class="aperto-note">${escapeHtml(note)}</p>` : ""}
+    ${list}
+    ${kind.id === "hospital" ? `<p class="aperto-note warn">${icon("phone")} Em emergência, ligue para o serviço de emergência local${isBrazil ? ": SAMU 192, Bombeiros 193, Polícia 190" : " (veja “Emergência” no guia do país)"}.</p>` : ""}
+    <p class="text-credit">Dados colaborativos do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a> (ODbL), extraídos em ${escapeHtml(formatDate(data.geradoEm, { month: "long", year: "numeric" }))}. Podem estar incompletos ou desatualizados: confirme no local.</p>`;
 }
 
 function checklistText(trip) {

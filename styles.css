@@ -1137,3 +1137,26 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 @media (max-width: 360px) { .choice-card { grid-template-columns: 1fr; justify-items: start; } .discover-head h2 { font-size: 24px; } }
 .deck-feedback { top: calc(var(--bar-h) + 40px + var(--safe-top)); bottom: auto; }
 .deck-actions { align-items: end; }
+
+/* Na Hora do Aperto (Guia) */
+.aperto-intro { margin-bottom: 12px; color: var(--ink-2); font-size: 14px; }
+.aperto-kinds { margin-bottom: 12px; }
+.aperto-kinds .chip { cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; }
+.aperto-kinds .chip.is-active { border-color: var(--brand-2); color: #fff; background: var(--brand-2); }
+.aperto-count { min-width: 20px; padding: 0 6px; border-radius: 999px; background: rgba(0, 0, 0, 0.07); font-size: 12px; text-align: center; }
+.aperto-kinds .chip.is-active .aperto-count { background: rgba(255, 255, 255, 0.22); }
+.aperto-ref { margin-bottom: 12px; }
+.aperto-list { display: grid; gap: 10px; margin: 0 0 12px; padding: 0; list-style: none; }
+.aperto-item { display: grid; grid-template-columns: 38px 1fr auto; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.aperto-item:first-child { border-top: 0; }
+.aperto-icon { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 12px; color: var(--brand-2); background: var(--brand-soft); }
+.aperto-icon .icon { width: 18px; height: 18px; }
+.aperto-item strong { display: block; font-size: 14px; overflow-wrap: anywhere; }
+.aperto-item small { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.aperto-item .btn { white-space: nowrap; }
+.aperto-more { margin-bottom: 12px; }
+.aperto-note { margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; color: var(--ink-2); background: var(--brand-soft); font-size: 13px; line-height: 1.45; }
+.aperto-note.warn { display: flex; align-items: flex-start; gap: 8px; color: #7a4510; background: var(--gold-soft); }
+.aperto-note .icon { flex: none; width: 16px; height: 16px; margin-top: 2px; }
+.aperto-kinds .chip.is-empty:not(.is-active) { opacity: 0.55; }
+.aperto-item .btn { text-decoration: none; }
