@@ -55,7 +55,7 @@
               <a class="botao botao-coral" href="https://app.viagemnamao.com/" rel="noopener">Experimentar grátis <span aria-hidden="true">→</span></a>
               <a class="botao botao-vidro" href="#lista">Quero ajudar a testar</a>
             </div>
-            <p class="selo"><span class="selo-ponto" aria-hidden="true"></span>Estamos em evolução • Buscamos até 50 viajantes para testar grátis</p>
+            <a class="selo" href="#lista"><span class="selo-ponto" aria-hidden="true"></span><span><strong>Estamos construindo juntos!</strong> Buscamos cerca de 50 viajantes para testar gratuitamente. <u>Quero participar</u></span></a>
             <p class="manuscrito hero-nota" aria-hidden="true">Mais destinos. Mais histórias.<br>Você por inteiro.</p>
           </div>
           <div class="hero-celular">
@@ -147,7 +147,10 @@
           </div>
           <div class="dupla-celulares">
             <figure class="celular"><img src="imagens/app-descobrir-aba.jpg" alt="Aba Descobrir com o progresso e as escolhas" loading="lazy" width="390" height="844"></figure>
-            <figure class="celular celular-frente"><img src="imagens/app-descobrir.jpg" alt="" loading="lazy" width="390" height="844"></figure>
+            <div class="celular-frente-caixa">
+              <figure class="celular celular-frente"><img src="imagens/app-descobrir.jpg" alt="" loading="lazy" width="390" height="844"></figure>
+              <div class="gesto" aria-hidden="true"><span class="gesto-passar">← Passar</span><span class="gesto-talvez">↓ Talvez</span><span class="gesto-curtir">Curtir →</span></div>
+            </div>
           </div>
           <p class="manuscrito descobrir-nota" aria-hidden="true">Lisboa é sempre<br>uma boa ideia.</p>
         </div>
@@ -237,6 +240,16 @@
           <li><span class="etiqueta">Em breve</span><h3>Mais cidades</h3><p>Muito mais destinos, no Brasil e no mundo.</p></li>
           <li><span class="etiqueta">Em breve</span><h3>Nas lojas de apps</h3><p>O Viagem na Mão na App Store e no Google Play.</p></li>
         </ul>
+        <div class="em-estudo">
+          <h3 class="em-estudo-titulo">Ideias em estudo</h3>
+          <p class="em-estudo-intro">Estamos explorando novas maneiras de ajudar você antes, durante e depois da viagem. Estas ideias estão em estudo para próximas etapas.</p>
+          <ul class="em-breve">
+            <li class="cartao-estudo"><span class="icone-estudo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/><path d="M15.8 9.2a2.5 2.5 0 0 0-3.5 0l-.3.4-.35-.3a2.42 2.42 0 1 0-3.2 3.6l3.6 3.5 3.6-3.5c1.2-1.2 1.1-2.7.2-3.7"/></svg></span><span class="etiqueta etiqueta-estudo">Em estudo</span><h3>Quem Já Foi, Conta!</h3><p class="cartao-sub">Dicas reais de viajantes</p><p>Dicas, perrengues, formas de economizar e momentos que valeram a pena, compartilhados por quem já visitou o lugar.</p></li>
+            <li class="cartao-estudo"><span class="icone-estudo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0"/><path d="M12 6.5c-1.5 2-2.5 3.3-2.5 4.5a2.5 2.5 0 0 0 5 0c0-1.2-1-2.5-2.5-4.5z"/></svg></span><span class="etiqueta etiqueta-estudo">Em estudo</span><h3>Na Hora do Aperto</h3><p class="cartao-sub">Pontos úteis por perto</p><p>Encontre pontos de água potável, banheiros e locais para carregar o celular durante a viagem.</p></li>
+            <li class="cartao-estudo"><span class="icone-estudo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 9v6M9 12h6"/></svg></span><span class="etiqueta etiqueta-estudo">Em estudo</span><h3>Preciso de Ajuda</h3><p class="cartao-sub">Orientações e serviços de emergência</p><p>Encontre contatos oficiais de emergência e locais de assistência no destino.</p></li>
+          </ul>
+          <p class="em-estudo-cta">Qual dessas novidades mais te ajudaria? Conta pra gente no <a href="https://www.instagram.com/viagemnamao.app/" rel="noopener" target="_blank">Instagram</a> ou por <a href="mailto:contato@viagemnamao.com?subject=Ideia%20para%20o%20Viagem%20na%20M%C3%A3o">e-mail</a>.</p>
+        </div>
       </section>
 
       <!-- Chamada final -->
@@ -258,7 +271,7 @@
         </div>
         <nav aria-label="Links do rodapé">
           <a href="https://app.viagemnamao.com/" rel="noopener">Abrir o app</a>
-          <a href="https://www.instagram.com/viagemnamao.app/" rel="noopener" target="_blank">Instagram @viagemnamao.app</a>
+          <a class="link-ig" href="https://www.instagram.com/viagemnamao.app/" rel="noopener" target="_blank" aria-label="Instagram do Viagem na Mão, @viagemnamao.app"><svg class="ig" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r="1.1" class="ig-ponto"/></svg>@viagemnamao.app</a>
           <a href="mailto:contato@viagemnamao.com">contato@viagemnamao.com</a>
           <a href="privacidade.html">Privacidade</a>
           <a href="termos.html">Termos de uso</a>
