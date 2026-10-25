@@ -311,6 +311,7 @@ const blankTrip = () => ({
   name: "",
   startDate: "",
   endDate: "",
+  departureTime: "",
   budget: 0,
   currency: "BRL",
   country: "Brasil",
@@ -483,13 +484,172 @@ function getBrasiliaDateKey(date = new Date()) {
   return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
-function getCountdown(dateString, endDateString = dateString) {
-  if (!parseLocalDate(dateString)) return "Defina as datas";
-  const today = getBrasiliaDateKey();
-  const days = daysBetween(today, dateString);
-  if (days < 0) return (endDateString || "") >= today ? "Viagem em andamento" : "Viagem concluída";
-  if (days === 0) return "É hoje! Boa viagem";
-  return `Faltam ${days} ${days === 1 ? "dia" : "dias"}`;
+// Contagem até a saída (horário opcional) e, durante a viagem, em que dia ela está.
+// Usa o horário de Brasília (UTC−3, sem horário de verão desde 2019).
+const BRASILIA_OFFSET_MS = 3 * 3600000;
+
+function countdownNow() {
+  return Date.now();
+}
+
+function tripStartMs(trip) {
+  const [year, month, day] = trip.startDate.split("-").map(Number);
+  const [hours, minutes] = (trip.departureTime || "00:00").split(":").map(Number);
+  return Date.UTC(year, month - 1, day, hours, minutes) + BRASILIA_OFFSET_MS;
+}
+
+function tripEndMs(trip) {
+  const [year, month, day] = trip.endDate.split("-").map(Number);
+  return Date.UTC(year, month - 1, day + 1) + BRASILIA_OFFSET_MS;
+}
+
+// Diferença em meses, dias, horas e minutos, contando pelo calendário.
+function splitDuration(fromMs, toMs) {
+  const from = new Date(fromMs - BRASILIA_OFFSET_MS);
+  const to = new Date(toMs - BRASILIA_OFFSET_MS);
+  const addMonths = (date, count) => {
+    const result = new Date(date);
+    const day = result.getUTCDate();
+    result.setUTCDate(1);
+    result.setUTCMonth(result.getUTCMonth() + count);
+    result.setUTCDate(Math.min(day, new Date(Date.UTC(result.getUTCFullYear(), result.getUTCMonth() + 1, 0)).getUTCDate()));
+    return result;
+  };
+  let months = (to.getUTCFullYear() - from.getUTCFullYear()) * 12 + to.getUTCMonth() - from.getUTCMonth();
+  if (addMonths(from, months) > to) months -= 1;
+  let rest = to - addMonths(from, months);
+  const days = Math.floor(rest / 86400000);
+  rest -= days * 86400000;
+  const hours = Math.floor(rest / 3600000);
+  rest -= hours * 3600000;
+  return { months, days, hours, minutes: Math.floor(rest / 60000) };
+}
+
+const plural = (count, one, many) => `${count} ${count === 1 ? one : many}`;
+
+function tripClock(trip) {
+  if (!parseLocalDate(trip.startDate) || !parseLocalDate(trip.endDate)) return { phase: "sem-data" };
+  const now = countdownNow();
+  const start = tripStartMs(trip);
+  if (now < start) return { phase: "antes", ...splitDuration(now, start), isToday: getBrasiliaDateKey(new Date(now)) === trip.startDate };
+  if (now < tripEndMs(trip)) {
+    const today = getBrasiliaDateKey(new Date(now));
+    return { phase: "durante", day: daysBetween(trip.startDate, today) + 1, totalDays: daysBetween(trip.startDate, trip.endDate) + 1, elapsed: splitDuration(start, now), daysLeft: daysBetween(today, trip.endDate) };
+  }
+  return { phase: "depois" };
+}
+
+function tripCountdownText(trip) {
+  const clock = tripClock(trip);
+  if (clock.phase === "sem-data") return "Defina as datas";
+  if (clock.phase === "depois") return "Viagem concluída";
+  if (clock.phase === "durante") return `Dia ${clock.day} de ${clock.totalDays}`;
+  const parts = clock.months ? [plural(clock.months, "mês", "meses"), clock.days && plural(clock.days, "dia", "dias")]
+    : clock.days ? [plural(clock.days, "dia", "dias"), clock.hours && `${clock.hours} h`]
+    : [clock.hours && `${clock.hours} h`, `${clock.minutes} min`];
+  const text = parts.filter(Boolean).join(" e ");
+  return clock.isToday ? `É hoje! Faltam ${text}` : `Faltam ${text}`;
+}
+
+function renderTripCountdown(trip) {
+  const panel = $("#trip-countdown");
+  const clock = tripClock(trip);
+  panel.hidden = !["antes", "durante"].includes(clock.phase);
+  if (panel.hidden) return;
+  if (clock.phase === "antes") {
+    const units = [
+      clock.months && [clock.months, clock.months === 1 ? "mês" : "meses"],
+      [clock.days, clock.days === 1 ? "dia" : "dias"],
+      [clock.hours, clock.hours === 1 ? "hora" : "horas"],
+      [clock.minutes, "min"]
+    ].filter(Boolean);
+    const when = formatDate(trip.startDate, { weekday: "short", day: "numeric", month: "short" });
+    panel.className = "countdown-card";
+    panel.innerHTML = `<p class="countdown-label">${clock.isToday ? "É hoje! Falta pouco para a saída" : "Contagem regressiva"}</p>
+      <div class="countdown-units">${units.map(([value, label]) => `<div><strong>${value}</strong><span>${label}</span></div>`).join("")}</div>
+      <p class="countdown-note">${trip.departureTime
+        ? `Saída ${escapeHtml(when)} às ${escapeHtml(trip.departureTime)}.`
+        : `Até o início do dia ${escapeHtml(when)}.`} <button class="link-btn" type="button" data-edit-departure>${trip.departureTime ? "Mudar horário" : "Adicionar horário de saída"}</button></p>`;
+    return;
+  }
+  const elapsed = clock.elapsed.days ? `${plural(clock.elapsed.days, "dia", "dias")} e ${plural(clock.elapsed.hours, "hora", "horas")}` : plural(clock.elapsed.hours, "hora", "horas");
+  panel.className = "countdown-card is-live";
+  panel.innerHTML = `<p class="countdown-label">Viagem em andamento</p>
+    <div class="countdown-day"><strong>Dia ${clock.day}</strong> <span>de ${clock.totalDays}</span></div>
+    <div class="progress"><span style="width:${Math.round((clock.day / clock.totalDays) * 100)}%"></span></div>
+    <p class="countdown-note">Viajando há ${elapsed}${clock.daysLeft > 0 ? ` · faltam ${plural(clock.daysLeft, "dia", "dias")}` : " · último dia"}</p>`;
+}
+
+// Atualiza contagens visíveis sem redesenhar a tela inteira.
+function updateCountdowns() {
+  if (document.hidden) return;
+  if (route.screen === "home") $("[data-countdown]").forEach((chip) => {
+    const trip = state.trips.find((item) => item.id === chip.dataset.countdown);
+    if (trip) chip.innerHTML = `${icon("calendar")} ${escapeHtml(tripCountdownText(trip))}`;
+  });
+  if (route.screen === "trip" && route.tab === "about") {
+    const trip = getCurrentTrip();
+    $("#trip-cover-countdown").innerHTML = `${icon("calendar")} ${escapeHtml(tripCountdownText(trip))}`;
+    renderTripCountdown(trip);
+  }
+}
+
+function openDepartureSheet() {
+  const trip = getCurrentTrip();
+  openSheet(`${sheetTitle("Horário de saída")}
+    <p class="muted">A contagem regressiva vai até esse horário no dia da ida (${escapeHtml(formatDate(trip.startDate, { day: "numeric", month: "long" }))}). Horário de Brasília.</p>
+    <label class="field">Saída<input id="departure-time" type="time" value="${escapeHtml(trip.departureTime || "")}"></label>
+    <div class="row-actions"><button class="btn btn-secondary" type="button" id="departure-clear">Sem horário</button><button class="btn btn-primary" type="button" id="departure-save">${icon("check")} Salvar</button></div>`, (root) => {
+    const save = (value) => {
+      trip.departureTime = value;
+      saveState();
+      closeSheet();
+      renderTripHeader();
+      renderAbout();
+      toast(value ? `Saída às ${value}` : "Horário de saída removido");
+    };
+    root.querySelector("#departure-save").addEventListener("click", () => save(root.querySelector("#departure-time").value || ""));
+    root.querySelector("#departure-clear").addEventListener("click", () => save(""));
+  });
+}
+
+// Editar viagem: nome direto aqui e atalhos para cada parte do cadastro.
+function openEditSheet() {
+  const trip = getCurrentTrip();
+  if (!trip) return;
+  const options = [["cities", "map-pin", "Cidades"], ["dates", "calendar", "Datas e horário de saída"], ["people", "users", "Quem vai e como"], ["interests", "heart", "Interesses"], ["budget", "wallet", "Orçamento"]];
+  openSheet(`${sheetTitle("Editar viagem")}
+    <label class="field">Nome da viagem<input id="edit-trip-name" maxlength="60" value="${escapeHtml(trip.name)}" placeholder="Ex.: Férias de verão"></label>
+    <button class="btn btn-primary btn-block" type="button" id="edit-trip-name-save">${icon("check")} Salvar nome</button>
+    <div class="edit-options">${options.map(([step, iconName, label]) => `<button type="button" data-edit-step="${step}"><span>${icon(iconName)}</span>${escapeHtml(label)}${icon("chevron-right")}</button>`).join("")}</div>
+    <p class="footnote">A hospedagem de cada cidade se edita no Resumo, em “Por onde você vai passar”.</p>`, (root) => {
+    const input = root.querySelector("#edit-trip-name");
+    const save = () => {
+      const name = input.value.trim();
+      if (!name) {
+        toast("Dê um nome para a viagem");
+        input.focus();
+        return;
+      }
+      const previous = trip.name;
+      trip.name = name;
+      if (!saveState()) {
+        trip.name = previous;
+        return;
+      }
+      closeSheet();
+      renderTripHeader();
+      toast("Nome atualizado");
+    };
+    root.querySelector("#edit-trip-name-save").addEventListener("click", save);
+    input.addEventListener("keydown", (event) => { if (event.key === "Enter") save(); });
+    root.querySelector(".edit-options").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-edit-step]");
+      if (!button) return;
+      closeSheet();
+      editTrip(button.dataset.editStep);
+    });
+  });
 }
 
 function formatRange(start, end, withYear = true) {
@@ -887,7 +1047,7 @@ function renderHome() {
       <img src="${escapeHtml(cover.image)}" alt="" loading="lazy">
       <div class="trip-card-shade"></div>
       <div class="trip-card-top">
-        <span class="chip chip-glass">${icon("calendar")} ${escapeHtml(getCountdown(trip.startDate, trip.endDate))}</span>
+        <span class="chip chip-glass" data-countdown="${escapeHtml(trip.id)}">${icon("calendar")} ${escapeHtml(tripCountdownText(trip))}</span>
         ${next && trip.id === next.id ? `<span class="chip chip-accent">${icon("sparkles")} Próxima</span>` : ""}
       </div>
       ${cover.photo ? `<a class="photo-credit" style="top:56px" href="${escapeHtml(safeUrl(cover.photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(cover.photo.author)} · ${escapeHtml(cover.photo.license)}</a>` : ""}
@@ -921,7 +1081,7 @@ function renderTripHeader() {
   image.alt = cover.photo ? `Foto de ${cover.activity.name}` : "Paisagem ilustrativa";
   $("#trip-cover-destination").textContent = tripCities(trip).join(" · ") || trip.country || "Destino a definir";
   $("#trip-cover-dates").textContent = formatRange(trip.startDate, trip.endDate);
-  $("#trip-cover-countdown").innerHTML = `${icon("calendar")} ${escapeHtml(getCountdown(trip.startDate, trip.endDate))}`;
+  $("#trip-cover-countdown").innerHTML = `${icon("calendar")} ${escapeHtml(tripCountdownText(trip))}`;
   const credit = $("#trip-cover-credit");
   credit.hidden = !cover.photo;
   if (cover.photo) {
@@ -955,6 +1115,7 @@ function renderAbout() {
   addImageFallbacks($("#saved-strip"));
   renderBudgetCard(trip);
   renderMemoriesCard(trip);
+  renderTripCountdown(trip);
   renderTripMessage(trip);
   renderTripInvite(trip);
   const details = [
@@ -1890,16 +2051,18 @@ function startNewTrip() {
     month: today.slice(0, 7),
     focus: "start",
     query: "",
-    data: { cities: [], startDate: "", endDate: "", companions: "", children: false, seniors: false, transport: "", interests: ["natureza", "gastronomia", "cultura"], budget: "", currency: "BRL", rate: 1, name: "", nameEdited: false }
+    data: { cities: [], startDate: "", endDate: "", companions: "", children: false, seniors: false, transport: "", interests: ["natureza", "gastronomia", "cultura"], budget: "", currency: "BRL", rate: 1, name: "", nameEdited: false, departureTime: "" }
   };
   navigate({ screen: "form" });
 }
 
-function editTrip() {
+// Com `only`, edita só uma parte (e a divisão de noites, quando ela precisar ser refeita).
+function editTrip(only = null) {
   const trip = getCurrentTrip();
   if (!trip) return;
   wizard = {
     step: 0,
+    only,
     editingId: trip.id,
     month: (trip.startDate || getBrasiliaDateKey()).slice(0, 7),
     focus: "start",
@@ -1924,13 +2087,18 @@ function editTrip() {
       currency: trip.currency || "BRL",
       rate: trip.budgetExchangeRate || 1,
       name: trip.name,
-      nameEdited: true
+      nameEdited: true,
+      departureTime: trip.departureTime || ""
     }
   };
   navigate({ screen: "form" });
 }
 
 function wizardSteps() {
+  if (wizard.only) {
+    const needsSplit = ["cities", "dates"].includes(wizard.only) && wizard.data.cities.length > 1;
+    return needsSplit ? [wizard.only, "split"] : [wizard.only];
+  }
   const steps = ["cities", "dates"];
   if (wizard.data.cities.length > 1) steps.push("split");
   steps.push("people", "interests", "budget");
@@ -2057,7 +2225,9 @@ function renderDatesStep(body) {
   body.innerHTML = `<div class="wizard-intro"><h2>Quando?</h2><p>Toque no dia da ida e depois no dia da volta.</p></div>
     <div class="range-summary"><div id="range-start"></div><div id="range-end"></div></div>
     <div class="calendar" id="calendar"></div>
-    <p class="nights-note" id="nights-note"></p>`;
+    <p class="nights-note" id="nights-note"></p>
+    <label class="field departure-field">Horário de saída (opcional)<input id="wizard-departure" type="time" value="${escapeHtml(data.departureTime || "")}"><small>Usado na contagem regressiva. Horário de Brasília.</small></label>`;
+  body.querySelector("#wizard-departure").addEventListener("input", (event) => { data.departureTime = event.target.value; });
   const paint = () => {
     $("#range-start").className = wizard.focus === "start" ? "is-focus" : "";
     $("#range-end").className = wizard.focus === "end" ? "is-focus" : "";
@@ -2112,6 +2282,7 @@ function renderDatesStep(body) {
 
 function renderSplitStep(body) {
   const data = wizard.data;
+  if (data.cities.reduce((sum, city) => sum + city.nights, 0) !== totalNights()) distributeNights();
   body.innerHTML = `<div class="wizard-intro"><h2>Quantas noites em cada cidade?</h2><p>Dividimos igualmente; ajuste como preferir.</p></div><div class="stepper-list" id="split-list"></div><p class="nights-note" id="split-note"></p>`;
   const paint = () => {
     let cursor = data.startDate;
@@ -2243,6 +2414,7 @@ function saveWizard() {
   const trip = migrateTrip({
     ...(existing || blankTrip()),
     name: data.name.trim(),
+    departureTime: data.departureTime || "",
     startDate: data.startDate,
     endDate: data.endDate,
     budget: Number(data.budget) || 0,
@@ -3223,6 +3395,10 @@ document.addEventListener("click", (event) => {
     window.scrollTo(0, 0);
     return;
   }
+  if (event.target.closest("[data-edit-departure]")) {
+    openDepartureSheet();
+    return;
+  }
   if (event.target.closest("[data-open-settings]")) {
     openSettingsSheet();
     return;
@@ -3244,7 +3420,7 @@ $("#toggle-budget-visibility").addEventListener("click", toggleAmounts);
 $("#toggle-expense-visibility").addEventListener("click", toggleAmounts);
 $("#new-trip-button").addEventListener("click", startNewTrip);
 $("#settings-button").addEventListener("click", openSettingsSheet);
-$("#edit-trip-button").addEventListener("click", editTrip);
+$("#edit-trip-button").addEventListener("click", openEditSheet);
 $("#city-filter").addEventListener("change", (event) => {
   deckCity = event.target.value;
   renderDeck();
@@ -3348,4 +3524,5 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 }
 window.history.replaceState({ ...route }, "");
 render();
+window.setInterval(updateCountdowns, 30000);
 if (state.trips.length) requestPersistentStorage();

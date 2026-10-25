@@ -913,3 +913,26 @@ img.is-missing { visibility: hidden; }
 .retro-cover-pick span { position: absolute; right: 4px; bottom: 4px; left: 4px; padding: 1px 0; border-radius: 999px; color: var(--brand-deep); background: var(--accent); font-size: 10px; font-weight: 800; text-align: center; }
 .retro-edit-order { display: flex; gap: 8px; }
 .retro-edit-order .icon-btn:disabled { opacity: 0.35; }
+
+/* Contagem regressiva e dia da viagem */
+.countdown-card { display: grid; gap: 10px; padding: 16px; border: 1px solid rgba(230, 225, 215, 0.8); border-radius: var(--radius); background: var(--surface); }
+.countdown-label { color: var(--brand-2); font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
+.countdown-units { display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; gap: 8px; }
+.countdown-units div { display: grid; justify-items: center; padding: 10px 4px; border-radius: 14px; background: var(--brand-soft); }
+.countdown-units strong { color: var(--brand); font-family: var(--font-display); font-size: 28px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.countdown-units span { color: var(--ink-2); font-size: 12px; font-weight: 600; }
+.countdown-note { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.countdown-note .link-btn { padding: 0; font-size: 13px; }
+.countdown-day { display: flex; align-items: baseline; gap: 6px; }
+.countdown-day strong { color: var(--brand); font-family: var(--font-display); font-size: 30px; font-weight: 800; }
+.countdown-day span { color: var(--ink-2); font-size: 16px; font-weight: 600; }
+.departure-field { margin-top: 14px; }
+.departure-field small { color: var(--muted); font-size: 12px; font-weight: 500; }
+
+/* Editar viagem */
+.edit-options { display: grid; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.edit-options button { display: flex; align-items: center; gap: 12px; min-height: 54px; padding: 0 14px; border: 0; border-top: 1px solid var(--line); color: var(--ink); background: none; font-size: 15px; font-weight: 700; text-align: left; }
+.edit-options button:first-child { border-top: 0; }
+.edit-options button > span { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; color: var(--brand); background: var(--brand-soft); }
+.edit-options button > span .icon { width: 18px; height: 18px; }
+.edit-options button > .icon:last-child { margin-left: auto; color: var(--muted); }
