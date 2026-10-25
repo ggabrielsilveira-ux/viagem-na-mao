@@ -3562,6 +3562,7 @@ function renderRetro() {
       </div>
     </div>
     <p class="retro-lead">${escapeHtml(messageFor("reverMemorias", `${trip.id}|retro`))}</p>
+    ${visible.length ? `<button class="btn btn-secondary btn-block" type="button" id="album-open">${icon("download")} Álbum em PDF</button>` : ""}
     ${visible.length ? Object.keys(byDate).sort().map((date) => {
       const index = days.indexOf(date);
       const stay = trip.destinations.find((item) => item.startDate <= date && item.endDate >= date);
@@ -3580,6 +3581,306 @@ function renderRetro() {
     <p class="retro-end">${escapeHtml(ending)}</p>
     <p class="privacy-note retro-privacy">${icon("lock")} Só você vê esta retrospectiva. Ela fica neste aparelho.</p>`;
   hydratePhotos(container);
+}
+
+// ---------------------------------------------------------------------------
+// Álbum em PDF da retrospectiva: cada página é desenhada como imagem (capa,
+// uma página por memória e encerramento) e juntada num PDF A5, tudo no aparelho.
+// ---------------------------------------------------------------------------
+
+const ALBUM = { width: 1240, height: 1754, pdfWidth: 420, pdfHeight: 595, pad: 96 };
+
+function roundedClip(context, x, y, width, height, radius) {
+  context.beginPath();
+  context.moveTo(x + radius, y);
+  context.arcTo(x + width, y, x + width, y + height, radius);
+  context.arcTo(x + width, y + height, x, y + height, radius);
+  context.arcTo(x, y + height, x, y, radius);
+  context.arcTo(x, y, x + width, y, radius);
+  context.closePath();
+  context.clip();
+}
+
+async function albumPhoto(id) {
+  const url = id ? await photoUrl(id).catch(() => "") : "";
+  return url ? loadImage(url).catch(() => null) : null;
+}
+
+function albumCanvas(background = "#FFFDF5") {
+  const canvas = document.createElement("canvas");
+  canvas.width = ALBUM.width;
+  canvas.height = ALBUM.height;
+  const context = canvas.getContext("2d");
+  context.fillStyle = background;
+  context.fillRect(0, 0, ALBUM.width, ALBUM.height);
+  return [canvas, context];
+}
+
+function albumFooter(context, page, dark = false) {
+  context.fillStyle = dark ? "rgba(255, 253, 245, 0.7)" : "#9aa29c";
+  context.font = '600 24px "DM Sans", sans-serif';
+  context.textAlign = "center";
+  context.fillText(`${page}  ·  Viagem na Mão`, ALBUM.width / 2, ALBUM.height - 56);
+  context.textAlign = "left";
+}
+
+async function albumCover(trip, visible) {
+  const [canvas, context] = albumCanvas();
+  const { width, height, pad } = ALBUM;
+  const photo = await albumPhoto(retroCover(trip, visible));
+  const photoHeight = Math.round(height * 0.64);
+  if (photo) drawCover(context, photo, 0, 0, width, photoHeight);
+  else {
+    const gradient = context.createLinearGradient(0, 0, width, photoHeight);
+    gradient.addColorStop(0, "#15563F");
+    gradient.addColorStop(1, "#104431");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, photoHeight);
+  }
+  let y = photoHeight + 110;
+  context.fillStyle = "#1f6b50";
+  context.font = '800 30px "DM Sans", sans-serif';
+  context.fillText(formatRange(trip.startDate, trip.endDate).toUpperCase(), pad, y);
+  y += 100;
+  context.fillStyle = "#15563F";
+  context.font = '800 88px Manrope, "DM Sans", sans-serif';
+  wrapLines(context, trip.retro.title || trip.name || "Minha viagem", width - pad * 2, 2).forEach((line) => { context.fillText(line, pad, y); y += 100; });
+  context.fillStyle = "#3c4842";
+  context.font = '36px Georgia, serif';
+  context.fillText(`${tripCities(trip).join(" · ")} · ${visible.length} ${visible.length === 1 ? "memória" : "memórias"}`, pad, y + 10);
+  const iconImage = await brandIcon();
+  if (iconImage) context.drawImage(iconImage, pad, height - 150, 64, 64);
+  context.fillStyle = "#727b75";
+  context.font = '700 28px Manrope, "DM Sans", sans-serif';
+  context.fillText("Memórias organizadas com Viagem na Mão", pad + (iconImage ? 84 : 0), height - 108);
+  return canvas;
+}
+
+async function albumMemoryPage(trip, memory, page, options) {
+  const [canvas, context] = albumCanvas();
+  const { width, height, pad } = ALBUM;
+  const days = getTripDays(trip);
+  const dayIndex = days.indexOf(memory.date);
+  const header = [
+    options.showDates && memory.date ? `${dayIndex >= 0 ? `DIA ${dayIndex + 1}  ·  ` : ""}${capitalize(formatDate(memory.date, { weekday: "long", day: "numeric", month: "long" })).toUpperCase()}` : "",
+    options.showPlaces && memory.place ? memory.place.toUpperCase() : ""
+  ].filter(Boolean);
+  let y = 150;
+  context.fillStyle = "#1f6b50";
+  context.font = '800 28px "DM Sans", sans-serif';
+  header.forEach((line) => { context.fillText(line, pad, y); y += 44; });
+  y += header.length ? 30 : 0;
+
+  const photos = (await Promise.all((memory.photos || []).slice(0, 4).map(albumPhoto))).filter(Boolean);
+  const title = memory.title || "";
+  const text = options.showTexts ? memory.text || "" : "";
+  const areaWidth = width - pad * 2;
+  if (photos.length) {
+    // A foto ocupa o que sobra depois de reservar espaço para o título e o texto.
+    context.font = '800 58px Manrope, "DM Sans", sans-serif';
+    const titleHeight = title ? wrapLines(context, title, areaWidth, 2).length * 70 + 12 : 0;
+    context.font = '36px Georgia, serif';
+    const textHeight = text ? Math.min(wrapLines(context, text, areaWidth, 12).length, 12) * 54 : 0;
+    const available = height - y - 160;
+    const words = titleHeight + textHeight;
+    const areaHeight = Math.round(Math.min(available * 0.94, Math.max(available * 0.5, available - words - (words ? 90 : 0))));
+    const gap = 16;
+    const cells = photos.length === 1 ? [[0, 0, areaWidth, areaHeight]]
+      : photos.length === 2 ? [[0, 0, areaWidth, (areaHeight - gap) / 2], [0, (areaHeight + gap) / 2, areaWidth, (areaHeight - gap) / 2]]
+      : photos.length === 3 ? [[0, 0, areaWidth, (areaHeight - gap) * 0.6], [0, (areaHeight - gap) * 0.6 + gap, (areaWidth - gap) / 2, (areaHeight - gap) * 0.4], [(areaWidth + gap) / 2, (areaHeight - gap) * 0.6 + gap, (areaWidth - gap) / 2, (areaHeight - gap) * 0.4]]
+      : [0, 1, 2, 3].map((index) => [(index % 2) * ((areaWidth + gap) / 2), Math.floor(index / 2) * ((areaHeight + gap) / 2), (areaWidth - gap) / 2, (areaHeight - gap) / 2]);
+    photos.forEach((photo, index) => {
+      const [cx, cy, cw, ch] = cells[index];
+      context.save();
+      roundedClip(context, pad + cx, y + cy, cw, ch, 28);
+      drawCover(context, photo, pad + cx, y + cy, cw, ch);
+      context.restore();
+    });
+    if ((memory.photos || []).length > 4) {
+      context.fillStyle = "rgba(10, 18, 14, 0.6)";
+      context.font = '700 30px "DM Sans", sans-serif';
+      const extra = memory.photos.length - 4;
+      const label = `+${extra} ${extra === 1 ? "foto" : "fotos"} no Baú`;
+      const labelWidth = context.measureText(label).width + 40;
+      context.fillRect(width - pad - labelWidth - 16, y + areaHeight - 72, labelWidth, 56);
+      context.fillStyle = "#fff";
+      context.fillText(label, width - pad - labelWidth + 4, y + areaHeight - 34);
+    }
+    y += areaHeight + 90;
+  } else {
+    // Só texto: o bloco fica centralizado na página.
+    context.font = '800 58px Manrope, "DM Sans", sans-serif';
+    const titleHeight = title ? wrapLines(context, title, areaWidth, 2).length * 70 + 12 : 0;
+    context.font = '46px Georgia, serif';
+    const textHeight = text ? wrapLines(context, text, areaWidth, 20).length * 69 : 0;
+    y = Math.max(y, Math.round((height - 260 - titleHeight - textHeight) / 2));
+    context.fillStyle = "#56D7AE";
+    context.font = '700 220px Georgia, serif';
+    context.fillText("“", pad - 12, y + 170);
+    y += 260;
+  }
+  if (title) {
+    context.fillStyle = "#15563F";
+    context.font = '800 58px Manrope, "DM Sans", sans-serif';
+    wrapLines(context, title, areaWidth, 2).forEach((line) => { context.fillText(line, pad, y); y += 70; });
+    y += 12;
+  }
+  if (text) {
+    const size = photos.length ? 36 : 46;
+    const lineHeight = Math.round(size * 1.5);
+    context.fillStyle = "#3c4842";
+    context.font = `${size}px Georgia, serif`;
+    const room = Math.max(1, Math.floor((height - 150 - y) / lineHeight));
+    wrapLines(context, text, areaWidth, room).forEach((line) => { context.fillText(line, pad, y); y += lineHeight; });
+  }
+  albumFooter(context, page);
+  return canvas;
+}
+
+async function albumClosing(trip) {
+  const [canvas, context] = albumCanvas("#15563F");
+  const { width, height } = ALBUM;
+  const iconImage = await brandIcon();
+  if (iconImage) context.drawImage(iconImage, width / 2 - 90, height / 2 - 330, 180, 180);
+  context.textAlign = "center";
+  context.fillStyle = "#FFFDF5";
+  context.font = '48px Georgia, serif';
+  const ending = tripPhase(trip) === "depois" ? messageFor("viagemEncerrada", trip.id) : "A viagem passa. As histórias ficam.";
+  let y = height / 2 - 40;
+  wrapLines(context, ending, width - 260, 4).forEach((line) => { context.fillText(line, width / 2, y); y += 70; });
+  context.fillStyle = "#56D7AE";
+  context.font = '800 34px Manrope, "DM Sans", sans-serif';
+  context.fillText("Memórias organizadas com Viagem na Mão", width / 2, y + 70);
+  context.fillStyle = "rgba(255, 253, 245, 0.6)";
+  context.font = '600 26px "DM Sans", sans-serif';
+  context.fillText(`Álbum criado em ${formatDate(getBrasiliaDateKey(), { day: "numeric", month: "long", year: "numeric" })}`, width / 2, height - 120);
+  context.textAlign = "left";
+  return canvas;
+}
+
+function canvasToJpeg(canvas, quality = 0.86) {
+  return new Promise((resolve, reject) => canvas.toBlob(async (blob) => {
+    if (!blob) return reject(new Error("Não foi possível gerar a página."));
+    resolve({ blob, bytes: new Uint8Array(await blob.arrayBuffer()), width: canvas.width, height: canvas.height });
+  }, "image/jpeg", quality));
+}
+
+async function buildAlbumPages(trip, options) {
+  await document.fonts?.ready;
+  const visible = retroOrdered(trip).filter((memory) => !trip.retro.hidden.includes(memory.id));
+  const pages = [await canvasToJpeg(await albumCover(trip, visible))];
+  for (const [index, memory] of visible.entries()) pages.push(await canvasToJpeg(await albumMemoryPage(trip, memory, index + 2, options)));
+  pages.push(await canvasToJpeg(await albumClosing(trip)));
+  return pages;
+}
+
+// PDF mínimo: uma imagem JPEG por página, sem bibliotecas.
+function buildPdf(pages) {
+  const encoder = new TextEncoder();
+  const chunks = [];
+  const offsets = [];
+  let offset = 0;
+  const push = (data) => {
+    const bytes = typeof data === "string" ? encoder.encode(data) : data;
+    chunks.push(bytes);
+    offset += bytes.length;
+  };
+  const object = (number, write) => {
+    offsets[number] = offset;
+    push(`${number} 0 obj\n`);
+    write();
+    push("\nendobj\n");
+  };
+  const { pdfWidth: width, pdfHeight: height } = ALBUM;
+  push("%PDF-1.4\n%âãÏÓ\n");
+  object(1, () => push("<< /Type /Catalog /Pages 2 0 R >>"));
+  object(2, () => push(`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_, index) => `${3 + index * 3} 0 R`).join(" ")}] >>`));
+  pages.forEach((page, index) => {
+    const number = 3 + index * 3;
+    const content = `q ${width} 0 0 ${height} 0 0 cm /Im${index} Do Q`;
+    object(number, () => push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /XObject << /Im${index} ${number + 2} 0 R >> >> /Contents ${number + 1} 0 R >>`));
+    object(number + 1, () => push(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`));
+    object(number + 2, () => {
+      push(`<< /Type /XObject /Subtype /Image /Width ${page.width} /Height ${page.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${page.bytes.length} >>\nstream\n`);
+      push(page.bytes);
+      push("\nendstream");
+    });
+  });
+  const size = 3 + pages.length * 3;
+  const xref = offset;
+  push(`xref\n0 ${size}\n0000000000 65535 f \n${offsets.slice(1).map((value) => `${String(value).padStart(10, "0")} 00000 n \n`).join("")}trailer\n<< /Size ${size} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  return new Blob(chunks, { type: "application/pdf" });
+}
+
+function openAlbumSheet() {
+  const trip = getCurrentTrip();
+  const options = { showDates: true, showPlaces: true, showTexts: true };
+  let pages = [];
+  let thumbs = [];
+  let version = 0;
+  openSheet(`${sheetTitle("Álbum em PDF")}
+    <p class="muted">Feito com as memórias e a capa da sua retrospectiva. Para mudar o que entra, use o lápis da retrospectiva.</p>
+    <div class="album-preview" id="album-preview"><p class="muted">Montando as páginas…</p></div>
+    <div class="share-toggles" id="album-options">
+      <label class="toggle-row">Mostrar as datas<span class="switch"><input type="checkbox" data-album-option="showDates" checked><span></span></span></label>
+      <label class="toggle-row">Mostrar os lugares<span class="switch"><input type="checkbox" data-album-option="showPlaces" checked><span></span></span></label>
+      <label class="toggle-row">Mostrar os textos<span class="switch"><input type="checkbox" data-album-option="showTexts" checked><span></span></span></label>
+    </div>
+    <p class="privacy-note">${icon("lock")} O álbum é gerado no aparelho e leva só as memórias escolhidas. Gastos e outros dados da viagem não entram.</p>
+    <p class="form-status" id="album-status" role="status" aria-live="polite"></p>
+    <div class="row-actions"><button class="btn btn-secondary" type="button" id="album-download" disabled>${icon("download")} Baixar</button><button class="btn btn-primary" type="button" id="album-share" disabled>${icon("share-2")} Compartilhar</button></div>`, (root) => {
+    const preview = root.querySelector("#album-preview");
+    const status = root.querySelector("#album-status");
+    const buttons = [root.querySelector("#album-download"), root.querySelector("#album-share")];
+    const refresh = async () => {
+      const mine = ++version;
+      buttons.forEach((button) => { button.disabled = true; });
+      status.textContent = "Montando as páginas…";
+      try {
+        const built = await buildAlbumPages(trip, options);
+        if (mine !== version) return;
+        thumbs.forEach((url) => URL.revokeObjectURL(url));
+        pages = built;
+        thumbs = pages.map((page) => URL.createObjectURL(page.blob));
+        preview.innerHTML = thumbs.map((url, index) => `<figure><img src="${url}" alt="Página ${index + 1}"><figcaption>${index + 1}</figcaption></figure>`).join("");
+        status.textContent = `${pages.length} páginas · formato A5`;
+        status.classList.add("is-info");
+        buttons.forEach((button) => { button.disabled = false; });
+      } catch (error) {
+        console.error("Falha ao montar o álbum.", error);
+        status.classList.remove("is-info");
+        status.textContent = "Não consegui montar o álbum. Tente de novo.";
+      }
+    };
+    refresh();
+    root.querySelector("#album-options").addEventListener("change", (event) => {
+      const input = event.target.closest("[data-album-option]");
+      if (!input) return;
+      options[input.dataset.albumOption] = input.checked;
+      refresh();
+    });
+    const file = () => new File([buildPdf(pages)], `album-${slugify(trip.retro.title || trip.name || "viagem")}.pdf`, { type: "application/pdf" });
+    buttons[0].addEventListener("click", () => {
+      const pdf = file();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(pdf);
+      link.download = pdf.name;
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(link.href), 4000);
+    });
+    buttons[1].addEventListener("click", async () => {
+      const pdf = file();
+      try {
+        if (navigator.canShare?.({ files: [pdf] })) await navigator.share({ files: [pdf], title: trip.retro.title || trip.name || "Álbum da viagem" });
+        else {
+          buttons[0].click();
+          status.textContent = "Este navegador não compartilha direto: o PDF foi baixado.";
+        }
+      } catch (error) {
+        if (error?.name !== "AbortError") status.textContent = "Não consegui compartilhar. Use Baixar.";
+      }
+    });
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -3888,6 +4189,10 @@ document.addEventListener("click", (event) => {
     getCurrentTrip().retro.coverPhotoId = retroCoverButton.dataset.retroCover;
     saveState();
     renderRetro();
+    return;
+  }
+  if (event.target.closest("#album-open")) {
+    openAlbumSheet();
     return;
   }
   if (event.target.closest("#retro-done, #retro-edit-button")) {
