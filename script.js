@@ -613,7 +613,7 @@ function renderTripCountdown(trip) {
 // Atualiza contagens visíveis sem redesenhar a tela inteira.
 function updateCountdowns() {
   if (document.hidden) return;
-  if (route.screen === "home") $("[data-countdown]").forEach((chip) => {
+  if (route.screen === "home") $$("[data-countdown]").forEach((chip) => {
     const trip = state.trips.find((item) => item.id === chip.dataset.countdown);
     if (trip) chip.innerHTML = `${icon("calendar")} ${escapeHtml(tripCountdownText(trip))}`;
   });
@@ -1301,20 +1301,67 @@ function getDiscoverableActivities(trip, city = deckCity) {
   });
 }
 
+function discoveryStats(trip, city = deckCity) {
+  const pool = activities.filter((activity) => trip.destinations.some((destination) => activityMatchesCity(activity, destination.name))
+    && (city === "all" || activityMatchesCity(activity, city))
+    && (trip.interests.length === 0 || activity.interests.some((interest) => trip.interests.includes(interest))));
+  const remaining = getDiscoverableActivities(trip, city);
+  return { total: pool.length, remaining: remaining.length, evaluated: pool.length - remaining.length, next: remaining[0] || null, pool };
+}
+
+// Resumo curto para o cartão: primeira frase (ou corte em palavra), sem perder o texto completo em Detalhes.
+function shortDescription(text, max = 130) {
+  const clean = String(text || "").replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const sentence = clean.match(/^.{40,}?[.!?](\s|$)/);
+  if (sentence && sentence[0].length <= max) return sentence[0].trim();
+  return `${clean.slice(0, max).replace(/\s+\S*$/, "")}…`;
+}
+
 function placeTile(activity, badge = "") {
   return `<button class="place-tile" type="button" data-place="${escapeHtml(activity.id)}"><img src="${escapeHtml(imageOf(activity))}" alt="" loading="lazy">${badge}<span><strong>${escapeHtml(activity.name)}</strong><small>${escapeHtml(activity.city)}</small></span></button>`;
 }
 
 function renderDiscoverTab() {
   const trip = getCurrentTrip();
-  const ideas = getDiscoverableActivities(trip, "all");
-  const cities = tripCities(trip);
-  $("#discover-summary").textContent = ideas.length
-    ? `${ideas.length} ${ideas.length === 1 ? "lugar" : "lugares"} em ${cities.join(", ")} esperando por você. Deslize para curtir, passar ou deixar para depois.`
-    : "Você já passou por todas as ideias. Reveja o que ficou em “Talvez depois”.";
+  const cities = [...new Set(tripCities(trip))];
+  if (deckCity !== "all" && !cities.some((city) => sameCity(city, deckCity))) deckCity = "all";
+  const stats = discoveryStats(trip);
+  const spot = stats.next || stats.pool[0] || null;
+  const place = deckCity === "all" ? (cities.length > 1 ? "Toda a viagem" : cities[0] || "Sua viagem") : deckCity;
+  const action = stats.remaining === 0 ? "" : stats.evaluated ? "Continuar descobrindo" : "Começar a descobrir";
+  const photo = spot ? photoOf(spot) : null;
+  $("#discover-spot").innerHTML = `
+    <div class="spot-photo">
+      <img src="${escapeHtml(spot ? imageOf(spot) : coverFor(trip).image)}" alt="">
+      <span class="chip chip-glass spot-chip">${icon("map-pin")} ${stats.remaining ? `${stats.remaining} ${stats.remaining === 1 ? "lugar esperando" : "lugares esperando"} por você` : "Tudo avaliado por aqui"}</span>
+      ${photo ? `<a class="photo-credit" href="${escapeHtml(safeUrl(photo.page))}" target="_blank" rel="noopener noreferrer">${escapeHtml(spot.name)} · Foto: ${escapeHtml(photo.author)} · ${escapeHtml(photo.license)}</a>` : ""}
+    </div>
+    <div class="spot-body">
+      <h3>${escapeHtml(place)}</h3>
+      <p>${stats.remaining ? `Próximo: ${escapeHtml(stats.next.name)}` : stats.total ? "Você já avaliou todos os lugares deste filtro. Reveja o que ficou em Talvez ou troque de cidade." : "Ainda não há lugares para os seus interesses aqui. Ajuste os interesses ao editar a viagem."}</p>
+      ${action ? `<button class="btn btn-primary btn-block" type="button" data-open-deck>${escapeHtml(action)} ${icon("arrow-right")}</button>` : `<button class="btn btn-secondary btn-block" type="button" data-open-list="maybe-preview-list">${icon("bookmark")} Ver Talvez</button>`}
+    </div>`;
+  $("#discover-progress").innerHTML = stats.total
+    ? `<p><strong>${stats.evaluated} de ${stats.total}</strong> lugares avaliados${deckCity === "all" ? "" : ` em ${escapeHtml(deckCity)}`}</p><div class="progress"><span style="width:${Math.round((stats.evaluated / stats.total) * 100)}%"></span></div>`
+    : "";
+  $("#city-choices").innerHTML = cities.length > 1 ? `<h3 class="home-section-title">Descobrir por cidade</h3>
+    <div class="city-chips">
+      <button type="button" class="city-chip${deckCity === "all" ? " is-selected" : ""}" data-discover-city="all"><span class="city-thumb is-all">${icon("globe")}</span>Todas</button>
+      ${cities.map((city) => {
+        const sample = activities.find((activity) => activityMatchesCity(activity, city) && photoOf(activity));
+        const left = getDiscoverableActivities(trip, city).length;
+        return `<button type="button" class="city-chip${sameCity(deckCity, city) ? " is-selected" : ""}" data-discover-city="${escapeHtml(city)}"><span class="city-thumb">${sample ? `<img src="${escapeHtml(imageOf(sample))}" alt="" loading="lazy">` : icon("map-pin")}</span><span>${escapeHtml(city)}<small>${left ? `${left} para ver` : "tudo visto"}</small></span></button>`;
+      }).join("")}
+    </div>` : "";
+  hydrateIcons($("#tab-discover"));
+  addImageFallbacks($("#tab-discover"));
   const saved = getTripActivities(trip);
   const maybe = getTripActivities(trip, "maybe");
   const dismissed = trip.dismissed.map(getActivity).filter(Boolean);
+  $("#choice-like").textContent = String(saved.length);
+  $("#choice-maybe").textContent = String(maybe.length);
+  $("#choice-skip").textContent = String(dismissed.length);
   $("#discovery-saved-count").textContent = String(saved.length);
   $("#maybe-count").textContent = String(maybe.length);
   $("#dismissed-count").textContent = String(dismissed.length);
@@ -1361,7 +1408,7 @@ function placeCardHtml(activity, trip, extraClass = "") {
       <div class="place-overlay"><h2>${escapeHtml(activity.name)}</h2><p>${icon("map-pin")} ${escapeHtml(activity.city)} · ${escapeHtml(country)}</p></div>
     </div>
     <div class="place-info">
-      <p class="place-desc">${escapeHtml(activity.description)}</p>
+      <p class="place-desc">${escapeHtml(shortDescription(activity.description))}</p>
       <div class="place-meta">
         ${near && near[1] >= 3 ? `<span class="chip">${icon("navigation")} ${escapeHtml(near[1])} km de ${escapeHtml(near[0])}</span>` : ""}
         ${activity.openingHours ? `<span class="chip">${icon("clock")} Horário informado</span>` : ""}
@@ -1377,8 +1424,12 @@ function renderDeck() {
   const ideas = getDiscoverableActivities(trip);
   currentActivityId = ideas[0]?.id || null;
   ["#skip-activity", "#maybe-activity", "#like-activity"].forEach((selector) => { $(selector).disabled = !currentActivityId; });
-  $("#discovery-position").textContent = ideas.length ? `${ideas.length} ${ideas.length === 1 ? "lugar" : "lugares"} para ver` : "Tudo visto";
-  $("#deck-title").textContent = deckCity === "all" ? "Descobrir" : deckCity;
+  const stats = discoveryStats(trip);
+  $("#discovery-position").innerHTML = stats.total
+    ? `${ideas.length ? `${ideas.length} ${ideas.length === 1 ? "lugar restante" : "lugares restantes"}` : "Tudo visto"} <b>${stats.evaluated} / ${stats.total}</b>`
+    : "Nenhum lugar neste filtro";
+  $("#deck-progress-bar").style.width = stats.total ? `${Math.round((stats.evaluated / stats.total) * 100)}%` : "0%";
+  $("#deck-title").textContent = deckCity === "all" ? "Descobrir lugares" : deckCity;
   const stage = $("#activity-stage");
   if (!ideas.length) {
     stage.innerHTML = `<div class="deck-empty">${icon("compass")}<h2>Você viu todas as ideias${deckCity === "all" ? "" : ` de ${escapeHtml(deckCity)}`}.</h2><p>Troque de cidade ou reveja o que ficou em “Talvez depois”.</p><button class="btn btn-secondary" type="button" data-back>Ver minhas ideias</button></div>`;
@@ -1403,7 +1454,8 @@ function addActivityToPlan(id) {
   trip.maybe = trip.maybe.filter((item) => item.id !== id);
   trip.dismissed = trip.dismissed.filter((item) => item !== id);
   if (!saveState()) return;
-  toast(`${activity.name} foi para o roteiro`);
+  if (route.screen === "deck") showDeckFeedback("like");
+  else toast(`${activity.name} foi para o roteiro`);
   announce(`${activity.name} adicionada ao roteiro.`);
   refreshAfterChoice();
 }
@@ -1415,7 +1467,8 @@ function markMaybe(id) {
   trip.maybe.push({ id });
   trip.dismissed = trip.dismissed.filter((item) => item !== id);
   if (!saveState()) return;
-  toast("Guardado para decidir depois");
+  if (route.screen === "deck") showDeckFeedback("maybe");
+  else toast("Guardado para decidir depois");
   announce(`${activity.name} guardada em talvez depois.`);
   refreshAfterChoice();
 }
@@ -1425,6 +1478,7 @@ function dismissActivity(id) {
   if (!trip || !id || trip.dismissed.includes(id)) return;
   trip.dismissed.push(id);
   if (!saveState()) return;
+  if (route.screen === "deck") showDeckFeedback("skip");
   refreshAfterChoice();
 }
 
@@ -1437,6 +1491,19 @@ function removeFromLists(id) {
 }
 
 let activeSwipe = null;
+
+let deckChoices = 0;
+let feedbackTimer = null;
+
+function showDeckFeedback(mode) {
+  deckChoices += 1;
+  if (deckChoices !== 1 && deckChoices % 4 !== 0) return;
+  const element = $("#swipe-feedback");
+  element.textContent = messageFor({ like: "escolhaCurti", maybe: "escolhaTalvez", skip: "escolhaPassar" }[mode], `deck|${deckChoices}`);
+  element.className = `deck-feedback is-${mode} is-visible`;
+  window.clearTimeout(feedbackTimer);
+  feedbackTimer = window.setTimeout(() => element.classList.remove("is-visible"), 1400);
+}
 
 function triggerSwipe(mode) {
   if (activeSwipe?.card.isConnected) {
@@ -5315,6 +5382,20 @@ document.addEventListener("click", (event) => {
     navigate({ tab: tabButton.dataset.tab }, { replace: true });
     return;
   }
+  const openList = event.target.closest("[data-open-list]");
+  if (openList) {
+    const details = $(`#${openList.dataset.openList}`).closest("details");
+    $$(".discover-group").forEach((group) => { if (group !== details) group.open = false; });
+    details.open = true;
+    details.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  const discoverCity = event.target.closest("[data-discover-city]");
+  if (discoverCity) {
+    deckCity = discoverCity.dataset.discoverCity;
+    renderDiscoverTab();
+    return;
+  }
   if (event.target.closest("[data-open-deck]")) {
     navigate({ screen: "deck" });
     return;
@@ -5436,7 +5517,7 @@ document.addEventListener("click", (event) => {
     const target = { top: "#home-top", trips: "#all-trips", inspiration: ".inspiration" }[homeNav.dataset.homeNav];
     if (homeNav.dataset.homeNav === "top") window.scrollTo({ top: 0, behavior: "smooth" });
     else $(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    $("[data-home-nav]").forEach((item) => {
+    $$("[data-home-nav]").forEach((item) => {
       const active = item === homeNav;
       item.classList.toggle("is-active", active);
       if (active) item.setAttribute("aria-current", "page");

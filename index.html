@@ -16,14 +16,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=22">
-    <script src="icones.js?v=22" defer></script>
-    <script src="dados/fontes-abertas.js?v=22" defer></script>
-    <script src="dados/atracoes-cidades.js?v=22" defer></script>
-    <script src="dados/osm-lugares.js?v=22" defer></script>
-    <script src="dados/guia-paises.js?v=22" defer></script>
-    <script src="dados/mensagens.js?v=22" defer></script>
-    <script src="script.js?v=22" defer></script>
+    <link rel="stylesheet" href="styles.css?v=24">
+    <script src="icones.js?v=24" defer></script>
+    <script src="dados/fontes-abertas.js?v=24" defer></script>
+    <script src="dados/atracoes-cidades.js?v=24" defer></script>
+    <script src="dados/osm-lugares.js?v=24" defer></script>
+    <script src="dados/guia-paises.js?v=24" defer></script>
+    <script src="dados/mensagens.js?v=24" defer></script>
+    <script src="script.js?v=24" defer></script>
   </head>
   <body>
     <div class="app" id="app">
@@ -161,12 +161,18 @@
 
           <!-- Descobrir (resumo; o swipe abre em tela própria) -->
           <div class="tab-panel" id="tab-discover" data-tab-panel="discover" hidden>
-            <div class="discover-hero">
-              <span class="discover-hero-icon"><svg class="icon" data-icon="compass"></svg></span>
-              <h2>Descubra sua viagem</h2>
-              <p id="discover-summary"></p>
-              <button class="btn btn-primary btn-block" type="button" data-open-deck><svg class="icon" data-icon="layers"></svg> Começar a descobrir</button>
+            <div class="discover-head">
+              <h2>Descubra lugares incríveis</h2>
+              <p>Escolha os passeios que combinam com você.</p>
             </div>
+            <article class="discover-spot" id="discover-spot"></article>
+            <div class="discover-progress" id="discover-progress"></div>
+            <div class="choice-cards">
+              <button type="button" class="choice-card is-like" data-open-list="saved-preview-list"><span class="choice-icon"><svg class="icon" data-icon="heart"></svg></span><span><strong id="choice-like">0</strong><small>Curtidas</small></span><svg class="icon chevron-right" data-icon="chevron-right"></svg></button>
+              <button type="button" class="choice-card is-maybe" data-open-list="maybe-preview-list"><span class="choice-icon"><svg class="icon" data-icon="bookmark"></svg></span><span><strong id="choice-maybe">0</strong><small>Talvez</small></span><svg class="icon chevron-right" data-icon="chevron-right"></svg></button>
+              <button type="button" class="choice-card is-skip" data-open-list="dismissed-preview-list"><span class="choice-icon"><svg class="icon" data-icon="heart-off"></svg></span><span><strong id="choice-skip">0</strong><small>Passei</small></span><svg class="icon chevron-right" data-icon="chevron-right"></svg></button>
+            </div>
+            <section class="city-choices" id="city-choices"></section>
             <details class="card disclosure discover-group">
               <summary><svg class="icon" data-icon="heart"></svg> Curtidas <span class="count-pill" id="discovery-saved-count">0</span><svg class="icon chevron" data-icon="chevron-down"></svg></summary>
               <div class="place-grid" id="saved-preview-list"></div>
@@ -242,17 +248,17 @@
       <section class="screen screen-deck" id="screen-deck" data-screen="deck" hidden aria-labelledby="deck-title">
         <header class="app-bar">
           <button class="icon-btn" type="button" data-back aria-label="Voltar"><svg class="icon" data-icon="arrow-left"></svg></button>
-          <div class="app-bar-title"><span class="app-bar-kicker" id="discovery-position" aria-live="polite"></span><h1 id="deck-title">Descobrir</h1></div>
+          <div class="app-bar-title"><h1 id="deck-title">Descobrir</h1><span class="app-bar-kicker" id="discovery-position" aria-live="polite"></span><div class="deck-progress"><span id="deck-progress-bar"></span></div></div>
           <label class="select-chip"><svg class="icon" data-icon="map-pin"></svg><select id="city-filter" aria-label="Filtrar por cidade"><option value="all">Todas</option></select></label>
         </header>
         <div class="deck" id="activity-stage" aria-live="polite"></div>
         <div class="deck-actions" aria-label="Escolha o que fazer com este lugar">
-          <button id="skip-activity" class="round-btn round-skip" type="button" aria-label="Não curti"><svg class="icon" data-icon="x"></svg></button>
-          <button id="maybe-activity" class="round-btn round-maybe" type="button" aria-label="Talvez, decidir depois"><svg class="icon" data-icon="bookmark"></svg></button>
-          <button id="like-activity" class="round-btn round-like" type="button" aria-label="Curti, quero conhecer"><svg class="icon" data-icon="heart"></svg></button>
+          <div class="deck-action"><button id="skip-activity" class="round-btn round-skip" type="button" aria-label="Passar, não curti"><svg class="icon" data-icon="x"></svg></button><span>Passar</span></div>
+          <div class="deck-action"><button id="maybe-activity" class="round-btn round-maybe" type="button" aria-label="Talvez, decidir depois"><svg class="icon" data-icon="bookmark"></svg></button><span>Talvez</span></div>
+          <div class="deck-action"><button id="like-activity" class="round-btn round-like" type="button" aria-label="Curtir, quero conhecer"><svg class="icon" data-icon="heart"></svg></button><span>Curtir</span></div>
         </div>
-        <p class="deck-hint">← não curti · ↓ talvez · curti →</p>
-        <p id="swipe-feedback" class="toast" role="status" aria-live="polite"></p>
+        <p class="deck-hint">Deslize ou toque para escolher · ← passar · ↓ talvez · curtir →</p>
+        <p id="swipe-feedback" class="deck-feedback" role="status" aria-live="polite"></p>
       </section>
 
       <!-- Retrospectiva da viagem (memórias do Baú) -->

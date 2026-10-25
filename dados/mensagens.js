@@ -85,6 +85,21 @@ window.MESSAGES = {
     "Orçamento chegando no limite. Passeio a pé e mirante de graça também contam história.",
     "Hora de segurar um pouco os gastos. As melhores lembranças nem sempre custam caro."
   ],
+  escolhaCurti: [
+    "Boa escolha! 💚",
+    "Esse vai pro roteiro!",
+    "Anotado com carinho!"
+  ],
+  escolhaTalvez: [
+    "Deixa pra pensar!",
+    "Fica guardado pra depois.",
+    "Sem pressa, decide depois."
+  ],
+  escolhaPassar: [
+    "Próxima descoberta!",
+    "Bora ver o próximo!",
+    "Tem mais coisa boa vindo."
+  ],
   mudancaDePlanos: [
     "Mudança de planos! 🌧️ Às vezes as melhores histórias começam com um imprevisto.",
     "Choveu no roteiro? Um café, um museu ou um bom papo também valem o dia.",
