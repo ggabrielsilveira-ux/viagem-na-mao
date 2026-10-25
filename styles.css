@@ -936,3 +936,10 @@ img.is-missing { visibility: hidden; }
 .edit-options button > span { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; color: var(--brand); background: var(--brand-soft); }
 .edit-options button > span .icon { width: 18px; height: 18px; }
 .edit-options button > .icon:last-child { margin-left: auto; color: var(--muted); }
+
+/* Compartilhar memória */
+.share-preview { display: grid; place-items: center; padding: 12px; border-radius: var(--radius); background: var(--surface-2); }
+.share-preview img { width: auto; max-width: 100%; max-height: 46dvh; border-radius: 12px; box-shadow: var(--shadow); aspect-ratio: 4 / 5; object-fit: contain; background: var(--surface); }
+.share-preview[data-format="story"] img { aspect-ratio: 9 / 16; }
+.share-photos { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.share-toggles { display: grid; gap: 4px; }

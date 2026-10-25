@@ -2640,7 +2640,7 @@ function renderMemoriesCard(trip) {
   const card = $("#memories-card");
   card.innerHTML = `<button class="memories-card-main" type="button" data-tab="memories">
       <span class="memories-card-icon">${icon("book-heart")}</span>
-      <span><strong>Meu Baú</strong><small>${escapeHtml(subtitle)}</small></span>${icon("chevron-right")}
+      <span><strong>Meu Baú de Memórias</strong><small>${escapeHtml(subtitle)}</small></span>${icon("chevron-right")}
     </button>
     ${photos.length ? `<div class="memories-thumbs">${photos.map((id) => `<img data-photo-id="${escapeHtml(id)}" alt="">`).join("")}</div>` : ""}
     <button class="btn btn-secondary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar momento</button>`;
@@ -2663,7 +2663,7 @@ function renderMemories() {
   container.innerHTML = `
     <div class="memories-hero">
       <span class="memories-hero-icon">${icon("book-heart")}</span>
-      <h2>Meu Baú</h2>
+      <h2>Meu Baú de Memórias</h2>
       <p>${escapeHtml(lead)}</p>
       <span class="private-pill">${icon("lock")} Privado · guardado só neste aparelho</span>
       <button class="btn btn-primary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar momento</button>
@@ -2698,13 +2698,15 @@ function openMemoryDetail(id) {
     <div class="chips"><span class="chip">${icon("calendar")} ${escapeHtml(memoryDayLabel(trip, memory.date))}</span>${memory.place ? `<span class="chip">${icon("map-pin")} ${escapeHtml(memory.place)}</span>` : ""}<span class="chip">${icon("lock")} Privado</span></div>
     ${memory.text ? `<p class="sheet-text memory-text">${escapeHtml(memory.text)}</p>` : ""}
     ${created ? `<p class="footnote">Guardada em ${escapeHtml(stamp(created))}${edited ? ` · editada em ${escapeHtml(stamp(edited))}` : ""}.</p>` : ""}
-    <div class="row-actions" id="memory-actions"><button class="btn btn-danger" type="button" id="memory-delete">${icon("trash-2")} Excluir</button><button class="btn btn-primary" type="button" id="memory-edit">${icon("pencil")} Editar</button></div>
+    <button class="btn btn-primary btn-block" type="button" id="memory-share">${icon("share-2")} Compartilhar esta memória</button>
+    <div class="row-actions" id="memory-actions"><button class="btn btn-danger" type="button" id="memory-delete">${icon("trash-2")} Excluir</button><button class="btn btn-secondary" type="button" id="memory-edit">${icon("pencil")} Editar</button></div>
     <div class="confirm-box" id="memory-confirm" hidden>
       <p><strong>Excluir esta memória?</strong> As fotos e o texto saem do seu Baú e não dá para desfazer.</p>
       <div class="row-actions"><button class="btn btn-secondary" type="button" id="memory-cancel-delete">Cancelar</button><button class="btn btn-danger" type="button" id="memory-confirm-delete">${icon("trash-2")} Excluir</button></div>
     </div>`, (root) => {
     hydratePhotos(root);
     root.querySelector("#memory-edit").addEventListener("click", () => openMemoryEditor({ id }));
+    root.querySelector("#memory-share").addEventListener("click", () => openShareMemorySheet(id));
     root.querySelector("#memory-delete").addEventListener("click", () => {
       root.querySelector("#memory-actions").hidden = true;
       root.querySelector("#memory-confirm").hidden = false;
@@ -2905,6 +2907,226 @@ function openMemoryEditor({ id = null, date = "", place = "", origin = "" } = {}
 }
 
 // ---------------------------------------------------------------------------
+// Compartilhar uma memória como imagem: só a memória escolhida, com prévia,
+// opção de esconder texto, data e lugar, e o crédito discreto da marca.
+// ---------------------------------------------------------------------------
+
+const SHARE_FORMATS = { post: [1080, 1350, "Post"], story: [1080, 1920, "Stories"] };
+let brandIconImage = null;
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Imagem indisponível."));
+    image.src = src;
+  });
+}
+
+async function brandIcon() {
+  brandIconImage ||= loadImage("marca/viagem-na-mao-icon.svg").catch(() => null);
+  return brandIconImage;
+}
+
+// Quebra o texto em linhas que cabem na largura; corta com reticências se passar do limite.
+function wrapLines(context, text, maxWidth, maxLines) {
+  const lines = [];
+  for (const paragraph of text.split(/\n+/)) {
+    let line = "";
+    for (const word of paragraph.split(/\s+/).filter(Boolean)) {
+      const attempt = line ? `${line} ${word}` : word;
+      if (context.measureText(attempt).width <= maxWidth) line = attempt;
+      else {
+        if (line) lines.push(line);
+        line = word;
+      }
+    }
+    if (line) lines.push(line);
+  }
+  if (lines.length > maxLines) {
+    const kept = lines.slice(0, maxLines);
+    let last = kept[maxLines - 1];
+    while (last && context.measureText(`${last}…`).width > maxWidth) last = last.slice(0, -1);
+    kept[maxLines - 1] = `${last.trimEnd()}…`;
+    return kept;
+  }
+  return lines;
+}
+
+function drawCover(context, image, x, y, width, height) {
+  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+  const sw = width / scale;
+  const sh = height / scale;
+  context.drawImage(image, (image.naturalWidth - sw) / 2, (image.naturalHeight - sh) / 2, sw, sh, x, y, width, height);
+}
+
+async function buildShareImage(memory, trip, { format = "post", photoId = "", showText = true, showDate = true, showPlace = false } = {}) {
+  await document.fonts?.ready;
+  const [width, height] = SHARE_FORMATS[format] || SHARE_FORMATS.post;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  const pad = 80;
+  const url = photoId ? await photoUrl(photoId) : "";
+  const photo = url ? await loadImage(url).catch(() => null) : null;
+  const meta = [showDate && memory.date ? formatDate(memory.date, { day: "numeric", month: "long", year: "numeric" }) : "", showPlace ? memory.place : ""].filter(Boolean).join("  ·  ");
+  const title = memory.title || "";
+  const text = showText ? memory.text || "" : "";
+  const dark = !photo;
+
+  if (photo) {
+    context.fillStyle = "#FFFDF5";
+    context.fillRect(0, 0, width, height);
+    const photoHeight = Math.round(height * (title || text ? 0.62 : 0.8));
+    drawCover(context, photo, 0, 0, width, photoHeight);
+    let y = photoHeight + 84;
+    context.textBaseline = "alphabetic";
+    if (title) {
+      context.fillStyle = "#15563F";
+      context.font = '800 58px Manrope, "DM Sans", sans-serif';
+      wrapLines(context, title, width - pad * 2, 2).forEach((line) => { context.fillText(line, pad, y); y += 68; });
+      y += 6;
+    }
+    if (text) {
+      context.fillStyle = "#3c4842";
+      context.font = '40px Georgia, serif';
+      const room = Math.max(1, Math.floor((height - 190 - y) / 56));
+      wrapLines(context, text, width - pad * 2, Math.min(room, format === "story" ? 9 : 5)).forEach((line) => { context.fillText(line, pad, y); y += 56; });
+    }
+    if (meta) {
+      context.fillStyle = "#727b75";
+      context.font = '600 30px "DM Sans", sans-serif';
+      context.fillText(meta, pad, Math.min(y + 14, height - 150));
+    }
+  } else {
+    const gradient = context.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#15563F");
+    gradient.addColorStop(1, "#104431");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
+    // Mede antes para centralizar o bloco de texto na altura da imagem.
+    context.font = '800 64px Manrope, "DM Sans", sans-serif';
+    const titleLines = title ? wrapLines(context, title, width - pad * 2, 2) : [];
+    context.font = '48px Georgia, serif';
+    const textLines = text ? wrapLines(context, text, width - pad * 2, format === "story" ? 16 : 10) : [];
+    const blockHeight = 140 + titleLines.length * 76 + (titleLines.length && textLines.length ? 20 : 0) + textLines.length * 68 + (meta ? 76 : 0);
+    let y = Math.max(300, Math.round((height - 140 - blockHeight) / 2) + 140);
+    context.fillStyle = "#56D7AE";
+    context.font = '700 200px Georgia, serif';
+    context.fillText("“", pad - 10, y - 60);
+    context.fillStyle = "#FFFDF5";
+    context.font = '800 64px Manrope, "DM Sans", sans-serif';
+    titleLines.forEach((line) => { context.fillText(line, pad, y); y += 76; });
+    if (titleLines.length && textLines.length) y += 20;
+    context.fillStyle = "rgba(255, 253, 245, 0.92)";
+    context.font = '48px Georgia, serif';
+    textLines.forEach((line) => { context.fillText(line, pad, y); y += 68; });
+    if (meta) {
+      context.fillStyle = "rgba(255, 253, 245, 0.75)";
+      context.font = '600 32px "DM Sans", sans-serif';
+      context.fillText(meta, pad, y + 30);
+    }
+  }
+
+  // Crédito discreto da marca no rodapé.
+  const iconImage = await brandIcon();
+  const footerY = height - 96;
+  if (iconImage) context.drawImage(iconImage, pad, footerY - 30, 52, 52);
+  context.fillStyle = dark ? "rgba(255, 253, 245, 0.8)" : "#727b75";
+  context.font = '700 28px Manrope, "DM Sans", sans-serif';
+  context.fillText("Feito com Viagem na Mão", pad + (iconImage ? 68 : 0), footerY + 6);
+
+  return new Promise((resolve, reject) => canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Não foi possível gerar a imagem."))), "image/jpeg", 0.9));
+}
+
+function openShareMemorySheet(id) {
+  const trip = getCurrentTrip();
+  const memory = trip.memories.find((item) => item.id === id);
+  if (!memory) return;
+  const options = { format: "post", photoId: memory.photos?.[0] || "", showText: Boolean(memory.text || memory.title), showDate: true, showPlace: false };
+  let currentBlob = null;
+  let previewUrl = "";
+  let version = 0;
+  openSheet(`${sheetTitle("Compartilhar memória")}
+    <div class="share-preview"><img id="share-preview" alt="Prévia da imagem que será compartilhada"></div>
+    <div class="segmented" id="share-format">${Object.entries(SHARE_FORMATS).map(([key, [, , label]]) => `<button type="button" data-share-format="${key}" class="${key === options.format ? "is-selected" : ""}">${label}</button>`).join("")}</div>
+    ${memory.photos?.length > 1 ? `<div class="share-photos">${memory.photos.map((photoId) => `<button type="button" class="retro-cover-pick${photoId === options.photoId ? " is-cover" : ""}" data-share-photo="${escapeHtml(photoId)}" aria-label="Usar esta foto"><img data-photo-id="${escapeHtml(photoId)}" alt=""></button>`).join("")}</div>` : ""}
+    <div class="share-toggles">
+      ${memory.text ? `<label class="toggle-row">Mostrar o texto<span class="switch"><input type="checkbox" data-share-option="showText"${options.showText ? " checked" : ""}><span></span></span></label>` : ""}
+      <label class="toggle-row">Mostrar a data<span class="switch"><input type="checkbox" data-share-option="showDate" checked><span></span></span></label>
+      ${memory.place ? `<label class="toggle-row">Mostrar o lugar<span class="switch"><input type="checkbox" data-share-option="showPlace"><span></span></span></label>` : ""}
+    </div>
+    <p class="privacy-note">${icon("lock")} Só esta memória vai na imagem. Depois de enviada, a cópia sai do app e não dá para recolher.</p>
+    <p class="form-status" id="share-status" role="status" aria-live="polite"></p>
+    <div class="row-actions"><button class="btn btn-secondary" type="button" id="share-download">${icon("download")} Baixar</button><button class="btn btn-primary" type="button" id="share-send">${icon("share-2")} Compartilhar</button></div>`, (root) => {
+    hydratePhotos(root);
+    const status = root.querySelector("#share-status");
+    const preview = root.querySelector("#share-preview");
+    const refresh = async () => {
+      const mine = ++version;
+      status.textContent = "Preparando a imagem…";
+      try {
+        const blob = await buildShareImage(memory, trip, options);
+        if (mine !== version) return;
+        currentBlob = blob;
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        previewUrl = URL.createObjectURL(blob);
+        preview.src = previewUrl;
+        root.querySelector(".share-preview").dataset.format = options.format;
+        status.textContent = "";
+      } catch (error) {
+        console.error("Falha ao gerar a imagem.", error);
+        status.textContent = "Não consegui gerar a imagem. Tente de novo.";
+      }
+    };
+    refresh();
+    root.querySelector("#share-format").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-share-format]");
+      if (!button) return;
+      options.format = button.dataset.shareFormat;
+      root.querySelectorAll("[data-share-format]").forEach((item) => item.classList.toggle("is-selected", item === button));
+      refresh();
+    });
+    root.querySelector(".share-photos")?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-share-photo]");
+      if (!button) return;
+      options.photoId = button.dataset.sharePhoto;
+      root.querySelectorAll("[data-share-photo]").forEach((item) => item.classList.toggle("is-cover", item === button));
+      refresh();
+    });
+    root.querySelector(".share-toggles").addEventListener("change", (event) => {
+      const input = event.target.closest("[data-share-option]");
+      if (!input) return;
+      options[input.dataset.shareOption] = input.checked;
+      refresh();
+    });
+    const fileName = () => `memoria-${slugify(memory.title || trip.name || "viagem")}.jpg`;
+    root.querySelector("#share-download").addEventListener("click", () => {
+      if (!currentBlob) return;
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(currentBlob);
+      link.download = fileName();
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(link.href), 4000);
+    });
+    root.querySelector("#share-send").addEventListener("click", async () => {
+      if (!currentBlob) return;
+      const file = new File([currentBlob], fileName(), { type: "image/jpeg" });
+      try {
+        if (navigator.canShare?.({ files: [file] })) await navigator.share({ files: [file], title: memory.title || "Memória de viagem" });
+        else {
+          root.querySelector("#share-download").click();
+          status.textContent = "Este navegador não compartilha direto: a imagem foi baixada para você enviar.";
+        }
+      } catch (error) {
+        if (error?.name !== "AbortError") status.textContent = "Não consegui compartilhar. Use Baixar e envie a imagem.";
+      }
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Convites leves para guardar memórias: só dentro do app, no máximo um por dia,
 // e nenhum se a pessoa já guardou algo hoje. Sem sequência nem cobrança.
 // ---------------------------------------------------------------------------
@@ -2919,8 +3141,8 @@ function memoryInvite(trip) {
   const { date, time } = nowInBrasilia();
   if (!trip.startDate || date < trip.startDate || date > trip.endDate) return null;
   if (state.invites[trip.id]?.dismissed === date) return null;
-  const savedToday = trip.memories.some((memory) => memory.date === date || (memory.createdAt && getBrasiliaDateKey(new Date(memory.createdAt)) === date));
-  if (savedToday) return null;
+  // Já existe memória sobre hoje: não pergunta de novo. Memórias de outros dias não contam.
+  if (trip.memories.some((memory) => memory.date === date)) return null;
   let context = null;
   if (time >= "18:00") context = "finalDoDia";
   else if (daySchedule(trip, date).some((stop) => (stop.time || "09:00") < time)) context = "depoisPasseio";
