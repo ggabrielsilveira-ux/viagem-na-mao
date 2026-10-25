@@ -18,7 +18,8 @@ Protótipo estático para planejar várias viagens, organizar um roteiro, descob
 - Encontrar 94 sugestões de atrações em 21 destinos de teste: Rio de Janeiro, Paraty, Gramado, Canela, Florianópolis, Curitiba, São Paulo, Foz do Iguaçu, Salvador, Recife, Olinda, Fortaleza, Brasília, Belo Horizonte, Bonito, Manaus, Porto Alegre, João Pessoa, Natal, Búzios e Aquiraz.
 - Descobrir algumas ideias de eventos sazonais, sem datas presumidas.
 - Abrir buscas da atração no Google Maps e no Tripadvisor para conferir informações atuais.
-- Ver, em 74 das 94 atrações, dados de fontes abertas: foto real com autor e licença (Wikimedia Commons), resumo e link da Wikipedia, site oficial (Wikidata) e coordenadas.
+- Descobrir cerca de 1.640 atrações em 100 cidades (60 no Brasil e 40 no exterior), encontradas num raio de até 50 km do centro de cada cidade a partir de Wikidata, Wikipedia e Wikimedia Commons. O cartão mostra a distância até o centro da cidade da viagem.
+- Ver, em 74 das 94 atrações do catálogo editorial, dados de fontes abertas: foto real com autor e licença (Wikimedia Commons), resumo e link da Wikipedia, site oficial (Wikidata) e coordenadas.
 - Ver no roteiro o tempo de carro e a pé entre paradas consecutivas que têm coordenadas, calculado pelo OSRM (servidor público da FOSSGIS, dados OpenStreetMap, sem trânsito). Enquanto calcula ou se o serviço falhar, mostra a distância em linha reta.
 
 ## Executar
@@ -49,6 +50,12 @@ Os cartões não exibem notas nem quantidades de avaliações inventadas. Preço
 O arquivo `dados/fontes-abertas.js` é gerado por `node ferramentas/gerar-fontes-abertas.mjs` (Node 18+ e internet). O script lê o catálogo do `script.js`, procura a página de cada atração na Wikipedia em português e só aceita o resultado se a coordenada estiver a até 60 km da cidade (ou, sem coordenada, se o texto citar a cidade). Fotos só entram com licença livre identificada (domínio público, CC0, CC BY, CC BY-SA), e o cartão mostra autor e licença com link para a página da foto. O resumo da Wikipedia aparece com crédito e licença CC BY-SA 4.0. Rode o script de novo quando o catálogo mudar; atrações sem correspondência confiável continuam com a imagem ilustrativa.
 
 Essas fontes não têm notas, preços nem horários, então o app continua sem esses dados.
+
+### Atrações de 100 cidades
+
+`dados/atracoes-cidades.js` é gerado por `node ferramentas/gerar-atracoes-cidades.mjs` (leva vários minutos; resultados por cidade ficam em `ferramentas/.cache/`, fora do Git, para retomar se parar). Para cada cidade da lista no início do script, consulta no Wikidata lugares de tipos turísticos (museu, praia, parque, igreja, mirante, mercado etc.) num raio de 50 km, ordenados pelo número de Wikipedias em que aparecem, e guarda até 25 com artigo na Wikipedia em português. Em cidades com dados demais (Paris, Londres, Tóquio...) a consulta de 50 km estoura o tempo do Wikidata e o script usa raio menor (8 a 10 km). Descarta obras de acervo (P195) e lugares que deixaram de existir (P576).
+
+Limites conhecidos: a quantidade varia muito por cidade (há cidades com 1 a 5 atrações e Caldas Novas ficou sem nenhuma); a categoria vem do tipo no Wikidata e pode não ser a ideal; a descrição é o resumo da Wikipedia, com crédito CC BY-SA 4.0 no cartão; restaurantes e lojas quase não aparecem.
 
 ### Tempos de deslocamento (OSRM)
 
@@ -90,3 +97,5 @@ As viagens e despesas ficam neste navegador e não são sincronizadas entre disp
 - `script.js`: catálogo de demonstração, filtros, roteiro e armazenamento local.
 - `dados/fontes-abertas.js`: dados gerados de Wikipedia, Wikidata e Commons (não editar à mão).
 - `ferramentas/gerar-fontes-abertas.mjs`: script que gera o arquivo acima.
+- `dados/atracoes-cidades.js`: atrações de 100 cidades (gerado, não editar à mão).
+- `ferramentas/gerar-atracoes-cidades.mjs`: script que gera o arquivo acima e define a lista de cidades.

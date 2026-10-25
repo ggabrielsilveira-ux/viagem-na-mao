@@ -479,6 +479,40 @@ function safeUrl(value) {
   return /^https?:\/\//i.test(value || "") ? value : "";
 }
 
+// Atrações de 100 cidades geradas por ferramentas/gerar-atracoes-cidades.mjs (opcional).
+// Cada lugar vale para todas as cidades a até 50 km (nearCities); a descrição vem da Wikipedia.
+const cityData = window.CITY_DATA || { cities: [], places: [] };
+const categoryImages = {};
+activities.forEach((activity) => { categoryImages[activity.category] ||= activity.image; });
+const editorialNames = new Set(activities.map((activity) => `${slugify(activity.city)}|${slugify(activity.name)}`));
+cityData.places.forEach((place) => {
+  if (editorialNames.has(`${slugify(place.city)}|${slugify(place.name)}`)) return;
+  const wikipediaUrl = `https://pt.wikipedia.org/wiki/${encodeURIComponent(place.title.replace(/ /g, "_"))}`;
+  activities.push({
+    id: place.id,
+    name: place.name,
+    city: place.city,
+    country: place.country,
+    category: place.category,
+    interests: place.interests,
+    description: place.extract,
+    descriptionSource: "wikipedia",
+    schedule: "Horários e disponibilidade variam; confirme antes de ir.",
+    cost: null,
+    rating: null,
+    reviews: null,
+    image: place.photo?.url || categoryImages[place.category] || categoryImages.Cultura || reflections[0].image,
+    nearCities: place.nearCities
+  });
+  openData[place.id] = {
+    coordinates: place.coordinates,
+    wikipedia: { title: place.title, url: wikipediaUrl, extract: "" },
+    wikidata: place.wikidata,
+    website: place.website,
+    photo: place.photo && { ...place.photo, page: `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(place.photo.file.replace(/ /g, "_"))}` }
+  };
+});
+
 function distanceKm([lat1, lon1], [lat2, lon2]) {
   const rad = (value) => (value * Math.PI) / 180;
   const a = Math.sin(rad(lat2 - lat1) / 2) ** 2
@@ -636,10 +670,13 @@ function renderHome() {
     const forecast = getTripForecastBRL(trip);
     const budget = getBudgetInBRL(trip);
     const activeClass = trip.id === next.id ? " trip-card-next" : "";
-    const hero = activities.find((activity) => cities.some((city) => activityMatchesCity(activity, city)))?.image
-      || reflections[0].image;
+    const heroActivity = activities.find((activity) => cities.some((city) => activityMatchesCity(activity, city)));
+    const hero = heroActivity?.image || reflections[0].image;
+    const heroPhoto = heroActivity && getOpenData(heroActivity.id)?.photo;
+    const heroCredit = heroPhoto && heroPhoto.url === hero ? `${heroActivity.name} · Foto: ${heroPhoto.author} · ${heroPhoto.license} · Wikimedia Commons` : "";
     return `<article class="trip-card${activeClass}">
-      <img src="${escapeHtml(hero)}" alt="" loading="lazy">
+      <img src="${escapeHtml(hero)}" alt="" loading="lazy"${heroCredit ? ` title="${escapeHtml(heroCredit)}"` : ""}>
+      ${heroCredit ? `<a class="photo-credit" href="${escapeHtml(safeUrl(heroPhoto.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(heroPhoto.author)} · ${escapeHtml(heroPhoto.license)}</a>` : ""}
       <div class="trip-card-shade"></div>
       ${trip.id === next.id ? '<span class="next-trip-label">✦ PRÓXIMA VIAGEM</span>' : ""}
       <button class="trip-card-open" type="button" data-open-trip="${escapeHtml(trip.id)}" aria-label="Abrir viagem ${escapeHtml(trip.name || destination)}">
@@ -712,9 +749,17 @@ function renderTripHeader() {
   const cities = trip.destinations.map((destination) => destination.name).filter(Boolean);
   const firstActivity = activities.find((activity) => cities.some((city) => activityMatchesCity(activity, city)));
   const coverImage = firstActivity?.image || reflections[0].image;
+  const coverPhoto = firstActivity && getOpenData(firstActivity.id)?.photo;
+  const isCommonsPhoto = Boolean(coverPhoto && coverPhoto.url === coverImage);
   const image = document.querySelector("#trip-cover-image");
   image.src = coverImage;
-  image.alt = cities.length ? `Paisagem ilustrativa de ${cities[0]}` : "Paisagem inspiradora para viagem";
+  image.alt = isCommonsPhoto ? `Foto de ${firstActivity.name}` : cities.length ? `Paisagem ilustrativa de ${cities[0]}` : "Paisagem inspiradora para viagem";
+  const credit = document.querySelector("#trip-cover-credit");
+  credit.hidden = !isCommonsPhoto;
+  if (isCommonsPhoto) {
+    credit.href = safeUrl(coverPhoto.page);
+    credit.textContent = `${firstActivity.name} · Foto: ${coverPhoto.author} · ${coverPhoto.license}`;
+  }
   document.querySelector("#trip-heading").textContent = trip.name || "Minha viagem";
   document.querySelector("#trip-cover-destination").textContent = cities.length ? cities.join(" · ") : trip.country || "DESTINO A DEFINIR";
   document.querySelector("#trip-cover-dates").textContent = trip.startDate
@@ -807,7 +852,7 @@ function renderTripForm() {
   document.querySelector("#trip-with-children").checked = Boolean(trip?.children);
   document.querySelector("#trip-with-seniors").checked = Boolean(trip?.seniors);
   document.querySelector("#trip-form-title").innerHTML = trip ? "Sua viagem,<br><span>do seu jeito.</span>" : "Vamos sonhar<br><span>essa viagem?</span>";
-  document.querySelector("#destination-city-options").innerHTML = [...new Set(activities.map((activity) => activity.city))]
+  document.querySelector("#destination-city-options").innerHTML = [...new Set([...activities.map((activity) => activity.city), ...cityData.cities.map((city) => city.name)])]
     .sort((a, b) => a.localeCompare(b, "pt-BR"))
     .map((city) => `<option value="${escapeHtml(city)}"></option>`).join("");
   elements.destinationsList.replaceChildren();
@@ -907,8 +952,12 @@ function saveTrip(event) {
   openTrip(trip.id);
 }
 
+function sameCity(a, b) {
+  return String(a || "").localeCompare(String(b || ""), "pt-BR", { sensitivity: "base" }) === 0;
+}
+
 function activityMatchesCity(activity, cityName) {
-  return activity.city.localeCompare(cityName, "pt-BR", { sensitivity: "base" }) === 0;
+  return sameCity(activity.city, cityName) || (activity.nearCities || []).some(([name]) => sameCity(name, cityName));
 }
 
 function getDiscoverableActivities(trip) {
@@ -960,7 +1009,15 @@ function renderDiscovery() {
   const activity = ideas[0];
   const open = getOpenData(activity.id);
   const photo = open?.photo && safeUrl(open.photo.url) ? open.photo : null;
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${activity.name}, ${activity.city}, Brasil`)}`;
+  const country = activity.country || "Brasil";
+  const nearDestination = (activity.nearCities || []).find(([name]) => trip.destinations.some((destination) => sameCity(destination.name, name)));
+  const distanceFact = nearDestination && nearDestination[1] >= 3
+    ? `<div class="activity-fact"><span class="fact-icon">↔</span><span>A cerca de ${escapeHtml(nearDestination[1])} km do centro de ${escapeHtml(nearDestination[0])}</span></div>`
+    : "";
+  const textCredit = activity.descriptionSource === "wikipedia"
+    ? `<p class="text-credit">Texto: <a href="${escapeHtml(safeUrl(open?.wikipedia?.url))}" target="_blank" rel="noopener noreferrer">Wikipedia</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a></p>`
+    : "";
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${activity.name}, ${activity.city}, ${country}`)}`;
   const tripadvisorUrl = `https://www.tripadvisor.com/Search?q=${encodeURIComponent(`${activity.name} ${activity.city}`)}`;
   const wikipediaUrl = safeUrl(open?.wikipedia?.url);
   const websiteUrl = safeUrl(open?.website);
@@ -972,8 +1029,8 @@ function renderDiscovery() {
     : "";
   elements.activityStage.innerHTML = `<article class="activity-card" data-activity-id="${escapeHtml(activity.id)}">
     <div class="activity-photo"><img src="${escapeHtml(photo?.url || activity.image)}" alt="${photo ? "Foto de" : "Imagem ilustrativa de"} ${escapeHtml(activity.name)}" draggable="false"><span class="photo-tag">${escapeHtml(activity.category)}</span>${photoCredit}</div>
-    <div class="activity-info"><p class="activity-location">⌖ ${escapeHtml(activity.city)}</p><h3>${escapeHtml(activity.name)}</h3><p class="activity-description">${escapeHtml(activity.description)}</p>${moreAbout}
-      <div class="activity-facts"><div class="activity-fact"><span class="fact-icon">◷</span><span>${escapeHtml(activity.schedule)}</span></div><div class="activity-fact"><span class="fact-icon">⌖</span><span>${escapeHtml(activity.city)} · Brasil</span></div></div>
+    <div class="activity-info"><p class="activity-location">⌖ ${escapeHtml(activity.city)}</p><h3>${escapeHtml(activity.name)}</h3><p class="activity-description">${escapeHtml(activity.description)}</p>${textCredit}${moreAbout}
+      <div class="activity-facts"><div class="activity-fact"><span class="fact-icon">◷</span><span>${escapeHtml(activity.schedule)}</span></div><div class="activity-fact"><span class="fact-icon">⌖</span><span>${escapeHtml(activity.city)} · ${escapeHtml(country)}</span></div>${distanceFact}</div>
       <div class="rating-line">Consulte avaliações atualizadas nos sites de viagem.</div><div class="activity-source-links">${websiteUrl ? `<a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener noreferrer">Site oficial ↗</a>` : ""}${wikipediaUrl ? `<a href="${escapeHtml(wikipediaUrl)}" target="_blank" rel="noopener noreferrer">Wikipedia ↗</a>` : ""}<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer">Google Maps ↗</a><a href="${tripadvisorUrl}" target="_blank" rel="noopener noreferrer">Tripadvisor ↗</a></div>
       <div class="activity-bottom"><span class="activity-cost-label">VALOR<strong class="activity-cost">${escapeHtml(formatActivityPrice(activity))}</strong></span><button class="save-small" data-save-activity="${escapeHtml(activity.id)}" type="button">Quero conhecer →</button></div>
     </div></article>`;

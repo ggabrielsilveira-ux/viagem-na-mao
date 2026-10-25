@@ -474,6 +474,25 @@ h1 span {
   white-space: nowrap;
 }
 
+.cover-credit {
+  z-index: 2;
+  bottom: 6px;
+  left: auto;
+  max-width: 60%;
+}
+
+.trip-card .photo-credit {
+  z-index: 2;
+  top: 14px;
+  bottom: auto;
+  left: auto;
+  max-width: 55%;
+}
+
+.cover-credit[hidden] {
+  display: none;
+}
+
 a.photo-credit:hover {
   text-decoration: underline;
 }
@@ -503,6 +522,17 @@ a.photo-credit:hover {
 }
 
 .activity-more a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.text-credit {
+  margin: -8px 0 12px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.text-credit a {
   color: inherit;
   text-decoration: underline;
 }
