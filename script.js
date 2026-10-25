@@ -45,7 +45,7 @@ const activities = [
     cost: null,
     rating: null,
     reviews: null,
-    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1100&q=85"
+    image: "imagens/1441974231531-c6227db76b6e.jpg"
   },
   {
     id: "museu-amanha",
@@ -58,7 +58,7 @@ const activities = [
     cost: null,
     rating: null,
     reviews: null,
-    image: "https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1100&q=85"
+    image: "imagens/1531058020387-3be344556be6.jpg"
   },
   {
     id: "arpoador",
@@ -71,7 +71,7 @@ const activities = [
     cost: null,
     rating: null,
     reviews: null,
-    image: "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1100&q=85"
+    image: "imagens/1483729558449-99ef09a8c325.jpg"
   },
   {
     id: "feira-sao-cristovao",
@@ -84,7 +84,7 @@ const activities = [
     cost: null,
     rating: null,
     reviews: null,
-    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1100&q=85"
+    image: "imagens/1555939594-58d7cb561ad1.jpg"
   },
   {
     id: "trindade",
@@ -97,7 +97,7 @@ const activities = [
     cost: null,
     rating: null,
     reviews: null,
-    image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1100&q=85"
+    image: "imagens/1500375592092-40eb2168fd21.jpg"
   },
   {
     id: "centro-historico-paraty",
@@ -110,7 +110,7 @@ const activities = [
     cost: null,
     rating: null,
     reviews: null,
-    image: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1100&q=85"
+    image: "imagens/1516483638261-f4dbaf036963.jpg"
   },
   {
     id: "cachaçaria-paraty",
@@ -123,7 +123,7 @@ const activities = [
     cost: null,
     rating: null,
     reviews: null,
-    image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1100&q=85"
+    image: "imagens/1514362545857-3bc16c4c7d1b.jpg"
   },
   {
     id: "barco-paraty",
@@ -136,7 +136,7 @@ const activities = [
     cost: null,
     rating: null,
     reviews: null,
-    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1100&q=85"
+    image: "imagens/1500530855697-b586d89ba3ee.jpg"
   },
   ...makeCityActivities("Rio de Janeiro", [
     ["Cristo Redentor", "Cultura & natureza", ["cultura", "natureza", "familia"], "Monumento no alto do Corcovado, dentro do Parque Nacional da Tijuca; acesso e ingresso dependem do transporte e da visitação."],
@@ -144,7 +144,7 @@ const activities = [
     ["Praia de Copacabana", "Praia", ["praia", "natureza", "familia"], "Praia e calçadão em um dos trechos mais conhecidos da orla carioca."],
     ["Parque Nacional da Tijuca", "Natureza", ["natureza", "aventura", "familia"], "Área de Mata Atlântica com trilhas, mirantes e cachoeiras; verifique acessos e condições antes da visita."],
     ["Escadaria Selarón", "Arte & cultura", ["arte", "cultura"], "Escadaria pública decorada pelo artista Jorge Selarón, entre os bairros da Lapa e Santa Teresa."]
-  ], "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1483729558449-99ef09a8c325.jpg"),
   ...makeCityActivities("Gramado", [
     ["Rua Coberta", "Passeio urbano", ["cultura", "gastronomia"], "Galeria coberta no centro, com cafés, restaurantes e programação cultural em diferentes épocas do ano."],
     ["Lago Negro", "Natureza", ["natureza", "familia"], "Parque arborizado junto ao lago, conhecido pelas trilhas de caminhada e passeios de pedalinho."],
@@ -152,26 +152,26 @@ const activities = [
     ["Igreja Matriz São Pedro", "Cultura", ["cultura", "arte"], "Igreja de pedra basáltica em frente à praça central, um dos marcos arquitetônicos de Gramado."],
     ["Snowland", "Aventura", ["aventura", "familia"], "Parque temático de neve indoor; atrações, calendário e ingressos devem ser verificados com o operador."],
     ["Natal Luz de Gramado", "Evento sazonal", ["cultura", "familia"], "Programação temática de Natal com atrações e espetáculos; datas, horários e ingressos mudam a cada edição."]
-  ], "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1470770841072-f978cf4d019e.jpg"),
   ...makeCityActivities("Canela", [
     ["Catedral de Pedra", "Cultura", ["cultura", "arte"], "Igreja de estilo gótico no centro de Canela, conhecida pela torre e pelo conjunto de vitrais."],
     ["Parque Estadual do Caracol", "Natureza", ["natureza", "aventura", "familia"], "Área natural protegida com trilhas e vista para a Cascata do Caracol; consulte regras e acessos antes da visita."],
     ["Bondinhos Aéreos Parques da Serra", "Aventura", ["natureza", "aventura", "familia"], "Teleférico com vista para o vale e para a Cascata do Caracol; operação sujeita a condições e ingresso."],
     ["Castelinho Caracol", "Cultura", ["cultura", "gastronomia"], "Casa histórica de madeira preservada, com visitação e opções de gastronomia local."]
-  ], "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1448375240586-882707db888b.jpg"),
   ...makeCityActivities("Florianópolis", [
     ["Ponte Hercílio Luz", "Passeio urbano", ["cultura", "arte"], "Cartão-postal de Florianópolis e ponte pênsil histórica que conecta a ilha ao continente."],
     ["Lagoa da Conceição", "Natureza", ["natureza", "gastronomia", "aventura"], "Região de lagoa com mirantes, esportes aquáticos, restaurantes e acesso a bairros e praias da ilha."],
     ["Praia da Joaquina", "Praia", ["praia", "natureza", "aventura"], "Praia oceânica conhecida pelas dunas próximas e pela prática de surfe, sujeita às condições do mar."],
     ["Mercado Público de Florianópolis", "Gastronomia", ["gastronomia", "cultura"], "Mercado tradicional no centro, com restaurantes, bares e comércio local."]
-  ], "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1507525428034-b723cf961d3e.jpg"),
   ...makeCityActivities("Curitiba", [
     ["Jardim Botânico de Curitiba", "Natureza", ["natureza", "familia"], "Jardim público com estufa de estrutura metálica e jardins geométricos, um dos cartões-postais da cidade."],
     ["Museu Oscar Niemeyer", "Arte & cultura", ["arte", "cultura"], "Museu de arte e design conhecido pelo edifício apelidado de Olho; exposições e horários podem variar."],
     ["Ópera de Arame", "Arte & cultura", ["arte", "cultura", "familia"], "Teatro de estrutura tubular e cobertura transparente integrado a uma antiga pedreira."],
     ["Parque Tanguá", "Natureza", ["natureza", "familia"], "Parque municipal com jardins, mirantes e estruturas construídas em antiga área de pedreira."],
     ["Feira do Largo da Ordem", "Evento & gastronomia", ["gastronomia", "cultura", "arte"], "Feira tradicional de artesanato e gastronomia; confirme a data e o funcionamento no calendário local."]
-  ], "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1511497584788-876760111969.jpg"),
   ...makeCityActivities("São Paulo", [
     ["Parque Ibirapuera", "Natureza", ["natureza", "familia", "aventura"], "Grande parque urbano com áreas verdes, espaços culturais e caminhos para caminhar e pedalar."],
     ["MASP — Museu de Arte de São Paulo", "Arte & cultura", ["arte", "cultura"], "Museu da Avenida Paulista conhecido por seu edifício suspenso e acervo de arte; consulte a programação."],
@@ -179,92 +179,109 @@ const activities = [
     ["Mercado Municipal de São Paulo", "Gastronomia", ["gastronomia", "cultura"], "Mercado central conhecido pela variedade de produtos, bancas e opções de alimentação."],
     ["Bairro da Liberdade", "Passeio urbano", ["gastronomia", "cultura"], "Bairro central com forte presença da cultura japonesa, comércio, restaurantes e feiras em datas específicas."],
     ["Virada Cultural", "Evento", ["arte", "cultura", "vida-noturna"], "Festival de programação cultural pela cidade; consulte se há edição durante as datas da viagem."]
-  ], "https://images.unsplash.com/photo-1543059080-f9b1272213d5?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1543059080-f9b1272213d5.jpg"),
   ...makeCityActivities("Foz do Iguaçu", [
     ["Cataratas do Iguaçu — lado brasileiro", "Natureza", ["natureza", "aventura", "familia"], "Conjunto de quedas-d'água dentro do Parque Nacional do Iguaçu, Patrimônio Mundial; acesso sujeito a ingresso e regras do parque."],
     ["Parque das Aves", "Natureza", ["natureza", "familia"], "Parque de conservação próximo ao acesso das Cataratas, com viveiros e atividades de educação ambiental."],
     ["Usina de Itaipu", "Passeio", ["cultura", "aventura", "familia"], "Complexo hidrelétrico com diferentes modalidades de visitação, conforme agenda e disponibilidade."],
     ["Marco das Três Fronteiras", "Cultura", ["cultura", "familia"], "Espaço de visitação na fronteira entre Brasil, Argentina e Paraguai, com referências culturais da região."]
-  ], "https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1433086966358-54859d0ed716.jpg"),
   ...makeCityActivities("Salvador", [
     ["Pelourinho e Centro Histórico", "Cultura", ["cultura", "arte", "gastronomia"], "Conjunto histórico com ruas, igrejas, museus e edifícios coloniais; visite com atenção às orientações locais."],
     ["Elevador Lacerda", "Passeio urbano", ["cultura"], "Elevador público que conecta a Cidade Alta à Cidade Baixa e oferece vista para a Baía de Todos-os-Santos."],
     ["Farol da Barra", "Cultura", ["cultura", "praia", "familia"], "Farol no Forte de Santo Antônio da Barra, junto à orla e ao Museu Náutico da Bahia."],
     ["Mercado Modelo", "Gastronomia", ["gastronomia", "cultura"], "Centro comercial de artesanato e produtos regionais na Cidade Baixa."],
     ["Carnaval de Salvador", "Evento sazonal", ["cultura", "vida-noturna", "gastronomia"], "Festa de rua com circuitos, blocos e apresentações; datas e programação mudam a cada ano."]
-  ], "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1518509562904-e7ef99cdcc86.jpg"),
   ...makeCityActivities("Recife", [
     ["Marco Zero e Recife Antigo", "Passeio urbano", ["cultura", "arte", "gastronomia"], "Praça e bairro histórico à beira do porto, com museus, espaços culturais e programação que varia ao longo do ano."],
     ["Instituto Ricardo Brennand", "Arte & cultura", ["arte", "cultura", "familia"], "Complexo cultural com museu, pinacoteca e acervo histórico; consulte exposições e funcionamento."],
     ["Parque das Esculturas Francisco Brennand", "Arte & cultura", ["arte", "cultura"], "Conjunto de esculturas do artista Francisco Brennand na área portuária, com vista para o Marco Zero."],
     ["Praia de Boa Viagem", "Praia", ["praia", "natureza"], "Trecho urbano de praia; observe a sinalização e as orientações locais sobre banho de mar."]
-  ], "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1519046904884-53103b34b206.jpg"),
   ...makeCityActivities("Olinda", [
     ["Centro Histórico de Olinda", "Cultura", ["cultura", "arte", "gastronomia"], "Conjunto urbano histórico reconhecido como Patrimônio Mundial, com ladeiras, igrejas e ateliês."],
     ["Alto da Sé", "Passeio urbano", ["cultura", "gastronomia", "familia"], "Mirante e área histórica junto à Catedral da Sé, com vista para Olinda e Recife."],
     ["Mosteiro de São Bento", "Cultura", ["cultura", "arte"], "Conjunto religioso histórico com igreja e decoração barroca; confirme as condições de visitação."],
     ["Carnaval de Olinda", "Evento sazonal", ["cultura", "vida-noturna", "familia"], "Festa popular de rua com blocos e bonecos gigantes; datas e programação mudam a cada ano."]
-  ], "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1516483638261-f4dbaf036963.jpg"),
   ...makeCityActivities("Fortaleza", [
     ["Praia do Futuro", "Praia", ["praia", "gastronomia", "familia"], "Praia urbana com barracas e serviços à beira-mar; consulte condições do mar e funcionamento dos estabelecimentos."],
     ["Mercado Central de Fortaleza", "Gastronomia", ["gastronomia", "cultura"], "Mercado de artesanato e produtos regionais no centro da cidade."],
     ["Centro Dragão do Mar de Arte e Cultura", "Arte & cultura", ["arte", "cultura", "vida-noturna"], "Complexo cultural com museus, cinema, planetário e espaços de eventos; programação varia."],
     ["Avenida Beira-Mar e Feirinha", "Passeio urbano", ["gastronomia", "cultura", "familia"], "Trecho de orla com espaços de caminhada, restaurantes e feira de artesanato em horários definidos localmente."]
-  ], "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1500375592092-40eb2168fd21.jpg"),
   ...makeCityActivities("Brasília", [
     ["Catedral Metropolitana de Brasília", "Arquitetura", ["cultura", "arte"], "Projeto de Oscar Niemeyer e marco da arquitetura moderna, situado no Eixo Monumental."],
     ["Congresso Nacional", "Arquitetura", ["cultura", "arte"], "Sede do Poder Legislativo Federal, com visitas institucionais sujeitas a agenda e regras de acesso."],
     ["Memorial JK", "Museu", ["cultura", "arte"], "Museu e memorial dedicado à trajetória de Juscelino Kubitschek, com exposição e acervo histórico."],
     ["Santuário Dom Bosco", "Arquitetura", ["cultura", "arte"], "Igreja conhecida pelos vitrais azuis, parte do conjunto de arquitetura moderna da capital."]
-  ], "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1519608487953-e999c86e7455.jpg"),
   ...makeCityActivities("Belo Horizonte", [
     ["Conjunto Moderno da Pampulha", "Arquitetura", ["cultura", "arte", "natureza"], "Conjunto de edifícios projetados por Oscar Niemeyer ao redor da lagoa, reconhecido como Patrimônio Mundial."],
     ["Mercado Central de Belo Horizonte", "Gastronomia", ["gastronomia", "cultura"], "Mercado tradicional com produtos mineiros, bares e restaurantes."],
     ["Praça da Liberdade", "Passeio urbano", ["cultura", "arte", "familia"], "Praça ajardinada cercada por edifícios históricos e espaços culturais do Circuito Liberdade."],
     ["Mirante do Mangabeiras", "Natureza", ["natureza", "familia"], "Área pública com vista panorâmica da cidade; acesso e horários dependem das regras locais."]
-  ], "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1511497584788-876760111969.jpg"),
   ...makeCityActivities("Bonito", [
     ["Gruta do Lago Azul", "Natureza", ["natureza", "aventura"], "Caverna com lago de águas azuis e visita controlada; passeio requer reserva por agência credenciada."],
     ["Flutuação no Rio da Prata", "Natureza", ["natureza", "aventura"], "Atividade de flutuação em águas de nascente com observação de peixes; exige reserva e segue regras ambientais."],
     ["Buraco das Araras", "Natureza", ["natureza", "aventura", "familia"], "Dolina com trilha e observação de aves em área de conservação; consulte disponibilidade e condições de visita."],
     ["Aquário Natural", "Natureza", ["natureza", "aventura", "familia"], "Atividade de flutuação em nascente de águas transparentes, realizada com acompanhamento e reserva."]
-  ], "https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1433086966358-54859d0ed716.jpg"),
   ...makeCityActivities("Manaus", [
     ["Teatro Amazonas", "Arte & cultura", ["arte", "cultura"], "Teatro histórico na região central, com visitas e apresentações sujeitas à programação."],
     ["Encontro das Águas", "Natureza", ["natureza", "aventura"], "Fenômeno natural da confluência dos rios Negro e Solimões, geralmente visitado em passeios de barco."],
     ["Mercado Municipal Adolpho Lisboa", "Gastronomia", ["gastronomia", "cultura"], "Mercado histórico com produtos regionais e arquitetura inspirada em mercados europeus."],
     ["MUSA — Museu da Amazônia", "Natureza", ["natureza", "cultura", "familia"], "Museu e área de visitação em floresta, com trilhas e atividades que requerem consulta de horários."]
-  ], "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1516026672322-bc52d61a55d5.jpg"),
   ...makeCityActivities("Porto Alegre", [
     ["Orla do Guaíba", "Natureza", ["natureza", "familia"], "Área pública de lazer junto ao lago Guaíba, com espaços de caminhada, bicicleta e contemplação."],
     ["Mercado Público de Porto Alegre", "Gastronomia", ["gastronomia", "cultura"], "Mercado histórico no centro com bancas, restaurantes e produtos regionais."],
     ["Fundação Iberê Camargo", "Arte & cultura", ["arte", "cultura"], "Museu dedicado ao artista Iberê Camargo, em edifício projetado por Álvaro Siza; consulte exposições."],
     ["Parque Farroupilha (Redenção)", "Natureza", ["natureza", "familia"], "Parque urbano tradicional com áreas verdes, feira em dias específicos e atividades ao ar livre."]
-  ], "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1470770841072-f978cf4d019e.jpg"),
   ...makeCityActivities("João Pessoa", [
     ["Farol do Cabo Branco", "Passeio urbano", ["cultura", "natureza"], "Marco geográfico e mirante na região do Cabo Branco, no extremo oriental das Américas."],
     ["Praia de Tambaú", "Praia", ["praia", "gastronomia", "familia"], "Orla urbana com hotéis, quiosques e saídas de passeios de barco conforme condições locais."],
     ["Centro Histórico de João Pessoa", "Cultura", ["cultura", "arte"], "Conjunto histórico com igrejas, praças e edifícios de diferentes períodos."],
     ["Piscinas naturais do Seixas", "Natureza", ["praia", "natureza", "aventura"], "Piscinas naturais acessíveis por embarcação em condições específicas de maré e clima; consulte operadores locais."]
-  ], "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1507525428034-b723cf961d3e.jpg"),
   ...makeCityActivities("Natal", [
     ["Parque das Dunas", "Natureza", ["natureza", "aventura", "familia"], "Parque urbano e área de Mata Atlântica com trilhas controladas e atividades mediante regras locais."],
     ["Praia de Ponta Negra", "Praia", ["praia", "gastronomia", "familia"], "Praia urbana com vista para o Morro do Careca; observe restrições de acesso à duna e sinalização."],
     ["Forte dos Reis Magos", "Cultura", ["cultura", "arte"], "Fortificação histórica na foz do rio Potengi; confirme abertura para visitação antes de ir."],
     ["Passeio pelas dunas de Genipabu", "Aventura", ["aventura", "natureza", "familia"], "Passeios em dunas e lagoas na região metropolitana, oferecidos por operadores locais e sujeitos a reserva."]
-  ], "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1500375592092-40eb2168fd21.jpg"),
   ...makeCityActivities("Búzios", [
     ["Orla Bardot", "Passeio urbano", ["cultura", "gastronomia", "familia"], "Calçadão à beira-mar com esculturas, vista da baía e acesso ao centro de Armação dos Búzios."],
     ["Praia de Geribá", "Praia", ["praia", "aventura"], "Praia extensa procurada para banho e surfe; condições variam conforme o mar."],
     ["Praia da Ferradura", "Praia", ["praia", "natureza", "familia"], "Enseada de águas geralmente abrigadas, com opções de atividades aquáticas conforme condições locais."],
     ["Rua das Pedras", "Gastronomia", ["gastronomia", "vida-noturna", "cultura"], "Rua central com restaurantes, lojas e bares; horários e programação variam por estabelecimento."]
-  ], "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1100&q=85"),
+  ], "imagens/1507525428034-b723cf961d3e.jpg"),
   ...makeCityActivities("Aquiraz", [
     ["Beach Park", "Aventura", ["aventura", "familia"], "Complexo de parque aquático e praia no litoral de Aquiraz; ingresso, calendário e atrações devem ser confirmados no site oficial."],
     ["Praia de Porto das Dunas", "Praia", ["praia", "natureza", "familia"], "Praia do município de Aquiraz, próxima a resorts e ao complexo Beach Park."],
     ["Centro Histórico de Aquiraz", "Cultura", ["cultura", "arte"], "Área histórica com construções religiosas e referências à formação do Ceará."]
-  ], "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1100&q=85")
+  ], "imagens/1500375592092-40eb2168fd21.jpg")
 ];
+
+const reflections = [
+  { message: "Que a gratidão por chegar até aqui acompanhe cada passo do caminho.", place: "Dolomitas, Itália", image: "imagens/1519681393784-d120267933ba.jpg", verse: "Em tudo dai graças, porque esta é a vontade de Deus em Cristo Jesus para convosco.", reference: "1 Tessalonicenses 5:18" },
+  { message: "Viajar é receber de presente o tempo, os encontros e a chance de olhar a vida de novo.", place: "Lago di Braies, Itália", image: "imagens/1470770841072-f978cf4d019e.jpg", verse: "O Senhor é o meu pastor; nada me faltará.", reference: "Salmos 23:1" },
+  { message: "Que cada paisagem lembre você: estar vivo, sonhar e partir também são bênçãos.", place: "Costa de Amalfi, Itália", image: "imagens/1533105079780-92b9be482077.jpg", verse: "Este é o dia que fez o Senhor; regozijemo-nos e alegremo-nos nele.", reference: "Salmos 118:24" },
+  { message: "Agradeça pela oportunidade de ir, pela coragem de descobrir e por ter para onde voltar.", place: "Montanhas do mundo", image: "imagens/1464822759023-fed622ff2c3b.jpg", verse: "Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.", reference: "Salmos 37:5" },
+  { message: "Que a beleza de um lugar novo abra espaço para reconhecer as belezas que já existem em você.", place: "Lagoa, Islândia", image: "imagens/1472396961693-142e6e269027.jpg", verse: "O Senhor te guardará de todo o mal; guardará a tua alma.", reference: "Salmos 121:7" },
+  { message: "Há beleza no caminho e também na pausa para contemplá-lo.", place: "Lago de montanha", image: "imagens/1501785888041-af3ef285b470.jpg", verse: "Confia no Senhor de todo o teu coração e não te estribes no teu próprio entendimento.", reference: "Provérbios 3:5" },
+  { message: "Que novos horizontes renovem a esperança e a alegria de seguir.", place: "Cinque Terre, Itália", image: "imagens/1516483638261-f4dbaf036963.jpg", verse: "Regozijai-vos sempre no Senhor; outra vez digo, regozijai-vos.", reference: "Filipenses 4:4" },
+  { message: "A vida floresce quando abrimos espaço para o que nos faz bem.", place: "Praia tropical", image: "imagens/1507525428034-b723cf961d3e.jpg", verse: "A minha graça te basta, porque o meu poder se aperfeiçoa na fraqueza.", reference: "2 Coríntios 12:9" },
+  { message: "Em cada destino, que não faltem gentileza, presença e bons encontros.", place: "Vale verde", image: "imagens/1469474968028-56623f02e42e.jpg", verse: "Agora, pois, permanecem a fé, a esperança e o amor, estes três; mas o maior destes é o amor.", reference: "1 Coríntios 13:13" },
+  { message: "Que cada amanhecer traga motivos para agradecer e continuar sonhando.", place: "Mar aberto", image: "imagens/1518837695005-2083093ee35b.jpg", verse: "Não estejais inquietos por coisa alguma; antes, as vossas petições sejam em tudo conhecidas diante de Deus.", reference: "Filipenses 4:6" }
+];
+
+// ---------------------------------------------------------------------------
+// Estado salvo no navegador (chave viagem-na-mao-v1; nunca apagar, só migrar)
+// ---------------------------------------------------------------------------
 
 const blankTrip = () => ({
   id: `viagem-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -303,6 +320,8 @@ function migrateTrip(value) {
   return trip;
 }
 
+let storageNotice = "";
+
 function readStoredState() {
   const initial = { trips: [], currentTripId: null, hideAmounts: false, displayCurrency: "BRL", displayCurrencyRate: 1 };
   try {
@@ -311,7 +330,6 @@ function readStoredState() {
     const value = JSON.parse(stored);
     if (Array.isArray(value.trips)) {
       initial.trips = value.trips.map(migrateTrip);
-      initial.trips.forEach(realignItineraryDates);
       initial.currentTripId = value.currentTripId || initial.trips[0]?.id || null;
       initial.hideAmounts = Boolean(value.hideAmounts);
       initial.displayCurrency = value.displayCurrency || "BRL";
@@ -319,12 +337,7 @@ function readStoredState() {
       return initial;
     }
     if (value.trip) {
-      const trip = migrateTrip({
-        ...value.trip,
-        interests: value.interests,
-        saved: value.saved,
-        dismissed: value.dismissed
-      });
+      const trip = migrateTrip({ ...value.trip, interests: value.interests, saved: value.saved, dismissed: value.dismissed });
       initial.trips.push(trip);
       initial.currentTripId = trip.id;
       return initial;
@@ -337,52 +350,43 @@ function readStoredState() {
   }
 }
 
-let storageNotice = "";
 const state = readStoredState();
-const elements = {
-  views: [...document.querySelectorAll(".view")],
-  tripNavigation: document.querySelector("#trip-navigation"),
-  homeButton: document.querySelector("#home-button"),
-  tripForm: document.querySelector("#trip-form"),
-  tripName: document.querySelector("#trip-name"),
-  tripStart: document.querySelector("#trip-start"),
-  tripEnd: document.querySelector("#trip-end"),
-  tripBudget: document.querySelector("#trip-budget"),
-  destinationsList: document.querySelector("#destinations-list"),
-  interestOptions: document.querySelector("#interest-options"),
-  formStatus: document.querySelector("#form-status"),
-  cityFilter: document.querySelector("#city-filter"),
-  activityStage: document.querySelector("#activity-stage"),
-  discoveryPosition: document.querySelector("#discovery-position"),
-  swipeFeedback: document.querySelector("#swipe-feedback"),
-  announcement: document.querySelector("#app-announcement")
-};
-
-let activeView = "home";
-let activeTab = "about";
-let currentActivityId = null;
-let editingTripId = null;
-let destinationSequence = 0;
-let feedbackTimer = null;
-let inspirationIndex = 0;
-let clockTimer = null;
 let displayAmounts = !state.hideAmounts;
 
-const reflections = [
-  { message: "Que a gratidão por chegar até aqui acompanhe cada passo do caminho.", place: "Dolomitas, Itália", image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2000&q=90", verse: "Em tudo dai graças, porque esta é a vontade de Deus em Cristo Jesus para convosco.", reference: "1 Tessalonicenses 5:18" },
-  { message: "Viajar é receber de presente o tempo, os encontros e a chance de olhar a vida de novo.", place: "Lago di Braies, Itália", image: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=2000&q=90", verse: "O Senhor é o meu pastor; nada me faltará.", reference: "Salmos 23:1" },
-  { message: "Que cada paisagem lembre você: estar vivo, sonhar e partir também são bênçãos.", place: "Costa de Amalfi, Itália", image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=2000&q=90", verse: "Este é o dia que fez o Senhor; regozijemo-nos e alegremo-nos nele.", reference: "Salmos 118:24" },
-  { message: "Agradeça pela oportunidade de ir, pela coragem de descobrir e por ter para onde voltar.", place: "Montanhas do mundo", image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=90", verse: "Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.", reference: "Salmos 37:5" },
-  { message: "Que a beleza de um lugar novo abra espaço para reconhecer as belezas que já existem em você.", place: "Lagoa, Islândia", image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=2000&q=90", verse: "O Senhor te guardará de todo o mal; guardará a tua alma.", reference: "Salmos 121:7" },
-  { message: "Há beleza no caminho e também na pausa para contemplá-lo.", place: "Lago de montanha", image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=2000&q=90", verse: "Confia no Senhor de todo o teu coração e não te estribes no teu próprio entendimento.", reference: "Provérbios 3:5" },
-  { message: "Que novos horizontes renovem a esperança e a alegria de seguir.", place: "Cinque Terre, Itália", image: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=2000&q=90", verse: "Regozijai-vos sempre no Senhor; outra vez digo, regozijai-vos.", reference: "Filipenses 4:4" },
-  { message: "A vida floresce quando abrimos espaço para o que nos faz bem.", place: "Praia tropical", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=90", verse: "A minha graça te basta, porque o meu poder se aperfeiçoa na fraqueza.", reference: "2 Coríntios 12:9" },
-  { message: "Em cada destino, que não faltem gentileza, presença e bons encontros.", place: "Vale verde", image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=2000&q=90", verse: "Agora, pois, permanecem a fé, a esperança e o amor, estes três; mas o maior destes é o amor.", reference: "1 Coríntios 13:13" },
-  { message: "Que cada amanhecer traga motivos para agradecer e continuar sonhando.", place: "Mar aberto", image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=2000&q=90", verse: "Não estejais inquietos por coisa alguma; antes, as vossas petições sejam em tudo conhecidas diante de Deus.", reference: "Filipenses 4:6" }
-];
+function saveState() {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return true;
+  } catch (error) {
+    console.error("Não foi possível salvar os dados da viagem.", error);
+    storageNotice = "Não foi possível salvar neste navegador. Verifique o espaço disponível ou as permissões.";
+    toast(storageNotice);
+    return false;
+  }
+}
 
 function getCurrentTrip() {
   return state.trips.find((trip) => trip.id === state.currentTripId) || null;
+}
+
+// ---------------------------------------------------------------------------
+// Utilidades
+// ---------------------------------------------------------------------------
+
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+function icon(name, className = "") {
+  return `<svg class="icon ${className}" viewBox="0 0 24 24" aria-hidden="true">${window.ICONS?.[name] || ""}</svg>`;
+}
+
+function hydrateIcons(root = document) {
+  root.querySelectorAll("svg[data-icon]").forEach((svg) => {
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    svg.innerHTML = window.ICONS?.[svg.dataset.icon] || "";
+    svg.removeAttribute("data-icon");
+  });
 }
 
 function escapeHtml(value) {
@@ -391,22 +395,24 @@ function escapeHtml(value) {
   })[character]);
 }
 
+function safeUrl(value) {
+  return /^https?:\/\//i.test(value || "") ? value : "";
+}
+
+function capitalize(value) {
+  return value ? value.charAt(0).toLocaleUpperCase("pt-BR") + value.slice(1) : value;
+}
+
 function formatCurrency(value, currency = "BRL", maximumFractionDigits = 0) {
   try {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency,
-      maximumFractionDigits
-    }).format(Number(value) || 0);
+    return new Intl.NumberFormat("pt-BR", { style: "currency", currency, maximumFractionDigits }).format(Number(value) || 0);
   } catch (error) {
     return `${Number(value) || 0} ${currency}`;
   }
 }
 
-function formatActivityPrice(activity) {
-  if (activity.cost === null || activity.cost === undefined) return "Consulte valor";
-  if (activity.cost === 0) return "Gratuito";
-  return formatCurrency(activity.cost);
+function money(value, currency = "BRL", digits = 0) {
+  return displayAmounts ? formatCurrency(value, currency, digits) : "••••";
 }
 
 function parseLocalDate(dateString) {
@@ -420,6 +426,20 @@ function formatDate(dateString, options = { day: "numeric", month: "short" }) {
   return date ? new Intl.DateTimeFormat("pt-BR", { ...options, timeZone: "UTC" }).format(date) : "";
 }
 
+function toDateKey(date) {
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(date.getUTCDate()).padStart(2, "0")}`;
+}
+
+function addDays(dateString, days) {
+  const date = parseLocalDate(dateString);
+  date.setUTCDate(date.getUTCDate() + days);
+  return toDateKey(date);
+}
+
+function daysBetween(from, to) {
+  return Math.round((parseLocalDate(to) - parseLocalDate(from)) / 86400000);
+}
+
 function getBrasiliaDateKey(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit"
@@ -429,65 +449,76 @@ function getBrasiliaDateKey(date = new Date()) {
 }
 
 function getCountdown(dateString, endDateString = dateString) {
-  const travelDate = parseLocalDate(dateString);
-  const today = parseLocalDate(getBrasiliaDateKey());
-  if (!travelDate || !today) return "Defina as datas";
-  const days = Math.round((Date.UTC(travelDate.getUTCFullYear(), travelDate.getUTCMonth(), travelDate.getUTCDate())
-    - Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())) / 86400000);
-  if (days < 0) return (endDateString || "") >= getBrasiliaDateKey() ? "Viagem em andamento" : "Viagem concluída";
+  if (!parseLocalDate(dateString)) return "Defina as datas";
+  const today = getBrasiliaDateKey();
+  const days = daysBetween(today, dateString);
+  if (days < 0) return (endDateString || "") >= today ? "Viagem em andamento" : "Viagem concluída";
   if (days === 0) return "É hoje! Boa viagem";
   return `Faltam ${days} ${days === 1 ? "dia" : "dias"}`;
 }
 
-function saveState() {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    return true;
-  } catch (error) {
-    console.error("Não foi possível salvar os dados da viagem.", error);
-    storageNotice = "Não foi possível salvar neste navegador. Verifique o espaço disponível ou as permissões.";
-    elements.announcement.textContent = storageNotice;
-    elements.formStatus.textContent = storageNotice;
-    showFeedback(storageNotice);
-    return false;
-  }
+function formatRange(start, end, withYear = true) {
+  if (!start) return "Datas a definir";
+  return `${formatDate(start)} – ${formatDate(end, withYear ? { day: "numeric", month: "short", year: "numeric" } : undefined)}`;
 }
 
-function showFeedback(message) {
-  elements.swipeFeedback.textContent = message;
-  window.clearTimeout(feedbackTimer);
-  if (message) feedbackTimer = window.setTimeout(() => { elements.swipeFeedback.textContent = ""; }, 3200);
+function nightsLabel(nights) {
+  return `${nights} ${nights === 1 ? "noite" : "noites"}`;
 }
 
+function distanceKm([lat1, lon1], [lat2, lon2]) {
+  const rad = (value) => (value * Math.PI) / 180;
+  const a = Math.sin(rad(lat2 - lat1) / 2) ** 2
+    + Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(rad(lon2 - lon1) / 2) ** 2;
+  return 6371 * 2 * Math.asin(Math.sqrt(a));
+}
+
+function normalizeText(value) {
+  return String(value || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+}
+
+function sameCity(a, b) {
+  return String(a || "").localeCompare(String(b || ""), "pt-BR", { sensitivity: "base" }) === 0;
+}
+
+function addImageFallbacks(container) {
+  container.querySelectorAll("img").forEach((image) => {
+    image.addEventListener("error", () => { image.style.visibility = "hidden"; }, { once: true });
+  });
+}
+
+const announcer = document.querySelector("#app-announcement");
 function announce(message) {
-  elements.announcement.textContent = "";
-  window.requestAnimationFrame(() => { elements.announcement.textContent = message; });
+  announcer.textContent = "";
+  window.requestAnimationFrame(() => { announcer.textContent = message; });
 }
 
-function getActivity(id) {
-  return activities.find((activity) => activity.id === id);
+const toastElement = document.createElement("p");
+toastElement.className = "toast";
+toastElement.setAttribute("role", "status");
+document.querySelector("#app").append(toastElement);
+let toastTimer = null;
+function toast(message) {
+  toastElement.textContent = message;
+  toastElement.classList.add("is-visible");
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toastElement.classList.remove("is-visible"), 2600);
 }
 
-// Dados de fontes abertas gerados por ferramentas/gerar-fontes-abertas.mjs (opcional).
+// ---------------------------------------------------------------------------
+// Catálogo ampliado: fontes abertas, 100+ cidades e OpenStreetMap
+// ---------------------------------------------------------------------------
+
 const openData = window.OPEN_DATA?.activities || {};
-
-function getOpenData(id) {
-  return openData[id] || null;
-}
-
-function safeUrl(value) {
-  return /^https?:\/\//i.test(value || "") ? value : "";
-}
-
-// Atrações de 100 cidades geradas por ferramentas/gerar-atracoes-cidades.mjs (opcional).
-// Cada lugar vale para todas as cidades a até 50 km (nearCities); a descrição vem da Wikipedia.
 const cityData = window.CITY_DATA || { cities: [], places: [] };
+const osmData = window.OSM_DATA || { places: [] };
 const categoryImages = {};
 activities.forEach((activity) => { categoryImages[activity.category] ||= activity.image; });
 const editorialNames = new Set(activities.map((activity) => `${slugify(activity.city)}|${slugify(activity.name)}`));
+const commonsPage = (file) => `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(file.replace(/ /g, "_"))}`;
+
 cityData.places.forEach((place) => {
   if (editorialNames.has(`${slugify(place.city)}|${slugify(place.name)}`)) return;
-  const wikipediaUrl = `https://pt.wikipedia.org/wiki/${encodeURIComponent(place.title.replace(/ /g, "_"))}`;
   activities.push({
     id: place.id,
     name: place.name,
@@ -499,30 +530,101 @@ cityData.places.forEach((place) => {
     descriptionSource: "wikipedia",
     schedule: "Horários e disponibilidade variam; confirme antes de ir.",
     cost: null,
-    rating: null,
-    reviews: null,
-    image: place.photo?.url || categoryImages[place.category] || categoryImages.Cultura || reflections[0].image,
+    image: place.photo?.url || categoryImages[place.category] || categoryImages.Cultura,
     nearCities: place.nearCities
   });
   openData[place.id] = {
     coordinates: place.coordinates,
-    wikipedia: { title: place.title, url: wikipediaUrl, extract: "" },
+    wikipedia: { title: place.title, url: `https://pt.wikipedia.org/wiki/${encodeURIComponent(place.title.replace(/ /g, "_"))}`, extract: "" },
     wikidata: place.wikidata,
     website: place.website,
-    photo: place.photo && { ...place.photo, page: `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(place.photo.file.replace(/ /g, "_"))}` }
+    photo: place.photo && { ...place.photo, page: commonsPage(place.photo.file) }
   };
 });
 
-function distanceKm([lat1, lon1], [lat2, lon2]) {
-  const rad = (value) => (value * Math.PI) / 180;
-  const a = Math.sin(rad(lat2 - lat1) / 2) ** 2
-    + Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(rad(lon2 - lon1) / 2) ** 2;
-  return 6371 * 2 * Math.asin(Math.sqrt(a));
+osmData.places.forEach((place) => {
+  if (editorialNames.has(`${slugify(place.city)}|${slugify(place.name)}`)) return;
+  activities.push({
+    id: place.id,
+    name: place.name,
+    city: place.city,
+    country: place.country,
+    category: place.category,
+    interests: place.interests,
+    description: `${place.kind}${place.details ? ` · ${place.details}` : ""}. Informações cadastradas no OpenStreetMap; confirme antes de ir.`,
+    descriptionSource: "osm",
+    schedule: place.openingHours ? `Horário no OpenStreetMap: ${place.openingHours}` : "Horários variam; confirme antes de ir.",
+    openingHours: place.openingHours || "",
+    cost: null,
+    image: place.photo?.url || categoryImages[place.category] || categoryImages.Cultura,
+    nearCities: place.nearCities
+  });
+  openData[place.id] = {
+    coordinates: place.coordinates,
+    website: place.website,
+    osm: place.osm,
+    photo: place.photo && { ...place.photo, page: commonsPage(place.photo.file) }
+  };
+});
+
+function getOpenData(id) {
+  return openData[id] || null;
 }
 
-// Tempo de carro e a pé entre paradas, pelo OSRM do servidor público da FOSSGIS
-// (uso não comercial, no máximo 1 requisição por segundo, sem trânsito).
-// Resultados ficam em uma chave separada do localStorage para não pedir o mesmo trecho de novo.
+function getActivity(id) {
+  return activities.find((activity) => activity.id === id);
+}
+
+function activityMatchesCity(activity, cityName) {
+  return sameCity(activity.city, cityName) || (activity.nearCities || []).some(([name]) => sameCity(name, cityName));
+}
+
+function getCityInfo(name) {
+  return cityData.cities.find((city) => sameCity(city.name, name)) || null;
+}
+
+function getTripActivities(trip, key = "saved") {
+  return (trip?.[key] || []).map((item) => ({ ...item, activity: getActivity(item.id) })).filter((item) => item.activity);
+}
+
+function getExpensesTotal(trip) {
+  return (trip?.expenses || []).reduce((total, expense) => total + (Number(expense.amountBRL) || 0), 0);
+}
+
+function getTripForecastBRL(trip) {
+  return getExpensesTotal(trip) + getTripActivities(trip).reduce((total, item) => total + (item.activity.cost || 0), 0);
+}
+
+function getBudgetInBRL(trip) {
+  return (Number(trip?.budget) || 0) * (Number(trip?.budgetExchangeRate) || 1);
+}
+
+function photoOf(activity) {
+  const photo = getOpenData(activity.id)?.photo;
+  return photo && safeUrl(photo.url) ? photo : null;
+}
+
+function imageOf(activity) {
+  return photoOf(activity)?.url || activity.image;
+}
+
+function tripCities(trip) {
+  return trip.destinations.map((destination) => destination.name).filter(Boolean);
+}
+
+// Imagem de capa: de preferência uma foto real (com crédito) de um lugar da viagem.
+function coverFor(trip) {
+  const cities = tripCities(trip);
+  const matches = activities.filter((activity) => cities.some((city) => activityMatchesCity(activity, city)));
+  const withPhoto = matches.find((activity) => photoOf(activity));
+  const activity = withPhoto || matches[0];
+  return { activity, image: activity ? imageOf(activity) : reflections[0].image, photo: withPhoto ? photoOf(withPhoto) : null };
+}
+
+// ---------------------------------------------------------------------------
+// Tempo de carro e a pé (OSRM público da FOSSGIS; uso não comercial, 1 req/s)
+// ---------------------------------------------------------------------------
+
 const ROUTE_CACHE_KEY = "viagem-na-mao-rotas-v1";
 const ROUTE_INTERVAL_MS = 1100;
 const routeCache = (() => {
@@ -535,7 +637,6 @@ const routeCache = (() => {
 const routeQueue = [];
 const routeFailed = new Set();
 let routeRunning = false;
-
 const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
 function routeKey(from, to) {
@@ -561,9 +662,9 @@ function formatDuration(seconds) {
 function routeText(key, straightKm) {
   const straight = `≈ ${straightKm.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} km em linha reta`;
   const route = routeCache[key];
-  if (route) return `Da parada anterior: ${formatDuration(route.car)} de carro · ${formatDuration(route.foot)} a pé (sem trânsito)`;
-  if (routeFailed.has(key)) return `${straight} da parada anterior · tempo indisponível`;
-  return `${straight} da parada anterior · calculando tempo…`;
+  if (route) return `${formatDuration(route.car)} de carro · ${formatDuration(route.foot)} a pé (sem trânsito)`;
+  if (routeFailed.has(key)) return `${straight} · tempo indisponível`;
+  return `${straight} · calculando tempo…`;
 }
 
 function paintRoutes(key) {
@@ -607,38 +708,101 @@ function requestRoutes(container) {
   runRouteQueue();
 }
 
-function getTripActivities(trip, key = "saved") {
-  return (trip?.[key] || []).map((item) => ({ ...item, activity: getActivity(item.id) })).filter((item) => item.activity);
+// ---------------------------------------------------------------------------
+// Navegação entre telas (o botão voltar do celular também funciona)
+// ---------------------------------------------------------------------------
+
+let route = { screen: "home", tab: "about", depth: 0 };
+
+function showScreen(name) {
+  $$(".screen").forEach((screen) => { screen.hidden = screen.dataset.screen !== name; });
 }
 
-function getExpensesTotal(trip) {
-  return (trip?.expenses || []).reduce((total, expense) => total + (Number(expense.amountBRL) || 0), 0);
+function navigate(next, { replace = false } = {}) {
+  const previousScreen = route.screen;
+  route = { ...route, ...next, depth: replace ? route.depth : route.depth + 1 };
+  window.history[replace ? "replaceState" : "pushState"]({ ...route }, "");
+  render({ scroll: previousScreen !== route.screen || !replace });
 }
 
-function getTripForecastBRL(trip) {
-  return getExpensesTotal(trip) + getTripActivities(trip).reduce((total, item) => total + (item.activity.cost || 0), 0);
+function goBack() {
+  if (sheet.open) closeSheet();
+  if ((window.history.state?.depth || 0) > 0) window.history.back();
+  else navigate({ screen: "home" }, { replace: true });
 }
 
-function getBudgetInBRL(trip) {
-  return (Number(trip?.budget) || 0) * (Number(trip?.budgetExchangeRate) || 1);
+window.addEventListener("popstate", (event) => {
+  if (sheet.open) closeSheet();
+  route = event.state || { screen: "home", tab: "about", depth: 0 };
+  render({ scroll: true });
+});
+
+function render({ scroll = true } = {}) {
+  const trip = getCurrentTrip();
+  if (["trip", "deck"].includes(route.screen) && !trip) route = { screen: "home", tab: "about", depth: 0 };
+  if (route.screen === "form" && !wizard) route = { screen: "home", tab: "about", depth: 0 };
+  showScreen(route.screen);
+  if (scroll) window.scrollTo(0, 0);
+  if (route.screen === "home") renderHome();
+  if (route.screen === "trip") {
+    renderTripHeader();
+    showTab(route.tab || "about");
+  }
+  if (route.screen === "deck") renderDeck();
+  if (route.screen === "form") renderWizard();
 }
 
-function addImageFallbacks(container) {
-  container.querySelectorAll("img").forEach((image) => {
-    image.addEventListener("error", () => { image.hidden = true; }, { once: true });
+function openTrip(id) {
+  if (!state.trips.some((trip) => trip.id === id)) return;
+  state.currentTripId = id;
+  saveState();
+  selectedDay = null;
+  navigate({ screen: "trip", tab: "about" });
+}
+
+function showTab(tabName) {
+  route.tab = tabName;
+  $$("[data-tab-panel]").forEach((panel) => { panel.hidden = panel.dataset.tabPanel !== tabName; });
+  $$("#trip-navigation [data-tab]").forEach((button) => {
+    const active = button.dataset.tab === tabName;
+    button.classList.toggle("is-active", active);
+    if (active) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
   });
+  $("#expense-fab").hidden = tabName !== "expenses";
+  ({ about: renderAbout, itinerary: renderItinerary, discover: renderDiscoverTab, expenses: renderExpenses, before: renderGuide })[tabName]?.();
 }
+
+// ---------------------------------------------------------------------------
+// Início
+// ---------------------------------------------------------------------------
+
+let inspirationIndex = 0;
+const INSPIRATION_INTERVAL_MS = 30000;
 
 function renderInspiration() {
   const item = reflections[inspirationIndex];
-  const image = document.querySelector("#hero-image");
-  image.src = item.image;
-  image.alt = `Paisagem inspiradora: ${item.place}`;
-  document.querySelector("#reflection-message").textContent = `“${item.message}”`;
-  document.querySelector("#hero-location").textContent = item.place;
-  document.querySelector("#home-verse-text").textContent = `“${item.verse}”`;
-  document.querySelector("#home-verse-reference").textContent = item.reference;
-  document.querySelector("#inspiration-position").textContent = `${String(inspirationIndex + 1).padStart(2, "0")} / ${String(reflections.length).padStart(2, "0")}`;
+  const current = $(".hero-img.is-active");
+  const next = current?.id === "hero-img-a" ? $("#hero-img-b") : $("#hero-img-a");
+  next.src = item.image;
+  next.alt = `Paisagem inspiradora: ${item.place}`;
+  const swap = () => {
+    next.classList.add("is-active");
+    next.removeAttribute("aria-hidden");
+    if (current && current !== next) {
+      current.classList.remove("is-active");
+      current.setAttribute("aria-hidden", "true");
+    }
+  };
+  if (next.complete) swap();
+  else next.addEventListener("load", swap, { once: true });
+  $("#reflection-message").textContent = `“${item.message}”`;
+  $("#hero-location").textContent = item.place;
+  $("#home-verse-text").textContent = `“${item.verse}”`;
+  $("#home-verse-reference").textContent = item.reference;
+  $("#hero-dots").innerHTML = reflections.map((_, index) => `<span class="${index === inspirationIndex ? "is-active" : ""}"></span>`).join("");
+  const preload = new Image();
+  preload.src = reflections[(inspirationIndex + 1) % reflections.length].image;
 }
 
 function changeInspiration(direction) {
@@ -646,322 +810,135 @@ function changeInspiration(direction) {
   renderInspiration();
 }
 
-function randomInspiration() {
-  if (reflections.length < 2) return;
-  const offset = 1 + Math.floor(Math.random() * (reflections.length - 1));
-  inspirationIndex = (inspirationIndex + offset) % reflections.length;
-  renderInspiration();
+function setAmountToggle(button) {
+  button.innerHTML = icon(displayAmounts ? "eye" : "eye-off");
+  button.setAttribute("aria-label", displayAmounts ? "Ocultar valores" : "Mostrar valores");
+}
+
+function toggleAmounts() {
+  displayAmounts = !displayAmounts;
+  state.hideAmounts = !displayAmounts;
+  saveState();
+  render({ scroll: false });
 }
 
 function renderHome() {
-  const amountButton = document.querySelector("#toggle-home-amounts");
-  amountButton.textContent = displayAmounts ? "◉" : "◎";
-  amountButton.setAttribute("aria-label", displayAmounts ? "Ocultar valores" : "Mostrar valores");
-  const container = document.querySelector("#trip-cards");
+  setAmountToggle($("#toggle-home-amounts"));
+  const container = $("#trip-cards");
   const trips = [...state.trips].sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
   if (!trips.length) {
-    container.innerHTML = `<div class="home-empty"><span>✦</span><h3>Sua próxima história começa aqui.</h3><p>Crie uma viagem para juntar destinos, lembranças e planos em um só lugar.</p><button class="primary-button" type="button" data-new-trip>Planejar minha primeira viagem →</button></div>`;
+    container.innerHTML = `<div class="home-empty">${icon("plane")}<h3>Sua próxima história começa aqui.</h3><p>Crie uma viagem para juntar destinos, roteiro e custos em um só lugar.</p></div>`;
     return;
   }
-  const next = trips.find((trip) => trip.endDate >= getBrasiliaDateKey()) || trips[0];
+  const today = getBrasiliaDateKey();
+  const next = trips.find((trip) => trip.endDate >= today) || null;
   container.innerHTML = trips.map((trip) => {
-    const cities = trip.destinations.map((destination) => destination.name).filter(Boolean);
-    const destination = cities.length ? cities.join(" · ") : trip.country || "Destino a definir";
-    const forecast = getTripForecastBRL(trip);
+    const cities = tripCities(trip);
+    const cover = coverFor(trip);
     const budget = getBudgetInBRL(trip);
-    const activeClass = trip.id === next.id ? " trip-card-next" : "";
-    const heroActivity = activities.find((activity) => cities.some((city) => activityMatchesCity(activity, city)));
-    const hero = heroActivity?.image || reflections[0].image;
-    const heroPhoto = heroActivity && getOpenData(heroActivity.id)?.photo;
-    const heroCredit = heroPhoto && heroPhoto.url === hero ? `${heroActivity.name} · Foto: ${heroPhoto.author} · ${heroPhoto.license} · Wikimedia Commons` : "";
-    return `<article class="trip-card${activeClass}">
-      <img src="${escapeHtml(hero)}" alt="" loading="lazy"${heroCredit ? ` title="${escapeHtml(heroCredit)}"` : ""}>
-      ${heroCredit ? `<a class="photo-credit" href="${escapeHtml(safeUrl(heroPhoto.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(heroPhoto.author)} · ${escapeHtml(heroPhoto.license)}</a>` : ""}
+    return `<article class="trip-card">
+      <img src="${escapeHtml(cover.image)}" alt="" loading="lazy">
       <div class="trip-card-shade"></div>
-      ${trip.id === next.id ? '<span class="next-trip-label">✦ PRÓXIMA VIAGEM</span>' : ""}
-      <button class="trip-card-open" type="button" data-open-trip="${escapeHtml(trip.id)}" aria-label="Abrir viagem ${escapeHtml(trip.name || destination)}">
-        <span class="trip-card-destination">${escapeHtml(destination)}</span>
-        <strong>${escapeHtml(trip.name || "Minha viagem")}</strong>
-        <span class="trip-card-date">${trip.startDate ? `${escapeHtml(formatDate(trip.startDate))} — ${escapeHtml(formatDate(trip.endDate, { day: "numeric", month: "short", year: "numeric" }))}` : "Datas a definir"}</span>
-        <span class="trip-countdown">${escapeHtml(getCountdown(trip.startDate, trip.endDate))}</span>
+      <div class="trip-card-top">
+        <span class="chip chip-glass">${icon("calendar")} ${escapeHtml(getCountdown(trip.startDate, trip.endDate))}</span>
+        ${next && trip.id === next.id ? `<span class="chip chip-accent">${icon("sparkles")} Próxima</span>` : ""}
+      </div>
+      ${cover.photo ? `<a class="photo-credit" style="top:56px" href="${escapeHtml(safeUrl(cover.photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(cover.photo.author)} · ${escapeHtml(cover.photo.license)}</a>` : ""}
+      <button class="trip-card-body" type="button" data-open-trip="${escapeHtml(trip.id)}">
+        <span class="trip-card-cities">${escapeHtml(cities.join(" · ") || trip.country || "Destino a definir")}</span>
+        <span class="trip-card-name">${escapeHtml(trip.name || "Minha viagem")}</span>
+        <span class="trip-card-meta"><span>${escapeHtml(formatRange(trip.startDate, trip.endDate, false))}</span><span>${budget ? `Orçamento <strong>${escapeHtml(money(budget))}</strong>` : `Gastos <strong>${escapeHtml(money(getExpensesTotal(trip)))}</strong>`}</span></span>
       </button>
-      <div class="trip-card-finance"><span>PREVISÃO / LANÇADO</span><strong>${displayAmounts ? escapeHtml(formatCurrency(forecast, "BRL")) : "••••••"}</strong><small>Orçamento ${displayAmounts && budget ? escapeHtml(formatCurrency(budget, "BRL")) : displayAmounts ? "não definido" : "••••••"}</small></div>
     </article>`;
   }).join("");
   addImageFallbacks(container);
 }
 
-function goHome() {
-  activeView = "home";
-  elements.views.forEach((view) => {
-    const active = view.id === "home-view";
-    view.hidden = !active;
-    view.classList.toggle("is-visible", active);
-  });
-  elements.tripNavigation.hidden = true;
-  elements.homeButton.hidden = true;
-  renderHome();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
+// ---------------------------------------------------------------------------
+// Viagem: cabeçalho e Resumo
+// ---------------------------------------------------------------------------
 
-function openTrip(id) {
-  if (!state.trips.some((trip) => trip.id === id)) return;
-  state.currentTripId = id;
-  saveState();
-  activeView = "trip";
-  elements.views.forEach((view) => {
-    const active = view.id === "trip-view";
-    view.hidden = !active;
-    view.classList.toggle("is-visible", active);
-  });
-  elements.tripNavigation.hidden = false;
-  elements.homeButton.hidden = false;
-  renderTripHeader();
-  showTab("about");
-}
-
-function showTab(tabName) {
-  activeTab = tabName;
-  document.querySelectorAll(".trip-tab").forEach((section) => {
-    const active = section.id === `tab-${tabName}`;
-    section.hidden = !active;
-  });
-  document.querySelectorAll("[data-tab]").forEach((button) => {
-    const active = button.dataset.tab === tabName;
-    button.classList.toggle("is-active", active);
-    if (active) button.setAttribute("aria-current", "page");
-    else button.removeAttribute("aria-current");
-  });
-  const renderers = {
-    about: renderAbout,
-    itinerary: renderItinerary,
-    discover: renderDiscovery,
-    expenses: renderExpenses,
-    before: renderBefore
-  };
-  renderers[tabName]?.();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
+const TRANSPORT_ICONS = { "Avião": "plane", "Carro próprio": "car", "Carro alugado": "car", "Ônibus": "bus", "Trem": "train-front", "Navio / cruzeiro": "ship", "Outro": "route" };
+const INTEREST_ICONS = { natureza: "trees", gastronomia: "utensils", cultura: "landmark", praia: "waves", aventura: "mountain", "vida-noturna": "moon", arte: "palette", familia: "baby", compras: "shopping-bag" };
+const INTEREST_LABELS = { natureza: "Natureza", gastronomia: "Gastronomia", cultura: "Cultura", praia: "Praia", aventura: "Aventura", "vida-noturna": "Vida noturna", arte: "Arte & design", familia: "Para a família", compras: "Compras" };
 
 function renderTripHeader() {
   const trip = getCurrentTrip();
   if (!trip) return;
-  const cities = trip.destinations.map((destination) => destination.name).filter(Boolean);
-  const firstActivity = activities.find((activity) => cities.some((city) => activityMatchesCity(activity, city)));
-  const coverImage = firstActivity?.image || reflections[0].image;
-  const coverPhoto = firstActivity && getOpenData(firstActivity.id)?.photo;
-  const isCommonsPhoto = Boolean(coverPhoto && coverPhoto.url === coverImage);
-  const image = document.querySelector("#trip-cover-image");
-  image.src = coverImage;
-  image.alt = isCommonsPhoto ? `Foto de ${firstActivity.name}` : cities.length ? `Paisagem ilustrativa de ${cities[0]}` : "Paisagem inspiradora para viagem";
-  const credit = document.querySelector("#trip-cover-credit");
-  credit.hidden = !isCommonsPhoto;
-  if (isCommonsPhoto) {
-    credit.href = safeUrl(coverPhoto.page);
-    credit.textContent = `${firstActivity.name} · Foto: ${coverPhoto.author} · ${coverPhoto.license}`;
+  $("#trip-heading").textContent = trip.name || "Minha viagem";
+  $("#trip-bar-dates").textContent = formatRange(trip.startDate, trip.endDate);
+  const cover = coverFor(trip);
+  const image = $("#trip-cover-image");
+  image.src = cover.image;
+  image.style.visibility = "";
+  image.alt = cover.photo ? `Foto de ${cover.activity.name}` : "Paisagem ilustrativa";
+  $("#trip-cover-destination").textContent = tripCities(trip).join(" · ") || trip.country || "Destino a definir";
+  $("#trip-cover-dates").textContent = formatRange(trip.startDate, trip.endDate);
+  $("#trip-cover-countdown").innerHTML = `${icon("calendar")} ${escapeHtml(getCountdown(trip.startDate, trip.endDate))}`;
+  const credit = $("#trip-cover-credit");
+  credit.hidden = !cover.photo;
+  if (cover.photo) {
+    credit.href = safeUrl(cover.photo.page);
+    credit.textContent = `${cover.activity.name} · Foto: ${cover.photo.author} · ${cover.photo.license}`;
   }
-  document.querySelector("#trip-heading").textContent = trip.name || "Minha viagem";
-  document.querySelector("#trip-cover-destination").textContent = cities.length ? cities.join(" · ") : trip.country || "DESTINO A DEFINIR";
-  document.querySelector("#trip-cover-dates").textContent = trip.startDate
-    ? `${formatDate(trip.startDate)} — ${formatDate(trip.endDate, { day: "numeric", month: "long", year: "numeric" })}`
-    : "Datas a definir";
-  document.querySelector("#trip-cover-countdown").textContent = getCountdown(trip.startDate, trip.endDate);
-  addImageFallbacks(document.querySelector("#trip-view"));
-}
-
-function formatTripMoney(value, trip, currency = trip.currency) {
-  const amount = Number(value) || 0;
-  return displayAmounts ? formatCurrency(amount, currency) : "••••••";
-}
-
-function renderBudgetCard() {
-  const trip = getCurrentTrip();
-  const budgetBRL = getBudgetInBRL(trip);
-  const forecast = getTripForecastBRL(trip);
-  const spent = getExpensesTotal(trip);
-  document.querySelector("#trip-budget-total").textContent = formatTripMoney(trip.budget, trip);
-  document.querySelector("#trip-budget-spent").textContent = `Gastos: ${formatTripMoney(spent, trip, "BRL")}`;
-  document.querySelector("#trip-budget-left").textContent = budgetBRL
-    ? `Saldo: ${formatTripMoney(budgetBRL - forecast, trip, "BRL")}`
-    : "Defina um orçamento";
-  document.querySelector("#trip-budget-progress").style.width = budgetBRL
-    ? `${Math.min(100, (forecast / budgetBRL) * 100)}%`
-    : "0%";
-  document.querySelector("#toggle-budget-visibility").textContent = displayAmounts ? "◉" : "◎";
-  document.querySelector("#toggle-budget-visibility").setAttribute("aria-label", displayAmounts ? "Ocultar valores" : "Mostrar valores");
+  addImageFallbacks($("#screen-trip .cover"));
 }
 
 function renderAbout() {
   const trip = getCurrentTrip();
-  document.querySelector("#trip-overview-dates").textContent = trip.startDate
-    ? `${formatDate(trip.startDate, { weekday: "long", day: "numeric", month: "long" })} — ${formatDate(trip.endDate, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`
-    : "Datas ainda não definidas";
-  document.querySelector("#trip-destination-list").innerHTML = trip.destinations.length
-    ? trip.destinations.map((destination) => `<article class="destination-summary-card">
-        <div class="destination-summary-date">${escapeHtml(formatDate(destination.startDate, { day: "numeric", month: "short" }))}<span>—</span>${escapeHtml(formatDate(destination.endDate, { day: "numeric", month: "short" }))}</div>
-        <div><strong>${escapeHtml(destination.name)}</strong><p>${destination.lodgingName ? escapeHtml(destination.lodgingName) : "Hospedagem não informada"}${destination.lodgingAddress ? ` · ${escapeHtml(destination.lodgingAddress)}` : ""}</p></div>
-      </article>`).join("")
-    : '<p class="muted-copy">Ainda não há cidades cadastradas.</p>';
+  const ideas = getDiscoverableActivities(trip, "all");
+  $("#discover-cta-count").textContent = ideas.length
+    ? `${ideas.length} ${ideas.length === 1 ? "lugar" : "lugares"} para curtir ou passar`
+    : "Você já viu todas as ideias";
+  $("#trip-destination-list").innerHTML = trip.destinations.length
+    ? trip.destinations.map((destination, index) => {
+      const nights = destination.startDate && destination.endDate ? daysBetween(destination.startDate, destination.endDate) : 0;
+      const lodging = destination.lodgingName
+        ? `${escapeHtml(destination.lodgingName)}${destination.lodgingAddress ? ` · ${escapeHtml(destination.lodgingAddress)}` : ""}`
+        : "Adicionar hospedagem";
+      return `<li><span class="timeline-dot">${index + 1}</span>
+        <div><strong>${escapeHtml(destination.name)}</strong><small>${escapeHtml(formatRange(destination.startDate, destination.endDate, false))} · ${nightsLabel(nights)}</small>
+        <button class="link-btn lodging" type="button" data-lodging="${index}">${icon("bed-double")} ${lodging}</button></div>
+        <span></span></li>`;
+    }).join("")
+    : '<li><div class="muted">Ainda não há cidades cadastradas.</div></li>';
+  const saved = getTripActivities(trip);
+  $("#saved-strip-card").hidden = !saved.length;
+  $("#saved-strip").innerHTML = saved.map(({ activity }) => `<button class="mini-place" type="button" data-place="${escapeHtml(activity.id)}"><img src="${escapeHtml(imageOf(activity))}" alt="" loading="lazy"><span>${escapeHtml(activity.name)}</span></button>`).join("");
+  addImageFallbacks($("#saved-strip"));
+  renderBudgetCard(trip);
   const details = [
-    trip.transport && `Transporte: ${trip.transport}`,
-    trip.rentalCar && "Carro alugado",
-    trip.companions && `Com: ${trip.companions}`,
-    trip.children && "Crianças",
-    trip.seniors && "Idosos"
+    trip.transport && `${icon(TRANSPORT_ICONS[trip.transport] || "route")} ${escapeHtml(trip.transport)}`,
+    trip.companions && `${icon("users")} ${escapeHtml(trip.companions)}`,
+    trip.children && `${icon("baby")} Crianças`,
+    trip.seniors && `${icon("heart")} Idosos`
   ].filter(Boolean);
-  document.querySelector("#travel-details").innerHTML = details.length
-    ? details.map((detail) => `<span class="detail-chip">${escapeHtml(detail)}</span>`).join("")
-    : '<span class="muted-copy">Conte como você vai viajar ao editar a viagem.</span>';
-  const selected = interests.filter((interest) => trip.interests.includes(interest.id));
-  document.querySelector("#trip-interests").innerHTML = selected.length
-    ? selected.map((interest) => `<span class="detail-chip">${escapeHtml(interest.label)}</span>`).join("")
-    : '<span class="muted-copy">Nenhum interesse selecionado.</span>';
-  renderBudgetCard();
+  $("#travel-details").innerHTML = details.length
+    ? details.map((detail) => `<span class="chip">${detail}</span>`).join("")
+    : '<span class="muted">Conte como você vai viajar ao editar a viagem.</span>';
+  $("#trip-interests").innerHTML = trip.interests.map((id) => `<span class="chip">${icon(INTEREST_ICONS[id] || "star")} ${escapeHtml(INTEREST_LABELS[id] || id)}</span>`).join("");
 }
 
-function createDestinationCard(destination = {}) {
-  const id = destination.id || `cidade-${++destinationSequence}`;
-  const card = document.createElement("div");
-  card.className = "destination-form-card";
-  card.dataset.destinationId = id;
-  card.innerHTML = `<div class="destination-form-heading"><span>⌖ Destino</span><button class="remove-destination" type="button">Remover</button></div>
-    <div class="destination-fields">
-      <label class="field field-wide">Cidade<input name="destinationName" list="destination-city-options" maxlength="80" value="${escapeHtml(destination.name || "")}" placeholder="Ex.: Salvador" required></label>
-      <label class="field">Chegada<input name="destinationStart" type="date" value="${escapeHtml(destination.startDate || "")}" required></label>
-      <label class="field">Saída<input name="destinationEnd" type="date" value="${escapeHtml(destination.endDate || "")}" required></label>
-      <label class="field">Hospedagem<input name="lodgingName" maxlength="100" value="${escapeHtml(destination.lodgingName || "")}" placeholder="Ex.: Pousada do Centro"></label>
-      <label class="field">Endereço<input name="lodgingAddress" maxlength="180" value="${escapeHtml(destination.lodgingAddress || "")}" placeholder="Rua, número, bairro"></label>
-    </div>`;
-  return card;
+function renderBudgetCard(trip) {
+  setAmountToggle($("#toggle-budget-visibility"));
+  const budgetBRL = getBudgetInBRL(trip);
+  const forecast = getTripForecastBRL(trip);
+  $("#trip-budget-total").textContent = budgetBRL ? money(trip.budget, trip.currency) : "Sem orçamento definido";
+  $("#trip-budget-spent").textContent = `Gastos: ${money(getExpensesTotal(trip))}`;
+  $("#trip-budget-left").textContent = budgetBRL ? `Saldo: ${money(budgetBRL - forecast)}` : "";
+  const bar = $("#trip-budget-progress");
+  bar.style.width = budgetBRL ? `${Math.min(100, (forecast / budgetBRL) * 100)}%` : "0%";
+  bar.classList.toggle("is-over", budgetBRL > 0 && forecast > budgetBRL);
 }
 
-function renderTripForm() {
-  const trip = editingTripId ? state.trips.find((item) => item.id === editingTripId) : null;
-  const form = elements.tripForm;
-  form.reset();
-  elements.tripName.value = trip?.name || "";
-  elements.tripStart.value = trip?.startDate || "";
-  elements.tripEnd.value = trip?.endDate || "";
-  elements.tripBudget.value = trip?.budget || "";
-  document.querySelector("#trip-currency").value = trip?.currency || "BRL";
-  document.querySelector("#budget-exchange-rate").value = trip?.budgetExchangeRate || 1;
-  document.querySelector("#trip-country").value = trip?.country || "Brasil";
-  document.querySelector("#trip-transport").value = trip?.transport || "";
-  document.querySelector("#trip-rental-car").value = trip?.rentalCar ? "sim" : "nao";
-  document.querySelector("#trip-companions").value = trip?.companions || "";
-  document.querySelector("#trip-with-children").checked = Boolean(trip?.children);
-  document.querySelector("#trip-with-seniors").checked = Boolean(trip?.seniors);
-  document.querySelector("#trip-form-title").innerHTML = trip ? "Sua viagem,<br><span>do seu jeito.</span>" : "Vamos sonhar<br><span>essa viagem?</span>";
-  document.querySelector("#destination-city-options").innerHTML = [...new Set([...activities.map((activity) => activity.city), ...cityData.cities.map((city) => city.name)])]
-    .sort((a, b) => a.localeCompare(b, "pt-BR"))
-    .map((city) => `<option value="${escapeHtml(city)}"></option>`).join("");
-  elements.destinationsList.replaceChildren();
-  (trip?.destinations?.length ? trip.destinations : [{}]).forEach((destination) => elements.destinationsList.append(createDestinationCard(destination)));
-  elements.interestOptions.innerHTML = interests.map((interest) => `<label class="interest-option">
-    <input type="checkbox" name="interest" value="${escapeHtml(interest.id)}" ${(trip?.interests || ["natureza", "gastronomia", "cultura"]).includes(interest.id) ? "checked" : ""}>
-    <span>${escapeHtml(interest.label)}</span></label>`).join("");
-  elements.formStatus.textContent = storageNotice;
-  document.querySelector("#trip-form-view").hidden = false;
-  document.querySelector("#trip-view").hidden = true;
-  document.querySelector("#home-view").hidden = true;
-  elements.tripNavigation.hidden = true;
-  elements.homeButton.hidden = false;
-  activeView = "trip-form";
-  elements.views.forEach((view) => view.classList.toggle("is-visible", view.id === "trip-form-view"));
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
+// ---------------------------------------------------------------------------
+// Descobrir: aba (curtidas e talvez) e tela exclusiva do swipe
+// ---------------------------------------------------------------------------
 
-function collectDestinations() {
-  return [...elements.destinationsList.querySelectorAll(".destination-form-card")].map((card) => ({
-    id: card.dataset.destinationId,
-    name: card.querySelector('[name="destinationName"]').value.trim(),
-    startDate: card.querySelector('[name="destinationStart"]').value,
-    endDate: card.querySelector('[name="destinationEnd"]').value,
-    lodgingName: card.querySelector('[name="lodgingName"]').value.trim(),
-    lodgingAddress: card.querySelector('[name="lodgingAddress"]').value.trim()
-  }));
-}
+let deckCity = "all";
+let currentActivityId = null;
 
-function validateTrip(trip) {
-  const start = parseLocalDate(trip.startDate);
-  const end = parseLocalDate(trip.endDate);
-  if (!trip.name) return "Dê um nome para esta viagem.";
-  if (!start || !end || start > end) return "Confira as datas: a volta não pode ser antes do início.";
-  if (!trip.destinations.length) return "Adicione pelo menos uma cidade ao seu roteiro.";
-  for (const destination of trip.destinations) {
-    const cityStart = parseLocalDate(destination.startDate);
-    const cityEnd = parseLocalDate(destination.endDate);
-    if (!destination.name || !cityStart || !cityEnd) return "Preencha a cidade e as datas de chegada e saída.";
-    if (cityStart > cityEnd || cityStart < start || cityEnd > end) return `Confira as datas de ${destination.name}: elas devem ficar dentro da viagem.`;
-  }
-  return "";
-}
-
-// Depois de mudar datas ou cidades, traz para dentro da viagem os itens que ficariam invisíveis no roteiro.
-function realignItineraryDates(trip) {
-  if (!trip.startDate || !trip.endDate) return;
-  trip.saved.forEach((item) => {
-    const activity = getActivity(item.id);
-    const stays = activity ? trip.destinations.filter((place) => activityMatchesCity(activity, place.name)) : [];
-    const ranges = stays.length ? stays : [{ startDate: trip.startDate, endDate: trip.endDate }];
-    if (!ranges.some((range) => item.date && item.date >= range.startDate && item.date <= range.endDate)) item.date = ranges[0].startDate;
-  });
-  trip.itinerary.forEach((event) => {
-    if (!event.date || event.date < trip.startDate || event.date > trip.endDate) event.date = trip.startDate;
-  });
-}
-
-function saveTrip(event) {
-  event.preventDefault();
-  const existing = editingTripId ? state.trips.find((trip) => trip.id === editingTripId) : null;
-  const trip = migrateTrip({
-    ...(existing || blankTrip()),
-    name: elements.tripName.value.trim(),
-    startDate: elements.tripStart.value,
-    endDate: elements.tripEnd.value,
-    budget: Number(elements.tripBudget.value) || 0,
-    currency: document.querySelector("#trip-currency").value,
-    country: document.querySelector("#trip-country").value.trim() || "Brasil",
-    budgetExchangeRate: Number(document.querySelector("#budget-exchange-rate").value) || 1,
-    destinations: collectDestinations(),
-    transport: document.querySelector("#trip-transport").value,
-    rentalCar: document.querySelector("#trip-rental-car").value === "sim",
-    companions: document.querySelector("#trip-companions").value.trim(),
-    children: document.querySelector("#trip-with-children").checked,
-    seniors: document.querySelector("#trip-with-seniors").checked,
-    interests: [...elements.interestOptions.querySelectorAll('input[name="interest"]:checked')].map((input) => input.value)
-  });
-  const message = validateTrip(trip);
-  if (message) {
-    elements.formStatus.textContent = message;
-    announce(message);
-    return;
-  }
-  realignItineraryDates(trip);
-  const previous = existing ? { ...existing } : null;
-  if (existing) Object.assign(existing, trip);
-  else state.trips.push(trip);
-  state.currentTripId = trip.id;
-  if (!saveState()) {
-    if (previous) Object.assign(existing, previous);
-    else state.trips = state.trips.filter((item) => item.id !== trip.id);
-    return;
-  }
-  editingTripId = null;
-  announce("Viagem salva.");
-  openTrip(trip.id);
-}
-
-function sameCity(a, b) {
-  return String(a || "").localeCompare(String(b || ""), "pt-BR", { sensitivity: "base" }) === 0;
-}
-
-function activityMatchesCity(activity, cityName) {
-  return sameCity(activity.city, cityName) || (activity.nearCities || []).some(([name]) => sameCity(name, cityName));
-}
-
-function getDiscoverableActivities(trip) {
-  const city = elements.cityFilter.value;
+function getDiscoverableActivities(trip, city = deckCity) {
   return activities.filter((activity) => {
     const inTrip = trip.destinations.some((destination) => activityMatchesCity(activity, destination.name));
     const matchesCity = city === "all" || activityMatchesCity(activity, city);
@@ -973,69 +950,85 @@ function getDiscoverableActivities(trip) {
   });
 }
 
-function renderCityFilter() {
-  const trip = getCurrentTrip();
-  const previous = elements.cityFilter.value || "all";
-  const cities = [...new Set(trip.destinations.map((destination) => destination.name.trim()).filter(Boolean))];
-  elements.cityFilter.innerHTML = '<option value="all">Todas as cidades</option>'
-    + cities.map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join("");
-  elements.cityFilter.value = cities.some((city) => activityMatchesCity({ city }, previous)) ? previous : "all";
+function placeTile(activity, badge = "") {
+  return `<button class="place-tile" type="button" data-place="${escapeHtml(activity.id)}"><img src="${escapeHtml(imageOf(activity))}" alt="" loading="lazy">${badge}<span><strong>${escapeHtml(activity.name)}</strong><small>${escapeHtml(activity.city)}</small></span></button>`;
 }
 
-function renderDiscovery() {
+function renderDiscoverTab() {
   const trip = getCurrentTrip();
-  if (!trip || activeView !== "trip") return;
-  renderCityFilter();
+  const ideas = getDiscoverableActivities(trip, "all");
+  const cities = tripCities(trip);
+  $("#discover-summary").textContent = ideas.length
+    ? `${ideas.length} ${ideas.length === 1 ? "lugar" : "lugares"} em ${cities.join(", ")} esperando por você. Deslize para curtir, passar ou deixar para depois.`
+    : "Você já passou por todas as ideias. Reveja o que ficou em “Talvez depois”.";
+  const saved = getTripActivities(trip);
+  const maybe = getTripActivities(trip, "maybe");
+  $("#discovery-saved-count").textContent = String(saved.length);
+  $("#maybe-count").textContent = String(maybe.length);
+  $("#saved-preview-list").innerHTML = saved.length
+    ? saved.map(({ activity }) => placeTile(activity)).join("")
+    : '<p class="empty-note">Os lugares que você curtir aparecem aqui.</p>';
+  $("#maybe-preview-list").innerHTML = maybe.length
+    ? maybe.map(({ activity }) => placeTile(activity, `<span class="tile-badge" aria-hidden="true">${icon("bookmark")}</span>`)).join("")
+    : '<p class="empty-note">Nada guardado para decidir depois.</p>';
+  addImageFallbacks($("#tab-discover"));
+}
+
+function renderCityFilter(trip) {
+  const select = $("#city-filter");
+  const cities = [...new Set(tripCities(trip))];
+  select.innerHTML = '<option value="all">Todas</option>' + cities.map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join("");
+  if (!cities.some((city) => sameCity(city, deckCity))) deckCity = "all";
+  select.value = deckCity;
+}
+
+function nearestTripCity(activity, trip) {
+  return (activity.nearCities || []).find(([name]) => trip.destinations.some((destination) => sameCity(destination.name, name)));
+}
+
+function placeCardHtml(activity, trip, extraClass = "") {
+  const photo = photoOf(activity);
+  const near = nearestTripCity(activity, trip);
+  const country = activity.country || "Brasil";
+  return `<article class="place-card ${extraClass}" data-activity-id="${escapeHtml(activity.id)}">
+    <div class="place-photo">
+      <img src="${escapeHtml(imageOf(activity))}" alt="${photo ? "Foto de" : "Imagem ilustrativa de"} ${escapeHtml(activity.name)}" draggable="false">
+      <div class="place-tags"><span class="chip chip-glass">${icon(categoryIcon(activity.category))} ${escapeHtml(activity.category)}</span>${photo ? "" : '<span class="chip chip-glass">Imagem ilustrativa</span>'}</div>
+      ${photo ? `<a class="photo-credit" href="${escapeHtml(safeUrl(photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(photo.author)} · ${escapeHtml(photo.license)}</a>` : ""}
+      <div class="place-overlay"><h2>${escapeHtml(activity.name)}</h2><p>${icon("map-pin")} ${escapeHtml(activity.city)} · ${escapeHtml(country)}</p></div>
+    </div>
+    <div class="place-info">
+      <p class="place-desc">${escapeHtml(activity.description)}</p>
+      <div class="place-meta">
+        ${near && near[1] >= 3 ? `<span class="chip">${icon("navigation")} ${escapeHtml(near[1])} km de ${escapeHtml(near[0])}</span>` : ""}
+        ${activity.openingHours ? `<span class="chip">${icon("clock")} Horário informado</span>` : ""}
+        <button class="btn btn-secondary btn-sm details-btn" type="button" data-place="${escapeHtml(activity.id)}">${icon("info")} Detalhes</button>
+      </div>
+    </div>
+  </article>`;
+}
+
+function renderDeck() {
+  const trip = getCurrentTrip();
+  renderCityFilter(trip);
   const ideas = getDiscoverableActivities(trip);
   currentActivityId = ideas[0]?.id || null;
-  document.querySelector("#skip-activity").disabled = !currentActivityId;
-  document.querySelector("#maybe-activity").disabled = !currentActivityId;
-  document.querySelector("#like-activity").disabled = !currentActivityId;
-  elements.discoveryPosition.textContent = `${ideas.length} ${ideas.length === 1 ? "ideia" : "ideias"}`;
-  document.querySelector("#discovery-saved-count").textContent = String(trip.saved.length);
-  document.querySelector("#maybe-count").textContent = `(${trip.maybe.length})`;
-  document.querySelector("#saved-preview-list").innerHTML = trip.saved.length
-    ? getTripActivities(trip).map(({ activity }) => `<div class="preview-item"><img class="preview-thumb" src="${escapeHtml(activity.image)}" alt=""><span><strong>${escapeHtml(activity.name)}</strong><small>${escapeHtml(activity.city)}</small></span></div>`).join("")
-    : '<p class="preview-empty">Os lugares que você curtir ficam por aqui.</p>';
-  document.querySelector("#maybe-preview-list").innerHTML = trip.maybe.length
-    ? getTripActivities(trip, "maybe").map(({ activity }) => `<button class="preview-item maybe-item" type="button" data-maybe-save="${escapeHtml(activity.id)}"><img class="preview-thumb" src="${escapeHtml(activity.image)}" alt=""><span><strong>${escapeHtml(activity.name)}</strong><small>${escapeHtml(activity.city)} · tocar para curtir</small></span></button>`).join("")
-    : '<p class="preview-empty">Ainda não há ideias para rever.</p>';
-  addImageFallbacks(document.querySelector("#saved-preview-list"));
-  addImageFallbacks(document.querySelector("#maybe-preview-list"));
+  ["#skip-activity", "#maybe-activity", "#like-activity"].forEach((selector) => { $(selector).disabled = !currentActivityId; });
+  $("#discovery-position").textContent = ideas.length ? `${ideas.length} ${ideas.length === 1 ? "lugar" : "lugares"} para ver` : "Tudo visto";
+  $("#deck-title").textContent = deckCity === "all" ? "Descobrir" : deckCity;
+  const stage = $("#activity-stage");
   if (!ideas.length) {
-    elements.activityStage.innerHTML = '<div class="empty-state"><span class="empty-illustration">✳</span><h3>Você explorou todas as ideias deste filtro.</h3><p>Troque de cidade ou revise as ideias em “Talvez depois”.</p></div>';
+    stage.innerHTML = `<div class="deck-empty">${icon("compass")}<h2>Você viu todas as ideias${deckCity === "all" ? "" : ` de ${escapeHtml(deckCity)}`}.</h2><p>Troque de cidade ou reveja o que ficou em “Talvez depois”.</p><button class="btn btn-secondary" type="button" data-back>Ver minhas ideias</button></div>`;
     return;
   }
-  const activity = ideas[0];
-  const open = getOpenData(activity.id);
-  const photo = open?.photo && safeUrl(open.photo.url) ? open.photo : null;
-  const country = activity.country || "Brasil";
-  const nearDestination = (activity.nearCities || []).find(([name]) => trip.destinations.some((destination) => sameCity(destination.name, name)));
-  const distanceFact = nearDestination && nearDestination[1] >= 3
-    ? `<div class="activity-fact"><span class="fact-icon">↔</span><span>A cerca de ${escapeHtml(nearDestination[1])} km do centro de ${escapeHtml(nearDestination[0])}</span></div>`
-    : "";
-  const textCredit = activity.descriptionSource === "wikipedia"
-    ? `<p class="text-credit">Texto: <a href="${escapeHtml(safeUrl(open?.wikipedia?.url))}" target="_blank" rel="noopener noreferrer">Wikipedia</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a></p>`
-    : "";
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${activity.name}, ${activity.city}, ${country}`)}`;
-  const tripadvisorUrl = `https://www.tripadvisor.com/Search?q=${encodeURIComponent(`${activity.name} ${activity.city}`)}`;
-  const wikipediaUrl = safeUrl(open?.wikipedia?.url);
-  const websiteUrl = safeUrl(open?.website);
-  const photoCredit = photo
-    ? `<a class="photo-credit" href="${escapeHtml(safeUrl(photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(photo.author)} · ${escapeHtml(photo.license)} · Wikimedia Commons</a>`
-    : '<span class="photo-credit">Imagem ilustrativa</span>';
-  const moreAbout = open?.wikipedia?.extract
-    ? `<details class="activity-more"><summary>Mais sobre este lugar</summary><p>${escapeHtml(open.wikipedia.extract)}</p><small>Texto: <a href="${escapeHtml(wikipediaUrl)}" target="_blank" rel="noopener noreferrer">Wikipedia</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a></small></details>`
-    : "";
-  elements.activityStage.innerHTML = `<article class="activity-card" data-activity-id="${escapeHtml(activity.id)}">
-    <div class="activity-photo"><img src="${escapeHtml(photo?.url || activity.image)}" alt="${photo ? "Foto de" : "Imagem ilustrativa de"} ${escapeHtml(activity.name)}" draggable="false"><span class="photo-tag">${escapeHtml(activity.category)}</span>${photoCredit}</div>
-    <div class="activity-info"><p class="activity-location">⌖ ${escapeHtml(activity.city)}</p><h3>${escapeHtml(activity.name)}</h3><p class="activity-description">${escapeHtml(activity.description)}</p>${textCredit}${moreAbout}
-      <div class="activity-facts"><div class="activity-fact"><span class="fact-icon">◷</span><span>${escapeHtml(activity.schedule)}</span></div><div class="activity-fact"><span class="fact-icon">⌖</span><span>${escapeHtml(activity.city)} · ${escapeHtml(country)}</span></div>${distanceFact}</div>
-      <div class="rating-line">Consulte avaliações atualizadas nos sites de viagem.</div><div class="activity-source-links">${websiteUrl ? `<a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener noreferrer">Site oficial ↗</a>` : ""}${wikipediaUrl ? `<a href="${escapeHtml(wikipediaUrl)}" target="_blank" rel="noopener noreferrer">Wikipedia ↗</a>` : ""}<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer">Google Maps ↗</a><a href="${tripadvisorUrl}" target="_blank" rel="noopener noreferrer">Tripadvisor ↗</a></div>
-      <div class="activity-bottom"><span class="activity-cost-label">VALOR<strong class="activity-cost">${escapeHtml(formatActivityPrice(activity))}</strong></span><button class="save-small" data-save-activity="${escapeHtml(activity.id)}" type="button">Quero conhecer →</button></div>
-    </div></article>`;
-  addImageFallbacks(elements.activityStage);
-  attachSwipeHandlers(elements.activityStage.querySelector(".activity-card"));
+  stage.innerHTML = (ideas[1] ? placeCardHtml(ideas[1], trip, "is-back") : "") + placeCardHtml(ideas[0], trip);
+  addImageFallbacks(stage);
+  attachSwipeHandlers(stage.querySelector(".place-card:not(.is-back)"));
+}
+
+function refreshAfterChoice() {
+  if (route.screen === "deck") renderDeck();
+  else if (route.screen === "trip") showTab(route.tab);
 }
 
 function addActivityToPlan(id) {
@@ -1046,9 +1039,9 @@ function addActivityToPlan(id) {
   trip.saved.push({ id, date: destination?.startDate || trip.startDate, time: "09:00" });
   trip.maybe = trip.maybe.filter((item) => item.id !== id);
   if (!saveState()) return;
-  showFeedback(`${activity.name} adicionada ao roteiro.`);
+  toast(`${activity.name} foi para o roteiro`);
   announce(`${activity.name} adicionada ao roteiro.`);
-  renderDiscovery();
+  refreshAfterChoice();
 }
 
 function markMaybe(id) {
@@ -1057,9 +1050,9 @@ function markMaybe(id) {
   if (!trip || !activity || trip.maybe.some((item) => item.id === id)) return;
   trip.maybe.push({ id });
   if (!saveState()) return;
-  showFeedback(`${activity.name} guardada para pensar depois.`);
+  toast("Guardado para decidir depois");
   announce(`${activity.name} guardada em talvez depois.`);
-  renderDiscovery();
+  refreshAfterChoice();
 }
 
 function dismissActivity(id) {
@@ -1067,8 +1060,15 @@ function dismissActivity(id) {
   if (!trip || !id || trip.dismissed.includes(id)) return;
   trip.dismissed.push(id);
   if (!saveState()) return;
-  showFeedback("Ideia descartada.");
-  renderDiscovery();
+  refreshAfterChoice();
+}
+
+function removeFromLists(id) {
+  const trip = getCurrentTrip();
+  trip.saved = trip.saved.filter((item) => item.id !== id);
+  trip.maybe = trip.maybe.filter((item) => item.id !== id);
+  saveState();
+  refreshAfterChoice();
 }
 
 let activeSwipe = null;
@@ -1086,13 +1086,13 @@ function triggerSwipe(mode) {
 function attachSwipeHandlers(card) {
   if (!card) return;
   const THRESHOLD = 90;
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  card.insertAdjacentHTML("beforeend",
-    '<span class="swipe-badge badge-like" aria-hidden="true">QUERO ♥</span>'
-    + '<span class="swipe-badge badge-skip" aria-hidden="true">PASSAR ×</span>'
-    + '<span class="swipe-badge badge-maybe" aria-hidden="true">TALVEZ ♡</span>');
   const FLICK_DISTANCE = 40;
   const FLICK_SPEED = 0.3; // px por ms
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  card.insertAdjacentHTML("beforeend",
+    '<span class="swipe-badge badge-like" aria-hidden="true">CURTI</span>'
+    + '<span class="swipe-badge badge-skip" aria-hidden="true">PASSO</span>'
+    + '<span class="swipe-badge badge-maybe" aria-hidden="true">TALVEZ</span>');
   let pointerId = null;
   let startX = null;
   let startY = null;
@@ -1147,13 +1147,13 @@ function attachSwipeHandlers(card) {
       return;
     }
     card.classList.add("is-flying");
-    card.style.setProperty("--" + mode, 1);
+    card.style.setProperty(`--${mode}`, 1);
     card.style.transform = exit;
     card.style.opacity = "0";
     window.setTimeout(() => {
       action(id);
       if (card.isConnected) reset();
-    }, 220);
+    }, 240);
   };
 
   activeSwipe = { card, commit };
@@ -1170,7 +1170,7 @@ function attachSwipeHandlers(card) {
   };
 
   card.addEventListener("pointerdown", (event) => {
-    if (busy || pointerId !== null || event.target.closest("button, a, summary")) return;
+    if (busy || pointerId !== null || event.target.closest("button, a")) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
     event.preventDefault();
     pointerId = event.pointerId;
@@ -1204,99 +1204,228 @@ function attachSwipeHandlers(card) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Janela de baixo (sheet) e detalhes de um lugar
+// ---------------------------------------------------------------------------
+
+const sheet = $("#sheet");
+const sheetContent = $("#sheet-content");
+
+function openSheet(html, onReady) {
+  sheetContent.innerHTML = html;
+  hydrateIcons(sheetContent);
+  addImageFallbacks(sheetContent);
+  if (!sheet.open) sheet.showModal();
+  sheetContent.scrollTop = 0;
+  onReady?.(sheetContent);
+}
+
+function closeSheet() {
+  if (sheet.open) sheet.close();
+}
+
+sheet.addEventListener("click", (event) => {
+  if (event.target === sheet) closeSheet();
+  if (event.target.closest("[data-close-sheet]")) closeSheet();
+});
+
+function sheetTitle(title) {
+  return `<div class="sheet-title"><h2>${escapeHtml(title)}</h2><button class="icon-btn icon-btn-sm" type="button" data-close-sheet aria-label="Fechar">${icon("x")}</button></div>`;
+}
+
+function openPlaceSheet(id) {
+  const trip = getCurrentTrip();
+  const activity = getActivity(id);
+  if (!activity || !trip) return;
+  const open = getOpenData(id) || {};
+  const photo = photoOf(activity);
+  const country = activity.country || "Brasil";
+  const near = nearestTripCity(activity, trip);
+  const isSaved = trip.saved.some((item) => item.id === id);
+  const isMaybe = trip.maybe.some((item) => item.id === id);
+  const wikipediaUrl = safeUrl(open.wikipedia?.url);
+  const links = [
+    safeUrl(open.website) && `<a class="chip" href="${escapeHtml(open.website)}" target="_blank" rel="noopener noreferrer">${icon("globe")} Site oficial</a>`,
+    wikipediaUrl && `<a class="chip" href="${escapeHtml(wikipediaUrl)}" target="_blank" rel="noopener noreferrer">${icon("info")} Wikipedia</a>`,
+    open.osm && `<a class="chip" href="https://www.openstreetmap.org/${escapeHtml(open.osm)}" target="_blank" rel="noopener noreferrer">${icon("map")} OpenStreetMap</a>`,
+    `<a class="chip" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${activity.name}, ${activity.city}, ${country}`)}" target="_blank" rel="noopener noreferrer">${icon("map-pin")} Google Maps</a>`,
+    `<a class="chip" href="https://www.tripadvisor.com/Search?q=${encodeURIComponent(`${activity.name} ${activity.city}`)}" target="_blank" rel="noopener noreferrer">${icon("star")} Tripadvisor</a>`
+  ].filter(Boolean).join("");
+  const credit = activity.descriptionSource === "wikipedia"
+    ? `<p class="text-credit">Texto: <a href="${escapeHtml(wikipediaUrl)}" target="_blank" rel="noopener noreferrer">Wikipedia</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a></p>`
+    : activity.descriptionSource === "osm"
+      ? '<p class="text-credit">Dados: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">colaboradores do OpenStreetMap</a> (ODbL)</p>'
+      : "";
+  const extract = open.wikipedia?.extract ? `<p class="sheet-text">${escapeHtml(open.wikipedia.extract)}</p><p class="text-credit">Resumo: Wikipedia · CC BY-SA 4.0</p>` : "";
+  let actions;
+  if (route.screen === "deck" && id === currentActivityId) {
+    actions = `<div class="row-actions"><button class="btn btn-secondary" type="button" data-sheet-action="maybe">${icon("bookmark")} Talvez</button><button class="btn btn-primary" type="button" data-sheet-action="like">${icon("heart")} Curti</button></div>`;
+  } else if (isSaved) {
+    actions = `<button class="btn btn-danger btn-block" type="button" data-sheet-action="remove">${icon("trash-2")} Tirar do roteiro</button>`;
+  } else if (isMaybe) {
+    actions = `<div class="row-actions"><button class="btn btn-secondary" type="button" data-sheet-action="remove">${icon("x")} Descartar</button><button class="btn btn-primary" type="button" data-sheet-action="like">${icon("heart")} Curti</button></div>`;
+  } else {
+    actions = `<button class="btn btn-primary btn-block" type="button" data-sheet-action="like">${icon("heart")} Quero conhecer</button>`;
+  }
+  openSheet(`
+    <div class="sheet-photo"><img src="${escapeHtml(imageOf(activity))}" alt="${photo ? "Foto de" : "Imagem ilustrativa de"} ${escapeHtml(activity.name)}">
+      ${photo ? `<a class="photo-credit" href="${escapeHtml(safeUrl(photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(photo.author)} · ${escapeHtml(photo.license)} · Wikimedia Commons</a>` : '<span class="photo-credit">Imagem ilustrativa</span>'}
+    </div>
+    ${sheetTitle(activity.name)}
+    <div class="chips"><span class="chip">${icon(categoryIcon(activity.category))} ${escapeHtml(activity.category)}</span><span class="chip">${icon("map-pin")} ${escapeHtml(activity.city)} · ${escapeHtml(country)}</span>${near && near[1] >= 3 ? `<span class="chip">${icon("navigation")} ${escapeHtml(near[1])} km de ${escapeHtml(near[0])}</span>` : ""}</div>
+    <p class="sheet-text">${escapeHtml(activity.description)}</p>${credit}${extract}
+    <div class="info-item"><span class="info-icon">${icon("clock")}</span><div><strong>Horário</strong><p>${escapeHtml(activity.schedule)}</p></div></div>
+    <div class="info-item"><span class="info-icon">${icon("banknote")}</span><div><strong>Valor</strong><p>Consulte no local ou no site oficial. O app não mostra preços nem notas que não possam ser confirmados.</p></div></div>
+    <div class="link-list">${links}</div>
+    ${actions}`, (root) => {
+    root.querySelectorAll("[data-sheet-action]").forEach((button) => button.addEventListener("click", () => {
+      const action = button.dataset.sheetAction;
+      closeSheet();
+      if (route.screen === "deck" && id === currentActivityId && action !== "remove") triggerSwipe(action);
+      else if (action === "like") addActivityToPlan(id);
+      else if (action === "maybe") markMaybe(id);
+      else if (action === "remove") removeFromLists(id);
+    }));
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Roteiro
+// ---------------------------------------------------------------------------
+
+let selectedDay = null;
+
 function getTripDays(trip) {
   if (!trip.startDate || !trip.endDate) return [];
   const days = [];
-  const start = parseLocalDate(trip.startDate);
-  const end = parseLocalDate(trip.endDate);
-  for (let date = start; date <= end && days.length < 60; date.setUTCDate(date.getUTCDate() + 1)) {
-    days.push(`${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(date.getUTCDate()).padStart(2, "0")}`);
-  }
+  for (let date = trip.startDate; date <= trip.endDate && days.length < 90; date = addDays(date, 1)) days.push(date);
   return days;
+}
+
+function daySchedule(trip, date) {
+  const events = trip.itinerary.filter((event) => event.date === date).map((event) => ({ ...event, type: "manual" }));
+  const saved = getTripActivities(trip).filter((item) => item.date === date)
+    .map(({ id, time, activity }) => ({ id, date, time: time || "09:00", title: activity.name, subtitle: activity.category, image: imageOf(activity), type: "activity", coordinates: getOpenData(id)?.coordinates }));
+  return [...events, ...saved].sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 }
 
 function renderItinerary() {
   const trip = getCurrentTrip();
-  const container = document.querySelector("#itinerary-content");
   const days = getTripDays(trip);
+  const strip = $("#day-strip");
   if (!days.length) {
-    container.innerHTML = '<div class="planner-empty"><strong>Defina as datas da viagem para montar seu roteiro.</strong><span>Depois, adicione compromissos manualmente ou guarde atrações na aba Descobrir.</span></div>';
+    strip.innerHTML = "";
+    $("#day-header").innerHTML = "";
+    $("#itinerary-content").innerHTML = '<li class="day-empty">Defina as datas da viagem para montar o roteiro.</li>';
     return;
   }
-  const dayOptions = days
-    .map((date) => `<option value="${date}">${escapeHtml(formatDate(date, { weekday: "short", day: "numeric", month: "short" }))}</option>`)
-    .join("");
-  document.querySelector("#manual-event-date").innerHTML = dayOptions;
-  container.innerHTML = days.map((date) => {
-    const destination = trip.destinations.find((item) => item.startDate <= date && item.endDate >= date);
-    const events = trip.itinerary.filter((event) => event.date === date);
-    const saved = getTripActivities(trip).filter((item) => item.date === date)
-      .map(({ id, date: itemDate, time, activity }) => ({ id, date: itemDate, time: time || "09:00", title: activity.name, city: activity.city, image: activity.image, type: "activity", cost: activity.cost, coordinates: getOpenData(id)?.coordinates }));
-    const schedule = [...events, ...saved].sort((a, b) => (a.time || "").localeCompare(b.time || ""));
-    // Trecho desde a parada anterior com coordenadas; o tempo de carro e a pé é preenchido depois pelo OSRM.
-    let previousPoint = null;
-    schedule.forEach((item) => {
-      if (!item.coordinates) return;
-      if (previousPoint) {
-        item.distance = distanceKm(previousPoint, item.coordinates);
-        item.routeKey = routeKey(previousPoint, item.coordinates);
-      }
-      previousPoint = item.coordinates;
-    });
-    return `<section class="itinerary-day" data-drop-date="${date}">
-      <header class="itinerary-day-heading"><span class="day-date"><strong>${parseLocalDate(date).getUTCDate()}</strong><small>${escapeHtml(formatDate(date, { month: "short" }).replace(".", ""))}</small></span><div><h3>${escapeHtml(formatDate(date, { weekday: "long" }))}</h3><p>${escapeHtml(destination?.name || "Dia livre")} · ${schedule.length} ${schedule.length === 1 ? "parada" : "paradas"}</p></div><button type="button" class="add-day-item" data-add-day="${date}">+ incluir</button></header>
-      <div class="itinerary-day-items">${schedule.length ? schedule.map((item) => `<article class="itinerary-item" draggable="true" data-item-id="${escapeHtml(item.id)}" data-item-type="${item.type}">
-        <span class="drag-handle" aria-hidden="true">⠿</span>${item.image ? `<img src="${escapeHtml(item.image)}" alt="">` : '<span class="manual-event-icon">◷</span>'}
-        <div class="planner-activity-info"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.city || item.category || "Compromisso manual")}</span>${item.routeKey ? `<span class="planner-distance" data-route="${escapeHtml(item.routeKey)}" data-straight-km="${item.distance}">${escapeHtml(routeText(item.routeKey, item.distance))}</span>` : ""}</div>
-        <label class="visually-hidden" for="day-${escapeHtml(item.id)}">Dia de ${escapeHtml(item.title)}</label><select id="day-${escapeHtml(item.id)}" class="itinerary-day-select" data-day-id="${escapeHtml(item.id)}" data-day-type="${item.type}">${dayOptions.replace(`value="${date}"`, `value="${date}" selected`)}</select>
-        <label class="visually-hidden" for="time-${escapeHtml(item.id)}">Horário de ${escapeHtml(item.title)}</label><input id="time-${escapeHtml(item.id)}" type="time" value="${escapeHtml(item.time || "09:00")}" data-time-id="${escapeHtml(item.id)}" data-time-type="${item.type}">
-        <button class="remove-activity" type="button" data-remove-itinerary="${escapeHtml(item.id)}" data-item-type="${item.type}" aria-label="Remover ${escapeHtml(item.title)}">×</button></article>`).join("") : '<p class="day-empty">Um espaço em branco também faz parte de uma boa viagem.</p>'}</div>
-    </section>`;
+  const today = getBrasiliaDateKey();
+  if (!days.includes(selectedDay)) selectedDay = days.includes(today) ? today : days[0];
+  strip.innerHTML = days.map((date) => {
+    const count = daySchedule(trip, date).length;
+    return `<button class="day-chip${date === selectedDay ? " is-active" : ""}${count ? " has-items" : ""}" type="button" role="tab" aria-selected="${date === selectedDay}" data-day="${date}">
+      <small>${escapeHtml(formatDate(date, { weekday: "short" }).replace(".", ""))}</small><strong>${parseLocalDate(date).getUTCDate()}</strong><i></i></button>`;
   }).join("");
-  addImageFallbacks(container);
-  requestRoutes(container);
-  container.querySelectorAll(".itinerary-item").forEach((item) => {
-    item.addEventListener("dragstart", (event) => {
-      event.dataTransfer.setData("text/plain", JSON.stringify({ id: item.dataset.itemId, type: item.dataset.itemType }));
-      event.dataTransfer.effectAllowed = "move";
-    });
-  });
-  container.querySelectorAll("[data-drop-date]").forEach((day) => {
-    day.addEventListener("dragover", (event) => { event.preventDefault(); day.classList.add("is-drop-target"); });
-    day.addEventListener("dragleave", () => day.classList.remove("is-drop-target"));
-    day.addEventListener("drop", (event) => {
-      event.preventDefault();
-      day.classList.remove("is-drop-target");
-      let data;
-      try {
-        data = JSON.parse(event.dataTransfer.getData("text/plain"));
-      } catch (error) {
-        return;
+  strip.querySelector(".is-active")?.scrollIntoView({ inline: "center", block: "nearest" });
+  const destination = trip.destinations.find((item) => item.startDate <= selectedDay && item.endDate >= selectedDay);
+  const schedule = daySchedule(trip, selectedDay);
+  $("#day-header").innerHTML = `<h2>${escapeHtml(capitalize(formatDate(selectedDay, { weekday: "long", day: "numeric", month: "long" })))}</h2>
+    <p>${icon("map-pin")} ${escapeHtml(destination?.name || "Dia livre")} · ${schedule.length} ${schedule.length === 1 ? "parada" : "paradas"}</p>`;
+  if (!schedule.length) {
+    $("#itinerary-content").innerHTML = '<li class="day-empty">Um espaço em branco também faz parte de uma boa viagem. Curta lugares em Descobrir ou adicione um compromisso.</li>';
+    return;
+  }
+  let previous = null;
+  $("#itinerary-content").innerHTML = schedule.map((item) => {
+    let leg = "";
+    if (item.coordinates && previous) {
+      const key = routeKey(previous, item.coordinates);
+      const km = distanceKm(previous, item.coordinates);
+      leg = `<li class="travel-leg"><i></i><span>${icon("car")}<b data-route="${escapeHtml(key)}" data-straight-km="${km}" style="font-weight:600">${escapeHtml(routeText(key, km))}</b></span></li>`;
+    }
+    if (item.coordinates) previous = item.coordinates;
+    return `${leg}<li class="stop">
+      <span class="stop-time">${escapeHtml(item.time || "09:00")}</span>
+      <div class="stop-card">
+        ${item.image ? `<img src="${escapeHtml(item.image)}" alt="">` : `<span class="stop-icon">${icon("calendar-days")}</span>`}
+        <div class="stop-info"><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.subtitle || item.category || "Compromisso")}</small></div>
+        <button class="icon-btn icon-btn-sm" type="button" data-stop="${escapeHtml(item.id)}" data-stop-type="${item.type}" aria-label="Opções de ${escapeHtml(item.title)}">${icon("ellipsis")}</button>
+      </div></li>`;
+  }).join("");
+  addImageFallbacks($("#itinerary-content"));
+  requestRoutes($("#itinerary-content"));
+}
+
+function dayOptions(trip, selected) {
+  return getTripDays(trip).map((date) => `<option value="${date}"${date === selected ? " selected" : ""}>${escapeHtml(formatDate(date, { weekday: "short", day: "numeric", month: "short" }))}</option>`).join("");
+}
+
+function openStopSheet(id, type) {
+  const trip = getCurrentTrip();
+  const collection = type === "activity" ? trip.saved : trip.itinerary;
+  const item = collection.find((entry) => entry.id === id);
+  if (!item) return;
+  const title = type === "activity" ? getActivity(id)?.name : item.title;
+  openSheet(`${sheetTitle(title || "Parada")}
+    <div class="field-row">
+      <label class="field">Dia<select id="stop-day">${dayOptions(trip, item.date)}</select></label>
+      <label class="field">Horário<input id="stop-time" type="time" value="${escapeHtml(item.time || "09:00")}"></label>
+    </div>
+    ${type === "activity" ? `<button class="btn btn-secondary btn-block" type="button" id="stop-details">${icon("info")} Ver detalhes do lugar</button>` : ""}
+    <div class="row-actions"><button class="btn btn-danger" type="button" id="stop-remove">${icon("trash-2")} Remover</button><button class="btn btn-primary" type="button" id="stop-save">${icon("check")} Salvar</button></div>`, (root) => {
+    root.querySelector("#stop-save").addEventListener("click", () => {
+      const date = root.querySelector("#stop-day").value;
+      if (type === "activity") {
+        const stays = trip.destinations.filter((entry) => activityMatchesCity(getActivity(id), entry.name));
+        if (stays.length && !stays.some((stay) => date >= stay.startDate && date <= stay.endDate)) {
+          toast(`Escolha um dia em que você estará em ${stays[0].name}`);
+          return;
+        }
       }
-      if (data?.id) moveItineraryItem(data.id, data.type, day.dataset.dropDate);
+      item.date = date;
+      item.time = root.querySelector("#stop-time").value || "09:00";
+      saveState();
+      selectedDay = date;
+      closeSheet();
+      renderItinerary();
+      announce("Parada atualizada.");
     });
+    root.querySelector("#stop-remove").addEventListener("click", () => {
+      if (type === "activity") trip.saved = trip.saved.filter((entry) => entry.id !== id);
+      else trip.itinerary = trip.itinerary.filter((entry) => entry.id !== id);
+      saveState();
+      closeSheet();
+      renderItinerary();
+      toast("Parada removida");
+    });
+    root.querySelector("#stop-details")?.addEventListener("click", () => openPlaceSheet(id));
   });
 }
 
-function moveItineraryItem(id, type, date) {
+function openManualEventSheet() {
   const trip = getCurrentTrip();
-  const item = type === "activity" ? trip.saved.find((saved) => saved.id === id) : trip.itinerary.find((event) => event.id === id);
-  if (!item) return;
-  if (type === "activity") {
-    const stays = trip.destinations.filter((entry) => activityMatchesCity(getActivity(id), entry.name));
-    if (stays.length && !stays.some((stay) => date >= stay.startDate && date <= stay.endDate)) {
-      const message = `Esta atração é de ${stays[0].name}; escolha um dia durante essa parada.`;
-      showFeedback(message);
-      announce(message);
+  if (!getTripDays(trip).length) return;
+  openSheet(`${sheetTitle("Novo compromisso")}
+    <label class="field">O que vai acontecer?<input id="event-title" maxlength="100" placeholder="Ex.: Check-in no hotel"></label>
+    <label class="field">Categoria<input id="event-category" maxlength="60" placeholder="Ex.: Transporte"></label>
+    <div class="field-row"><label class="field">Dia<select id="event-day">${dayOptions(trip, selectedDay)}</select></label><label class="field">Horário<input id="event-time" type="time" value="09:00"></label></div>
+    <button class="btn btn-primary btn-block" type="button" id="event-save">${icon("plus")} Adicionar ao roteiro</button>`, (root) => {
+    root.querySelector("#event-title").focus();
+    root.querySelector("#event-save").addEventListener("click", () => {
+      const title = root.querySelector("#event-title").value.trim();
+      if (!title) {
+        toast("Dê um nome para o compromisso");
+        return;
+      }
+      const date = root.querySelector("#event-day").value;
+      trip.itinerary.push({ id: `evento-${Date.now()}`, title, category: root.querySelector("#event-category").value.trim(), date, time: root.querySelector("#event-time").value || "09:00", type: "manual" });
+      saveState();
+      selectedDay = date;
+      closeSheet();
       renderItinerary();
-      return;
-    }
-  }
-  item.date = date;
-  if (type === "activity") item.time ||= "09:00";
-  saveState();
-  renderItinerary();
-  announce("Compromisso movido para outro dia.");
+      toast("Compromisso adicionado");
+    });
+  });
 }
 
 function generateItinerary() {
@@ -1304,7 +1433,7 @@ function generateItinerary() {
   const days = getTripDays(trip);
   if (!days.length) return;
   if (!trip.saved.length) {
-    showFeedback("Curta algumas atrações na aba Descobrir antes de montar uma sugestão.");
+    toast("Curta alguns lugares em Descobrir primeiro");
     return;
   }
   trip.saved.forEach((item, index) => {
@@ -1317,254 +1446,906 @@ function generateItinerary() {
   });
   if (!saveState()) return;
   renderItinerary();
-  showFeedback("Sugestão distribuída por regras locais. Revise horários e deslocamentos antes de seguir.");
+  toast("Sugestão pronta. Revise horários e deslocamentos.");
+}
+
+// Depois de mudar datas ou cidades, traz para dentro da viagem os itens que ficariam invisíveis no roteiro.
+function realignItineraryDates(trip) {
+  if (!trip.startDate || !trip.endDate) return;
+  trip.saved.forEach((item) => {
+    const activity = getActivity(item.id);
+    const stays = activity ? trip.destinations.filter((place) => activityMatchesCity(activity, place.name)) : [];
+    const ranges = stays.length ? stays : [{ startDate: trip.startDate, endDate: trip.endDate }];
+    if (!ranges.some((range) => item.date && item.date >= range.startDate && item.date <= range.endDate)) item.date = ranges[0].startDate;
+  });
+  trip.itinerary.forEach((event) => {
+    if (!event.date || event.date < trip.startDate || event.date > trip.endDate) event.date = trip.startDate;
+  });
+}
+
+state.trips.forEach(realignItineraryDates);
+
+// ---------------------------------------------------------------------------
+// Custos
+// ---------------------------------------------------------------------------
+
+const EXPENSE_CATEGORIES = {
+  transporte: ["Transporte", "plane"],
+  hospedagem: ["Hospedagem", "bed-double"],
+  alimentacao: ["Alimentação", "utensils"],
+  atracoes: ["Atrações", "ticket"],
+  compras: ["Compras", "shopping-bag"],
+  seguro: ["Seguro", "shield-check"],
+  outros: ["Outros", "receipt"]
+};
+const CURRENCIES = ["BRL", "USD", "EUR", "GBP", "ARS"];
+
+function categoryIcon(category) {
+  return ({ Natureza: "trees", Praia: "waves", Cultura: "landmark", Arte: "palette", "Diversão": "sparkles", Compras: "shopping-bag", Gastronomia: "utensils", Passeio: "camera", "Passeio urbano": "footprints", Aventura: "mountain" })[category] || "map-pin";
+}
+
+function displayValue(amountBRL) {
+  const rate = state.displayCurrency === "BRL" ? 1 : Number(state.displayCurrencyRate);
+  if (!displayAmounts) return "••••";
+  return rate > 0 ? formatCurrency(amountBRL / rate, state.displayCurrency) : "Informe a cotação";
 }
 
 function renderExpenses() {
   const trip = getCurrentTrip();
-  const expenses = [...trip.expenses].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  setAmountToggle($("#toggle-expense-visibility"));
   const spent = getExpensesTotal(trip);
   const forecast = getTripForecastBRL(trip);
-  document.querySelector("#finance-budget").textContent = formatTripMoney(trip.budget, trip);
-  document.querySelector("#finance-spent").textContent = formatTripMoney(spent, trip, "BRL");
-  document.querySelector("#finance-forecast").textContent = formatTripMoney(forecast, trip, "BRL");
-  document.querySelector("#display-currency").value = state.displayCurrency || "BRL";
-  document.querySelector("#display-exchange-rate").value = state.displayCurrencyRate || 1;
-  const rate = state.displayCurrency === "BRL" ? 1 : Number(state.displayCurrencyRate);
-  document.querySelectorAll("#finance-budget, #finance-spent, #finance-forecast").forEach((node) => {
-    const baseAmount = node.id === "finance-budget" ? getBudgetInBRL(trip) : node.id === "finance-spent" ? spent : forecast;
-    node.textContent = displayAmounts
-      ? (rate > 0 ? formatCurrency(baseAmount / rate, state.displayCurrency) : "Informe a cotação")
-      : "••••••";
-  });
-  document.querySelector("#toggle-expense-visibility").textContent = displayAmounts ? "Ocultar valores" : "Mostrar valores";
-  const list = document.querySelector("#expense-list");
-  list.innerHTML = expenses.length ? expenses.map((expense) => {
-    const category = expense.category.charAt(0).toUpperCase() + expense.category.slice(1);
-    return `<article class="expense-row"><span class="expense-category-icon">${categoryIcon(expense.category)}</span><div class="expense-description"><strong>${escapeHtml(expense.description)}</strong><small>${escapeHtml(category)} · ${escapeHtml(formatDate(expense.date, { day: "numeric", month: "short", year: "numeric" }))}</small></div><span class="expense-original">${displayAmounts ? escapeHtml(formatCurrency(expense.amount, expense.currency, 2)) : "••••"}</span><span class="expense-converted">${displayAmounts ? escapeHtml(formatCurrency(expense.amountBRL, "BRL", 2)) : "••••"}</span><button class="remove-activity" type="button" data-remove-expense="${escapeHtml(expense.id)}" aria-label="Remover despesa ${escapeHtml(expense.description)}">×</button></article>`;
-  }).join("") : '<div class="planner-empty"><strong>Nenhuma despesa registrada.</strong><span>Adicione gastos de transporte, hospedagem, alimentação, atrações, compras e outras categorias.</span></div>';
+  const budget = getBudgetInBRL(trip);
+  $("#finance-spent").textContent = displayValue(spent);
+  $("#finance-budget").textContent = budget ? displayValue(budget) : "—";
+  $("#finance-forecast").textContent = displayValue(forecast);
+  $("#finance-left").textContent = budget ? displayValue(budget - forecast) : "—";
+  $("#finance-progress").style.width = budget ? `${Math.min(100, (forecast / budget) * 100)}%` : "0%";
+  $("#display-currency").value = state.displayCurrency || "BRL";
+  $("#display-exchange-rate").value = state.displayCurrencyRate || 1;
+  $("#display-currency-label").textContent = state.displayCurrency || "BRL";
+
+  const totals = {};
+  trip.expenses.forEach((expense) => { totals[expense.category] = (totals[expense.category] || 0) + (Number(expense.amountBRL) || 0); });
+  const ranked = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+  $("#category-card").hidden = !ranked.length;
+  $("#category-bars").innerHTML = ranked.map(([category, total]) => {
+    const [label, iconName] = EXPENSE_CATEGORIES[category] || [category, "receipt"];
+    const share = spent ? Math.round((total / spent) * 100) : 0;
+    return `<div class="category-bar"><span class="cat-icon">${icon(iconName)}</span><div><strong>${escapeHtml(label)}</strong><div class="progress"><span style="width:${share}%"></span></div></div><em>${escapeHtml(displayValue(total))}</em></div>`;
+  }).join("");
+
+  const byDate = {};
+  [...trip.expenses].sort((a, b) => (b.date || "").localeCompare(a.date || "")).forEach((expense) => { (byDate[expense.date] ||= []).push(expense); });
+  const dates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
+  $("#expense-list").innerHTML = dates.length ? dates.map((date) => `<section class="expense-day"><h4>${escapeHtml(capitalize(formatDate(date, { weekday: "long", day: "numeric", month: "long" })) || "Sem data")}</h4><div class="expense-group">${byDate[date].map((expense) => {
+    const [label, iconName] = EXPENSE_CATEGORIES[expense.category] || [expense.category, "receipt"];
+    const original = expense.currency !== "BRL" ? `<small>${escapeHtml(money(expense.amount, expense.currency, 2))}</small>` : "";
+    return `<div class="expense-row"><span class="cat-icon">${icon(iconName)}</span><div style="min-width:0"><strong>${escapeHtml(expense.description)}</strong><small>${escapeHtml(label)}</small></div><div class="expense-amount"><strong>${escapeHtml(money(expense.amountBRL, "BRL", 2))}</strong>${original}</div><button class="remove-btn" type="button" data-remove-expense="${escapeHtml(expense.id)}" aria-label="Remover despesa ${escapeHtml(expense.description)}">${icon("trash-2")}</button></div>`;
+  }).join("")}</div></section>`).join("")
+    : `<div class="day-empty">${icon("receipt")}<p style="margin-top:8px">Nenhuma despesa ainda. Toque no <strong>+</strong> para registrar transporte, hospedagem, comida e passeios.</p></div>`;
 }
 
-function categoryIcon(category) {
-  return ({ transporte: "↗", hospedagem: "⌂", alimentacao: "⌁", atracoes: "✳", compras: "◇", seguro: "♡", outros: "＋" })[category] || "＋";
-}
-
-function renderBefore() {
+function openExpenseSheet() {
   const trip = getCurrentTrip();
-  document.querySelectorAll("[data-checklist]").forEach((input) => {
-    input.checked = Boolean(trip.checklist[input.dataset.checklist]);
+  const today = getBrasiliaDateKey();
+  const defaultDate = trip.startDate && today >= trip.startDate && today <= trip.endDate ? today : (trip.startDate && today < trip.startDate ? today : trip.startDate || today);
+  let category = "alimentacao";
+  let currency = "BRL";
+  openSheet(`${sheetTitle("Nova despesa")}
+    <div class="amount-input"><span id="expense-currency-symbol">R$</span><input id="expense-amount" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0,00" aria-label="Valor"></div>
+    <div class="segmented" id="expense-currency">${CURRENCIES.map((code) => `<button type="button" data-currency="${code}" class="${code === currency ? "is-selected" : ""}">${code}</button>`).join("")}</div>
+    <label class="field" id="expense-rate-field" hidden>Cotação · 1 unidade em R$<input id="expense-rate" type="number" inputmode="decimal" min="0.000001" step="0.000001" placeholder="Ex.: 5,40"></label>
+    <div class="cat-chips" id="expense-categories">${Object.entries(EXPENSE_CATEGORIES).map(([key, [label, iconName]]) => `<button type="button" class="cat-chip${key === category ? " is-selected" : ""}" data-category="${key}">${icon(iconName)}${escapeHtml(label)}</button>`).join("")}</div>
+    <label class="field">Descrição<input id="expense-description" maxlength="100" placeholder="Ex.: Almoço no centro"></label>
+    <label class="field">Data<input id="expense-date" type="date" value="${escapeHtml(defaultDate)}"></label>
+    <p class="footnote" style="margin:0">A cotação é manual; não há câmbio em tempo real.</p>
+    <button class="btn btn-primary btn-block" type="button" id="expense-save">${icon("check")} Salvar despesa</button>`, (root) => {
+    root.querySelector("#expense-currency").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-currency]");
+      if (!button) return;
+      currency = button.dataset.currency;
+      root.querySelectorAll("[data-currency]").forEach((item) => item.classList.toggle("is-selected", item === button));
+      root.querySelector("#expense-rate-field").hidden = currency === "BRL";
+      root.querySelector("#expense-currency-symbol").textContent = currency === "BRL" ? "R$" : currency;
+    });
+    root.querySelector("#expense-categories").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-category]");
+      if (!button) return;
+      category = button.dataset.category;
+      root.querySelectorAll("[data-category]").forEach((item) => item.classList.toggle("is-selected", item === button));
+    });
+    root.querySelector("#expense-save").addEventListener("click", () => {
+      const amount = Number(root.querySelector("#expense-amount").value);
+      const exchangeRate = currency === "BRL" ? 1 : Number(root.querySelector("#expense-rate").value);
+      const description = root.querySelector("#expense-description").value.trim() || EXPENSE_CATEGORIES[category][0];
+      if (!(amount > 0)) {
+        toast("Informe um valor maior que zero");
+        return;
+      }
+      if (!(exchangeRate > 0)) {
+        toast("Informe a cotação da moeda em reais");
+        return;
+      }
+      trip.expenses.push({ id: `despesa-${Date.now()}`, description, category, amount, currency, exchangeRate, amountBRL: amount * exchangeRate, date: root.querySelector("#expense-date").value || today });
+      if (!saveState()) return;
+      closeSheet();
+      renderExpenses();
+      toast("Despesa registrada");
+      announce("Despesa registrada.");
+    });
+    window.setTimeout(() => root.querySelector("#expense-amount").focus(), 80);
   });
 }
+
+// ---------------------------------------------------------------------------
+// Guia do destino: clima (Open-Meteo), entrada, saúde, dinheiro e checklist
+// ---------------------------------------------------------------------------
+
+const WEATHER_CACHE_KEY = "viagem-na-mao-clima-v1";
+const weatherCache = (() => {
+  try {
+    return JSON.parse(window.localStorage.getItem(WEATHER_CACHE_KEY)) || {};
+  } catch (error) {
+    return {};
+  }
+})();
+
+function average(values) {
+  const valid = values.filter((value) => typeof value === "number");
+  return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : null;
+}
+
+// Previsão quando a viagem está a até 14 dias; senão, o que fez nas mesmas datas do ano passado.
+async function loadWeather(city, start, end) {
+  const key = `${city.name}|${start}|${end}`;
+  const cached = weatherCache[key];
+  const today = getBrasiliaDateKey();
+  if (cached && cached.savedOn === today) return cached;
+  const [lat, lon] = city.coordinates;
+  let result;
+  if (daysBetween(today, start) <= 14 && end >= today) {
+    const from = start > today ? start : today;
+    const limit = addDays(today, 15);
+    const to = end < limit ? end : limit;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&start_date=${from}&end_date=${to}`;
+    const data = await (await fetch(url)).json();
+    const daily = data.daily || {};
+    result = { mode: "forecast", max: average(daily.temperature_2m_max || []), min: average(daily.temperature_2m_min || []), rainy: (daily.precipitation_probability_max || []).filter((value) => value >= 50).length, days: (daily.time || []).length };
+  } else {
+    const shift = (date) => `${Number(date.slice(0, 4)) - 1}${date.slice(4)}`;
+    const span = Math.min(daysBetween(start, end), 30);
+    const from = shift(start);
+    const to = addDays(from, span);
+    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto&start_date=${from}&end_date=${to}`;
+    const data = await (await fetch(url)).json();
+    const daily = data.daily || {};
+    result = { mode: "history", max: average(daily.temperature_2m_max || []), min: average(daily.temperature_2m_min || []), rainy: (daily.precipitation_sum || []).filter((value) => value >= 1).length, days: (daily.time || []).length };
+  }
+  if (result.max === null) throw new Error("Sem dados de clima");
+  result.savedOn = today;
+  weatherCache[key] = result;
+  try {
+    window.localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(weatherCache));
+  } catch (error) {
+    console.warn("Não foi possível guardar o clima.", error);
+  }
+  return result;
+}
+
+function weatherTips(weather) {
+  const tips = [];
+  if (weather.min < 8) tips.push("Casaco pesado, cachecol e luvas: as noites devem ser frias.");
+  else if (weather.min < 15) tips.push("Leve um casaco ou blusa para a noite.");
+  if (weather.max >= 28) tips.push("Roupas leves, protetor solar, chapéu e garrafa de água.");
+  else if (weather.max < 18) tips.push("Prefira roupas em camadas para os dias mais frescos.");
+  if (weather.days && weather.rainy / weather.days >= 0.3) tips.push("Guarda-chuva ou capa de chuva compacta.");
+  tips.push("Sapato confortável para caminhar bastante.");
+  return tips;
+}
+
+function renderWeather(slot, city, start, end) {
+  loadWeather(city, start, end).then((weather) => {
+    const round = (value) => Math.round(value);
+    const label = weather.mode === "forecast" ? "Previsão para os dias da viagem" : "Nas mesmas datas do ano passado";
+    slot.innerHTML = `<p class="muted" style="font-size:13px;margin-bottom:8px">${escapeHtml(label)} em ${escapeHtml(city.name)}</p>
+      <div class="weather"><div><span>Máxima média</span><strong>${round(weather.max)}°</strong></div><div><span>Mínima média</span><strong>${round(weather.min)}°</strong></div><div><span>Dias de chuva</span><strong>${weather.rainy}/${weather.days}</strong></div></div>
+      <ul class="tips">${weatherTips(weather).map((tip) => `<li>${icon("check")} ${escapeHtml(tip)}</li>`).join("")}</ul>
+      <p class="text-credit" style="margin-top:8px">Dados: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo.com</a> (CC BY 4.0). Clima passado não garante o tempo da viagem.</p>`;
+  }).catch(() => {
+    slot.innerHTML = '<p class="muted">Não foi possível carregar o clima agora. Verifique a conexão e tente de novo.</p>';
+  });
+}
+
+function guideCountries(trip) {
+  const groups = [];
+  trip.destinations.forEach((destination) => {
+    const country = getCityInfo(destination.name)?.country || trip.country || "Brasil";
+    let group = groups.find((item) => item.country === country);
+    if (!group) groups.push(group = { country, destinations: [] });
+    group.destinations.push(destination);
+  });
+  return groups;
+}
+
+function infoItem(iconName, title, text, warn = false) {
+  if (!text) return "";
+  return `<div class="info-item"><span class="info-icon${warn ? " warn" : ""}">${icon(iconName)}</span><div><strong>${escapeHtml(title)}</strong><p>${escapeHtml(text)}</p></div></div>`;
+}
+
+function buildChecklist(trip, groups) {
+  const guide = window.COUNTRY_GUIDE || {};
+  const foreign = groups.filter((group) => group.country !== "Brasil");
+  const items = [];
+  if (foreign.length) {
+    const validity = foreign.map((group) => guide[group.country]?.validadePassaporte).filter(Boolean)[0];
+    items.push({ id: "passaporte", title: "Passaporte válido", detail: validity || "Confira a validade exigida por cada país." });
+  } else {
+    items.push({ id: "documento-foto", title: "Documento oficial com foto", detail: "RG, CNH ou passaporte para embarque em voos nacionais." });
+  }
+  foreign.forEach(({ country }) => {
+    const info = guide[country];
+    const slug = slugify(country);
+    if (info?.visto?.exigido) items.push({ id: `visto-${slug}`, title: `Visto para ${country}`, detail: info.visto.resumo });
+    if (info?.autorizacaoEletronica) items.push({ id: `autorizacao-${slug}`, title: `Autorização eletrônica · ${country}`, detail: info.autorizacaoEletronica });
+    if (info?.tomadas) items.push({ id: `adaptador-${slug}`, title: `Adaptador de tomada · ${country}`, detail: info.tomadas });
+    if (info?.moeda?.codigo && info.moeda.codigo !== "BRL") items.push({ id: `moeda-${info.moeda.codigo}`, title: `Dinheiro ou cartão em ${info.moeda.nome}`, detail: `Moeda local: ${info.moeda.nome} (${info.moeda.codigo}).` });
+  });
+  const mandatoryInsurance = foreign.filter(({ country }) => guide[country]?.seguro?.obrigatorio).map(({ country }) => country);
+  if (foreign.length) items.push({ id: "seguro", title: "Seguro viagem", detail: mandatoryInsurance.length ? `Obrigatório em: ${mandatoryInsurance.join(", ")}.` : "Recomendado: despesas médicas no exterior podem ser muito caras." });
+  const yellowFever = groups.some(({ country }) => /febre amarela/i.test(guide[country]?.saude || ""));
+  if (yellowFever) items.push({ id: "vacina-febre-amarela", title: "Vacina de febre amarela e certificado (CIVP)", detail: "Veja no guia de cada país se é exigido ou recomendado." });
+  if (trip.rentalCar && foreign.length) items.push({ id: "cnh-internacional", title: "Permissão Internacional para Dirigir (PID)", detail: "Emitida pelo Detran do seu estado; confirme se o país exige." });
+  if (trip.children) items.push({ id: "autorizacao-menores", title: "Autorização de viagem para menores", detail: "Necessária quando a criança viaja sem um dos pais. Veja as regras do CNJ e da Polícia Federal." });
+  if (trip.seniors) items.push({ id: "medicamentos", title: "Medicamentos de uso contínuo e receitas", detail: "Leve na bagagem de mão, com receita, de preferência em inglês para o exterior." });
+  items.push({ id: "internet", title: "Internet: chip, eSIM ou roaming", detail: "Confira cobertura e se o seu celular aceita eSIM." });
+  items.push({ id: "cartao", title: "Cartão para usar na viagem", detail: foreign.length ? "Compare tarifas e câmbio. Link parceiro do projeto: Nomad · cupom #viagemnamao (benefício não verificado pelo app)." : "Confira limites e avise o banco sobre a viagem." });
+  items.push({ id: "copias-documentos", title: "Cópias digitais dos documentos", detail: "Guarde fotos do passaporte, reservas e seguro na nuvem." });
+  items.push({ id: "enderecos", title: "Endereços e reservas salvos offline", detail: "Hospedagens, contatos e mapas offline das cidades." });
+  items.push({ id: "ritmo", title: "Revisar o ritmo do roteiro", detail: "Pausas, deslocamentos e atividades que pedem reserva." });
+  return items;
+}
+
+function renderGuide() {
+  const trip = getCurrentTrip();
+  const guide = window.COUNTRY_GUIDE || {};
+  const groups = guideCountries(trip);
+  const checklist = buildChecklist(trip, groups);
+  const done = checklist.filter((item) => trip.checklist[item.id]).length;
+  const verified = Object.values(guide)[0]?.verificadoEm;
+  const container = $("#guide-content");
+  container.innerHTML = `
+    <div class="guide-hero"><h2>Guia da viagem</h2><p>O essencial para brasileiros em cada destino${verified ? `, pesquisado em fontes oficiais em ${escapeHtml(formatDate(verified, { day: "numeric", month: "long", year: "numeric" }))}` : ""}. Regras mudam: confirme antes de comprar passagens.</p></div>
+    ${groups.map((group) => {
+      const info = guide[group.country];
+      const cities = group.destinations.map((destination) => destination.name).join(" · ");
+      const weatherSlots = group.destinations.map((destination, index) => getCityInfo(destination.name) && destination.startDate
+        ? `<div class="card"><div class="card-head"><h2>${icon("cloud-sun")} Clima · ${escapeHtml(destination.name)}</h2></div><div data-weather="${escapeHtml(destination.name)}|${destination.startDate}|${destination.endDate}"><p class="muted">Carregando clima…</p></div></div>`
+        : "").join("");
+      if (!info) {
+        return `<section class="guide-country"><h3 class="guide-country-title">${escapeHtml(group.country)} <small>${escapeHtml(cities)}</small></h3>${weatherSlots}
+          <div class="card">${infoItem("info", "Guia ainda não disponível", "Ainda não reunimos as regras de entrada deste país. Consulte o Portal Consular do Itamaraty e o consulado do país no Brasil.", true)}<div class="sources"><a href="https://www.gov.br/mre/pt-br/assuntos/portal-consular" target="_blank" rel="noopener noreferrer">Portal Consular ↗</a></div></div></section>`;
+      }
+      const visa = info.visto ? `${info.visto.exigido ? "Precisa de visto. " : ""}${info.visto.resumo || ""}` : null;
+      const insurance = info.seguro?.resumo ? `${info.seguro.obrigatorio ? "Obrigatório. " : info.seguro.obrigatorio === false ? "Não obrigatório, mas recomendado. " : ""}${info.seguro.resumo}` : null;
+      return `<section class="guide-country">
+        <h3 class="guide-country-title">${escapeHtml(group.country)} <small>${escapeHtml(cities)}</small></h3>
+        ${weatherSlots}
+        <div class="card"><div class="card-head"><h2>${icon("id-card")} Entrada e documentos</h2></div><div class="info-list">
+          ${infoItem("id-card", "Documentos", info.documentos)}
+          ${infoItem("calendar", "Validade do passaporte", info.validadePassaporte)}
+          ${infoItem("flag", "Visto", visa, Boolean(info.visto?.exigido))}
+          ${infoItem("shield-check", "Autorização eletrônica", info.autorizacaoEletronica, true)}
+          ${infoItem("list-checks", "Pode ser pedido na imigração", info.comprovantes)}
+        </div></div>
+        <div class="card"><div class="card-head"><h2>${icon("syringe")} Saúde e seguro</h2></div><div class="info-list">
+          ${infoItem("umbrella", "Seguro viagem", insurance, Boolean(info.seguro?.obrigatorio))}
+          ${infoItem("syringe", "Vacinas e saúde", info.saude)}
+        </div></div>
+        <div class="card"><div class="card-head"><h2>${icon("globe")} No dia a dia</h2></div><div class="info-list">
+          ${infoItem("banknote", "Moeda", info.moeda ? `${info.moeda.nome} (${info.moeda.codigo})` : null)}
+          ${infoItem("plug", "Tomadas", info.tomadas)}
+          ${infoItem("languages", "Idioma", info.idioma)}
+          ${infoItem("phone", "Emergência", info.emergencia)}
+          ${infoItem("car", "Trânsito", info.direcao ? `Dirige-se do lado ${info.direcao}.` : null)}
+          ${infoItem("coffee", "Gorjeta", info.gorjeta)}
+        </div>
+        ${info.fontes?.length ? `<div class="sources">${info.fontes.slice(0, 6).map((source) => `<a href="${escapeHtml(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.titulo)} ↗</a>`).join("")}</div>` : ""}
+        </div>
+      </section>`;
+    }).join("")}
+    <div class="card" id="checklist-card">
+      <div class="card-head"><h2>${icon("list-checks")} Checklist da viagem</h2></div>
+      <div class="check-progress"><span>${done} de ${checklist.length} prontos</span><span>${Math.round((done / checklist.length) * 100)}%</span></div>
+      <div class="progress"><span style="width:${(done / checklist.length) * 100}%"></span></div>
+      <div class="checklist">${checklist.map((item) => `<label class="check-item"><input type="checkbox" data-checklist="${escapeHtml(item.id)}"${trip.checklist[item.id] ? " checked" : ""}><span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.detail)}</small></span></label>`).join("")}</div>
+      <div class="guide-actions"><button class="btn btn-secondary btn-sm" type="button" id="download-checklist">${icon("download")} Baixar</button><button class="btn btn-secondary btn-sm" type="button" id="share-checklist">${icon("share-2")} Compartilhar</button></div>
+    </div>
+    <p class="footnote">Conteúdo informativo, não é orientação legal, médica ou consular. Confirme sempre com o consulado do país, a companhia aérea e fontes oficiais.</p>`;
+  container.querySelectorAll("[data-weather]").forEach((slot) => {
+    const [name, start, end] = slot.dataset.weather.split("|");
+    renderWeather(slot, getCityInfo(name), start, end);
+  });
+}
+
+function checklistText(trip) {
+  const groups = guideCountries(trip);
+  const lines = [`Checklist — ${trip.name || "Minha viagem"}`, `${tripCities(trip).join(" · ")} · ${formatRange(trip.startDate, trip.endDate)}`, ""];
+  buildChecklist(trip, groups).forEach((item) => lines.push(`${trip.checklist[item.id] ? "[x]" : "[ ]"} ${item.title} — ${item.detail}`));
+  lines.push("", "Gerado pelo Viagem na Mão. Regras mudam: confirme com fontes oficiais.");
+  return lines.join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// Hospedagem (pelo Resumo)
+// ---------------------------------------------------------------------------
+
+function openLodgingSheet(index) {
+  const trip = getCurrentTrip();
+  const destination = trip.destinations[index];
+  if (!destination) return;
+  openSheet(`${sheetTitle(`Hospedagem em ${destination.name}`)}
+    <label class="field">Nome<input id="lodging-name" maxlength="100" value="${escapeHtml(destination.lodgingName || "")}" placeholder="Ex.: Pousada do Centro"></label>
+    <label class="field">Endereço<input id="lodging-address" maxlength="180" value="${escapeHtml(destination.lodgingAddress || "")}" placeholder="Rua, número, bairro"></label>
+    <button class="btn btn-primary btn-block" type="button" id="lodging-save">${icon("check")} Salvar</button>`, (root) => {
+    root.querySelector("#lodging-save").addEventListener("click", () => {
+      destination.lodgingName = root.querySelector("#lodging-name").value.trim();
+      destination.lodgingAddress = root.querySelector("#lodging-address").value.trim();
+      saveState();
+      closeSheet();
+      renderAbout();
+      toast("Hospedagem salva");
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Cadastro da viagem em etapas
+// ---------------------------------------------------------------------------
+
+let wizard = null;
+
+const COMPANION_OPTIONS = [["Sozinho(a)", "user"], ["Casal", "heart"], ["Família", "users"], ["Amigos", "users"]];
+const TRANSPORT_OPTIONS = [["Avião", "plane"], ["Carro próprio", "car"], ["Carro alugado", "car"], ["Ônibus", "bus"], ["Trem", "train-front"], ["Navio / cruzeiro", "ship"]];
 
 function startNewTrip() {
-  editingTripId = null;
-  renderTripForm();
+  const today = getBrasiliaDateKey();
+  wizard = {
+    step: 0,
+    editingId: null,
+    month: today.slice(0, 7),
+    focus: "start",
+    query: "",
+    data: { cities: [], startDate: "", endDate: "", companions: "", children: false, seniors: false, transport: "", interests: ["natureza", "gastronomia", "cultura"], budget: "", currency: "BRL", rate: 1, name: "", nameEdited: false }
+  };
+  navigate({ screen: "form" });
 }
 
-function updateClock() {
-  const clock = document.querySelector("#brazil-clock");
-  if (clock) clock.textContent = new Intl.DateTimeFormat("pt-BR", {
-    timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", hour12: false
-  }).format(new Date());
-}
-
-document.querySelectorAll("[data-home]").forEach((button) => button.addEventListener("click", goHome));
-document.querySelector("#trip-cards").addEventListener("click", (event) => {
-  const openButton = event.target.closest("[data-open-trip]");
-  if (openButton) openTrip(openButton.dataset.openTrip);
-  if (event.target.closest("[data-new-trip]")) startNewTrip();
-});
-elements.homeButton.addEventListener("click", goHome);
-elements.tripNavigation.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-tab]");
-  if (button) showTab(button.dataset.tab);
-});
-document.querySelector("#trip-view").addEventListener("click", (event) => {
-  const button = event.target.closest("[data-tab]");
-  if (button) showTab(button.dataset.tab);
-});
-document.querySelector("#edit-trip-button").addEventListener("click", () => {
-  editingTripId = getCurrentTrip()?.id || null;
-  renderTripForm();
-});
-document.querySelector("#previous-inspiration").addEventListener("click", () => changeInspiration(-1));
-document.querySelector("#next-inspiration").addEventListener("click", () => changeInspiration(1));
-document.querySelector("#toggle-budget-visibility").addEventListener("click", () => {
-  displayAmounts = !displayAmounts;
-  state.hideAmounts = !displayAmounts;
-  saveState();
-  renderAbout();
-  renderHome();
-});
-document.querySelector("#toggle-home-amounts").addEventListener("click", () => {
-  displayAmounts = !displayAmounts;
-  state.hideAmounts = !displayAmounts;
-  saveState();
-  renderHome();
-  if (activeTab === "about") renderAbout();
-  if (activeTab === "expenses") renderExpenses();
-});
-document.querySelector("#toggle-expense-visibility").addEventListener("click", () => {
-  displayAmounts = !displayAmounts;
-  state.hideAmounts = !displayAmounts;
-  saveState();
-  renderExpenses();
-});
-document.querySelector("#city-filter").addEventListener("change", renderDiscovery);
-document.querySelector("#skip-activity").addEventListener("click", () => triggerSwipe("skip"));
-document.querySelector("#maybe-activity").addEventListener("click", () => triggerSwipe("maybe"));
-document.querySelector("#like-activity").addEventListener("click", () => triggerSwipe("like"));
-elements.activityStage.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-save-activity]");
-  if (button) addActivityToPlan(button.dataset.saveActivity);
-});
-document.querySelector("#maybe-preview-list").addEventListener("click", (event) => {
-  const button = event.target.closest("[data-maybe-save]");
-  if (button) addActivityToPlan(button.dataset.maybeSave);
-});
-document.querySelector("#add-destination").addEventListener("click", () => {
-  elements.destinationsList.append(createDestinationCard({
-    startDate: elements.tripStart.value,
-    endDate: elements.tripEnd.value
-  }));
-});
-elements.destinationsList.addEventListener("click", (event) => {
-  const button = event.target.closest(".remove-destination");
-  if (button && elements.destinationsList.children.length > 1) button.closest(".destination-form-card").remove();
-  else if (button) elements.formStatus.textContent = "Adicione outra cidade antes de remover esta.";
-});
-elements.tripForm.addEventListener("submit", saveTrip);
-document.querySelector("#add-itinerary-button").addEventListener("click", () => {
-  renderItinerary();
-  document.querySelector("#manual-event-form").hidden = false;
-  document.querySelector("#manual-event-title").focus();
-});
-document.querySelector("#manual-event-form").addEventListener("submit", (event) => {
-  event.preventDefault();
+function editTrip() {
   const trip = getCurrentTrip();
-  const data = new FormData(event.currentTarget);
-  const title = String(data.get("title")).trim();
-  if (!title) {
-    announce("Dê um nome para o compromisso.");
+  if (!trip) return;
+  wizard = {
+    step: 0,
+    editingId: trip.id,
+    month: (trip.startDate || getBrasiliaDateKey()).slice(0, 7),
+    focus: "start",
+    query: "",
+    data: {
+      cities: trip.destinations.map((destination) => ({
+        name: destination.name,
+        country: getCityInfo(destination.name)?.country || trip.country || "",
+        nights: destination.startDate && destination.endDate ? daysBetween(destination.startDate, destination.endDate) : 0,
+        lodgingName: destination.lodgingName || "",
+        lodgingAddress: destination.lodgingAddress || "",
+        id: destination.id
+      })),
+      startDate: trip.startDate,
+      endDate: trip.endDate,
+      companions: trip.companions,
+      children: trip.children,
+      seniors: trip.seniors,
+      transport: trip.transport,
+      interests: [...trip.interests],
+      budget: trip.budget || "",
+      currency: trip.currency || "BRL",
+      rate: trip.budgetExchangeRate || 1,
+      name: trip.name,
+      nameEdited: true
+    }
+  };
+  navigate({ screen: "form" });
+}
+
+function wizardSteps() {
+  const steps = ["cities", "dates"];
+  if (wizard.data.cities.length > 1) steps.push("split");
+  steps.push("people", "interests", "budget");
+  return steps;
+}
+
+function totalNights() {
+  const { startDate, endDate } = wizard.data;
+  return startDate && endDate ? daysBetween(startDate, endDate) : 0;
+}
+
+function distributeNights() {
+  const cities = wizard.data.cities;
+  if (!cities.length) return;
+  const total = totalNights();
+  const base = Math.floor(total / cities.length);
+  let remainder = total - base * cities.length;
+  cities.forEach((city) => {
+    city.nights = base + (remainder > 0 ? 1 : 0);
+    remainder -= 1;
+  });
+}
+
+function suggestedName() {
+  const names = wizard.data.cities.map((city) => city.name);
+  if (!names.length) return "";
+  const base = names.length > 2 ? `${names.slice(0, 2).join(", ")} e mais ${names.length - 2}` : names.join(" e ");
+  return wizard.data.startDate ? `${base} · ${formatDate(wizard.data.startDate, { month: "short", year: "numeric" }).replace(" de ", " ")}` : base;
+}
+
+function stepIsValid(step) {
+  const data = wizard.data;
+  if (step === "cities") return data.cities.length > 0;
+  if (step === "dates") return Boolean(data.startDate && data.endDate && data.endDate >= data.startDate);
+  if (step === "split") return data.cities.reduce((sum, city) => sum + city.nights, 0) === totalNights();
+  if (step === "budget") return Boolean(data.name.trim()) && (data.currency === "BRL" || Number(data.rate) > 0);
+  return true;
+}
+
+function renderWizard() {
+  const steps = wizardSteps();
+  wizard.step = Math.min(wizard.step, steps.length - 1);
+  const step = steps[wizard.step];
+  const titles = { cities: "Destinos", dates: "Datas", split: "Dias por cidade", people: "Quem vai", interests: "Interesses", budget: "Orçamento" };
+  $("#wizard-title").textContent = wizard.editingId ? "Editar viagem" : "Nova viagem";
+  $("#wizard-step-label").textContent = `Etapa ${wizard.step + 1} de ${steps.length} · ${titles[step]}`;
+  $("#wizard-progress").style.width = `${((wizard.step + 1) / steps.length) * 100}%`;
+  $("#form-status").textContent = wizard.step === 0 ? storageNotice : "";
+  const body = $("#wizard-body");
+  ({ cities: renderCitiesStep, dates: renderDatesStep, split: renderSplitStep, people: renderPeopleStep, interests: renderInterestsStep, budget: renderBudgetStep })[step](body);
+  hydrateIcons(body);
+  updateWizardNext();
+}
+
+function updateWizardNext() {
+  const steps = wizardSteps();
+  const step = steps[wizard.step];
+  const last = wizard.step === steps.length - 1;
+  const button = $("#wizard-next");
+  button.disabled = !stepIsValid(step);
+  button.innerHTML = last ? `${icon("check")} ${wizard.editingId ? "Salvar alterações" : "Criar viagem"}` : `Continuar ${icon("arrow-right")}`;
+}
+
+function cityOptionHtml(city, selected) {
+  return `<button class="city-option${selected ? " is-selected" : ""}" type="button" data-city="${escapeHtml(city.name)}" data-country="${escapeHtml(city.country)}">
+    <span class="city-icon">${icon(city.country === "Brasil" ? "map-pin" : "globe")}</span>
+    <span><strong>${escapeHtml(city.name)}</strong><small>${escapeHtml(city.country)}</small></span>
+    <span class="check">${icon("check")}</span></button>`;
+}
+
+function renderCitiesStep(body) {
+  const data = wizard.data;
+  body.innerHTML = `<div class="wizard-intro"><h2>Para onde você vai?</h2><p>Escolha uma ou mais cidades, na ordem da viagem.</p></div>
+    <div class="search-box">${icon("search")}<input id="city-search" type="search" placeholder="Buscar cidade" value="${escapeHtml(wizard.query)}" autocomplete="off" aria-label="Buscar cidade"></div>
+    <div class="selected-cities" id="selected-cities"></div>
+    <div class="city-list" id="city-list"></div>`;
+  const paint = () => {
+    $("#selected-cities").innerHTML = data.cities.map((city, index) => `<span class="chip">${index + 1}. ${escapeHtml(city.name)}<button type="button" data-remove-city="${index}" aria-label="Remover ${escapeHtml(city.name)}">${icon("x")}</button></span>`).join("");
+    const query = normalizeText(wizard.query);
+    const all = [...cityData.cities].sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+    const filtered = all.filter((city) => !query || normalizeText(city.name).includes(query) || normalizeText(city.country).includes(query));
+    const isSelected = (name) => data.cities.some((city) => sameCity(city.name, name));
+    const brazil = filtered.filter((city) => city.country === "Brasil");
+    const abroad = filtered.filter((city) => city.country !== "Brasil");
+    const exact = all.some((city) => normalizeText(city.name) === query);
+    $("#city-list").innerHTML = (query && !exact ? `<button class="city-option" type="button" data-city="${escapeHtml(wizard.query.trim())}" data-country=""><span class="city-icon">${icon("plus")}</span><span><strong>Usar “${escapeHtml(wizard.query.trim())}”</strong><small>Cidade fora da lista: sem sugestões nem guia automático por enquanto</small></span><span class="check">${icon("check")}</span></button>` : "")
+      + (brazil.length ? `<p class="city-group-title">Brasil</p>${brazil.map((city) => cityOptionHtml(city, isSelected(city.name))).join("")}` : "")
+      + (abroad.length ? `<p class="city-group-title">Exterior</p>${abroad.map((city) => cityOptionHtml(city, isSelected(city.name))).join("")}` : "");
+    updateWizardNext();
+  };
+  paint();
+  $("#city-search").addEventListener("input", (event) => {
+    wizard.query = event.target.value;
+    paint();
+  });
+  body.addEventListener("click", (event) => {
+    const remove = event.target.closest("[data-remove-city]");
+    if (remove) {
+      data.cities.splice(Number(remove.dataset.removeCity), 1);
+      distributeNights();
+      paint();
+      return;
+    }
+    const option = event.target.closest("[data-city]");
+    if (!option) return;
+    const name = option.dataset.city;
+    const index = data.cities.findIndex((city) => sameCity(city.name, name));
+    if (index >= 0) data.cities.splice(index, 1);
+    else {
+      data.cities.push({ name, country: option.dataset.country, nights: 0 });
+      if (!getCityInfo(name)) {
+        wizard.query = "";
+        $("#city-search").value = "";
+      }
+    }
+    distributeNights();
+    paint();
+  });
+}
+
+function renderDatesStep(body) {
+  const data = wizard.data;
+  const today = getBrasiliaDateKey();
+  body.innerHTML = `<div class="wizard-intro"><h2>Quando?</h2><p>Toque no dia da ida e depois no dia da volta.</p></div>
+    <div class="range-summary"><div id="range-start"></div><div id="range-end"></div></div>
+    <div class="calendar" id="calendar"></div>
+    <p class="nights-note" id="nights-note"></p>`;
+  const paint = () => {
+    $("#range-start").className = wizard.focus === "start" ? "is-focus" : "";
+    $("#range-end").className = wizard.focus === "end" ? "is-focus" : "";
+    $("#range-start").innerHTML = `<span>Ida</span><strong>${data.startDate ? escapeHtml(formatDate(data.startDate, { weekday: "short", day: "numeric", month: "short" })) : "Escolha"}</strong>`;
+    $("#range-end").innerHTML = `<span>Volta</span><strong>${data.endDate ? escapeHtml(formatDate(data.endDate, { weekday: "short", day: "numeric", month: "short" })) : "Escolha"}</strong>`;
+    const [year, month] = wizard.month.split("-").map(Number);
+    const first = new Date(Date.UTC(year, month - 1, 1, 12));
+    const daysInMonth = new Date(Date.UTC(year, month, 0, 12)).getUTCDate();
+    const offset = first.getUTCDay();
+    const monthLabel = capitalize(new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric", timeZone: "UTC" }).format(first));
+    let cells = ["D", "S", "T", "Q", "Q", "S", "S"].map((day) => `<span class="dow">${day}</span>`).join("");
+    for (let index = 0; index < offset; index++) cells += "<span></span>";
+    for (let day = 1; day <= daysInMonth; day++) {
+      const key = `${wizard.month}-${String(day).padStart(2, "0")}`;
+      const disabled = !wizard.editingId && key < today;
+      const classes = ["calendar-day"];
+      if (key === today) classes.push("is-today");
+      if (data.startDate && key === data.startDate) classes.push("is-start");
+      if (data.endDate && key === data.endDate) classes.push("is-end");
+      if (data.startDate && data.endDate && key >= data.startDate && key <= data.endDate) classes.push("in-range");
+      cells += `<button class="${classes.join(" ")}" type="button" data-date="${key}"${disabled ? " disabled" : ""} aria-label="${escapeHtml(formatDate(key, { day: "numeric", month: "long" }))}"><span>${day}</span></button>`;
+    }
+    $("#calendar").innerHTML = `<div class="calendar-head"><button class="icon-btn icon-btn-sm" type="button" data-month="-1" aria-label="Mês anterior">${icon("chevron-left")}</button><strong>${escapeHtml(monthLabel)}</strong><button class="icon-btn icon-btn-sm" type="button" data-month="1" aria-label="Próximo mês">${icon("chevron-right")}</button></div><div class="calendar-grid">${cells}</div>`;
+    $("#nights-note").textContent = data.startDate && data.endDate ? `${nightsLabel(totalNights())} · ${totalNights() + 1} dias` : "";
+    updateWizardNext();
+  };
+  paint();
+  $("#calendar").addEventListener("click", (event) => {
+    const monthButton = event.target.closest("[data-month]");
+    if (monthButton) {
+      const [year, month] = wizard.month.split("-").map(Number);
+      const date = new Date(Date.UTC(year, month - 1 + Number(monthButton.dataset.month), 1));
+      wizard.month = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+      paint();
+      return;
+    }
+    const dayButton = event.target.closest("[data-date]");
+    if (!dayButton) return;
+    const key = dayButton.dataset.date;
+    if (wizard.focus === "start" || !data.startDate || key < data.startDate) {
+      data.startDate = key;
+      data.endDate = "";
+      wizard.focus = "end";
+    } else {
+      data.endDate = key;
+      wizard.focus = "start";
+      distributeNights();
+    }
+    paint();
+  });
+}
+
+function renderSplitStep(body) {
+  const data = wizard.data;
+  body.innerHTML = `<div class="wizard-intro"><h2>Quantas noites em cada cidade?</h2><p>Dividimos igualmente; ajuste como preferir.</p></div><div class="stepper-list" id="split-list"></div><p class="nights-note" id="split-note"></p>`;
+  const paint = () => {
+    let cursor = data.startDate;
+    $("#split-list").innerHTML = data.cities.map((city, index) => {
+      const arrival = cursor;
+      const departure = index === data.cities.length - 1 ? data.endDate : addDays(cursor, city.nights);
+      cursor = departure;
+      return `<div class="stepper-row"><div><strong>${escapeHtml(city.name)}</strong><small>${escapeHtml(formatRange(arrival, departure, false))}</small></div>
+        <div class="stepper"><button class="icon-btn icon-btn-sm" type="button" data-nights="${index}" data-delta="-1" aria-label="Menos uma noite em ${escapeHtml(city.name)}"${city.nights <= 0 ? " disabled" : ""}>${icon("minus")}</button><output>${nightsLabel(city.nights)}</output><button class="icon-btn icon-btn-sm" type="button" data-nights="${index}" data-delta="1" aria-label="Mais uma noite em ${escapeHtml(city.name)}">${icon("plus")}</button></div></div>`;
+    }).join("");
+    const diff = totalNights() - data.cities.reduce((sum, city) => sum + city.nights, 0);
+    $("#split-note").textContent = diff === 0 ? `Tudo certo: ${nightsLabel(totalNights())} no total.` : diff > 0 ? `Faltam ${nightsLabel(diff)} para completar a viagem.` : `Passou ${nightsLabel(-diff)} do total da viagem.`;
+    $("#split-note").style.color = diff === 0 ? "" : "var(--danger)";
+    updateWizardNext();
+  };
+  paint();
+  $("#split-list").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-nights]");
+    if (!button) return;
+    const city = data.cities[Number(button.dataset.nights)];
+    city.nights = Math.max(0, city.nights + Number(button.dataset.delta));
+    paint();
+  });
+}
+
+function renderPeopleStep(body) {
+  const data = wizard.data;
+  body.innerHTML = `<div class="wizard-intro"><h2>Quem vai com você?</h2><p>Ajuda a sugerir lugares e o checklist certo.</p></div>
+    <div class="option-grid" id="companion-options">${COMPANION_OPTIONS.map(([label, iconName]) => `<button class="option-tile${data.companions === label ? " is-selected" : ""}" type="button" data-companion="${escapeHtml(label)}">${icon(iconName)}${escapeHtml(label)}</button>`).join("")}</div>
+    <div style="margin-top:12px"><label class="toggle-row">Crianças na viagem<span class="switch"><input type="checkbox" id="wizard-children"${data.children ? " checked" : ""}><span></span></span></label>
+    <label class="toggle-row">Idosos na viagem<span class="switch"><input type="checkbox" id="wizard-seniors"${data.seniors ? " checked" : ""}><span></span></span></label></div>
+    <h3 class="option-group-title">Como você vai?</h3>
+    <div class="option-grid" id="transport-options">${TRANSPORT_OPTIONS.map(([label, iconName]) => `<button class="option-tile${data.transport === label ? " is-selected" : ""}" type="button" data-transport="${escapeHtml(label)}">${icon(iconName)}${escapeHtml(label)}</button>`).join("")}</div>`;
+  body.querySelector("#companion-options").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-companion]");
+    if (!button) return;
+    data.companions = data.companions === button.dataset.companion ? "" : button.dataset.companion;
+    body.querySelectorAll("[data-companion]").forEach((item) => item.classList.toggle("is-selected", item.dataset.companion === data.companions));
+  });
+  body.querySelector("#transport-options").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-transport]");
+    if (!button) return;
+    data.transport = data.transport === button.dataset.transport ? "" : button.dataset.transport;
+    body.querySelectorAll("[data-transport]").forEach((item) => item.classList.toggle("is-selected", item.dataset.transport === data.transport));
+  });
+  body.querySelector("#wizard-children").addEventListener("change", (event) => { data.children = event.target.checked; });
+  body.querySelector("#wizard-seniors").addEventListener("change", (event) => { data.seniors = event.target.checked; });
+}
+
+function renderInterestsStep(body) {
+  const data = wizard.data;
+  body.innerHTML = `<div class="wizard-intro"><h2>O que você curte?</h2><p>Usamos isso para escolher os lugares que aparecem em Descobrir.</p></div>
+    <div class="option-grid" id="interest-options">${interests.map(({ id }) => `<button class="option-tile${data.interests.includes(id) ? " is-selected" : ""}" type="button" data-interest="${id}" aria-pressed="${data.interests.includes(id)}">${icon(INTEREST_ICONS[id] || "star")}${escapeHtml(INTEREST_LABELS[id] || id)}</button>`).join("")}</div>`;
+  body.querySelector("#interest-options").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-interest]");
+    if (!button) return;
+    const id = button.dataset.interest;
+    data.interests = data.interests.includes(id) ? data.interests.filter((item) => item !== id) : [...data.interests, id];
+    button.classList.toggle("is-selected", data.interests.includes(id));
+    button.setAttribute("aria-pressed", String(data.interests.includes(id)));
+  });
+}
+
+function renderBudgetStep(body) {
+  const data = wizard.data;
+  if (!data.nameEdited) data.name = suggestedName();
+  body.innerHTML = `<div class="wizard-intro"><h2>Quase lá!</h2><p>Dê um nome para a viagem e, se quiser, um orçamento.</p></div>
+    <label class="field">Nome da viagem<input id="wizard-name" maxlength="60" value="${escapeHtml(data.name)}" placeholder="Ex.: Férias de verão"></label>
+    <h3 class="option-group-title">Orçamento total <span class="muted" style="font-weight:600;font-size:13px">(opcional)</span></h3>
+    <div class="amount-input"><span id="budget-symbol">${data.currency === "BRL" ? "R$" : escapeHtml(data.currency)}</span><input id="wizard-budget" type="number" inputmode="decimal" min="0" step="50" value="${escapeHtml(data.budget)}" placeholder="0" aria-label="Orçamento"></div>
+    <div class="segmented" id="budget-currency">${CURRENCIES.map((code) => `<button type="button" data-currency="${code}" class="${code === data.currency ? "is-selected" : ""}">${code}</button>`).join("")}</div>
+    <label class="field" id="budget-rate-field" style="margin-top:12px"${data.currency === "BRL" ? " hidden" : ""}>Cotação manual · 1 unidade em R$<input id="wizard-rate" type="number" inputmode="decimal" min="0.000001" step="0.000001" value="${data.currency === "BRL" ? 1 : escapeHtml(data.rate)}"></label>`;
+  body.querySelector("#wizard-name").addEventListener("input", (event) => {
+    data.name = event.target.value;
+    data.nameEdited = true;
+    updateWizardNext();
+  });
+  body.querySelector("#wizard-budget").addEventListener("input", (event) => { data.budget = event.target.value; });
+  body.querySelector("#wizard-rate").addEventListener("input", (event) => {
+    data.rate = event.target.value;
+    updateWizardNext();
+  });
+  body.querySelector("#budget-currency").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-currency]");
+    if (!button) return;
+    data.currency = button.dataset.currency;
+    body.querySelectorAll("[data-currency]").forEach((item) => item.classList.toggle("is-selected", item === button));
+    body.querySelector("#budget-rate-field").hidden = data.currency === "BRL";
+    body.querySelector("#budget-symbol").textContent = data.currency === "BRL" ? "R$" : data.currency;
+    if (data.currency === "BRL") data.rate = 1;
+    updateWizardNext();
+  });
+}
+
+function validateTrip(trip) {
+  const start = parseLocalDate(trip.startDate);
+  const end = parseLocalDate(trip.endDate);
+  if (!trip.name) return "Dê um nome para esta viagem.";
+  if (!start || !end || start > end) return "Confira as datas: a volta não pode ser antes da ida.";
+  if (!trip.destinations.length) return "Adicione pelo menos uma cidade.";
+  for (const destination of trip.destinations) {
+    const cityStart = parseLocalDate(destination.startDate);
+    const cityEnd = parseLocalDate(destination.endDate);
+    if (!destination.name || !cityStart || !cityEnd) return "Preencha a cidade e as datas de cada parada.";
+    if (cityStart > cityEnd || cityStart < start || cityEnd > end) return `Confira as datas de ${destination.name}: elas devem ficar dentro da viagem.`;
+  }
+  return "";
+}
+
+function saveWizard() {
+  const data = wizard.data;
+  const existing = wizard.editingId ? state.trips.find((trip) => trip.id === wizard.editingId) : null;
+  if (data.cities.length === 1) data.cities[0].nights = totalNights();
+  let cursor = data.startDate;
+  const destinations = data.cities.map((city, index) => {
+    const startDate = cursor;
+    const endDate = index === data.cities.length - 1 ? data.endDate : addDays(cursor, city.nights);
+    cursor = endDate;
+    const previous = existing?.destinations.find((destination) => destination.id === city.id) || existing?.destinations.find((destination) => sameCity(destination.name, city.name));
+    return {
+      id: previous?.id || `cidade-${Date.now()}-${index}`,
+      name: city.name,
+      startDate,
+      endDate,
+      lodgingName: previous?.lodgingName || "",
+      lodgingAddress: previous?.lodgingAddress || ""
+    };
+  });
+  const trip = migrateTrip({
+    ...(existing || blankTrip()),
+    name: data.name.trim(),
+    startDate: data.startDate,
+    endDate: data.endDate,
+    budget: Number(data.budget) || 0,
+    currency: data.currency,
+    budgetExchangeRate: data.currency === "BRL" ? 1 : Number(data.rate) || 1,
+    country: data.cities[0]?.country || getCityInfo(data.cities[0]?.name)?.country || "Brasil",
+    destinations,
+    transport: data.transport,
+    rentalCar: data.transport === "Carro alugado",
+    companions: data.companions,
+    children: data.children,
+    seniors: data.seniors,
+    interests: data.interests
+  });
+  const message = validateTrip(trip);
+  if (message) {
+    $("#form-status").textContent = message;
+    announce(message);
     return;
   }
-  trip.itinerary.push({
-    id: `evento-${Date.now()}`,
-    title,
-    category: String(data.get("category")),
-    date: String(data.get("date")),
-    time: String(data.get("time") || "09:00"),
-    type: "manual"
-  });
-  saveState();
-  event.currentTarget.reset();
-  event.currentTarget.hidden = true;
-  renderItinerary();
-});
-document.querySelector("#cancel-manual-event").addEventListener("click", () => {
-  document.querySelector("#manual-event-form").hidden = true;
-});
-document.querySelector("#itinerary-content").addEventListener("click", (event) => {
-  const addButton = event.target.closest("[data-add-day]");
-  if (addButton) {
-    const form = document.querySelector("#manual-event-form");
-    form.elements.date.value = addButton.dataset.addDay;
-    form.hidden = false;
-    document.querySelector("#manual-event-title").focus();
+  realignItineraryDates(trip);
+  const previous = existing ? { ...existing } : null;
+  if (existing) Object.assign(existing, trip);
+  else state.trips.push(trip);
+  state.currentTripId = trip.id;
+  if (!saveState()) {
+    if (previous) Object.assign(existing, previous);
+    else state.trips = state.trips.filter((item) => item.id !== trip.id);
+    return;
   }
-  const remove = event.target.closest("[data-remove-itinerary]");
-  if (remove) {
-    const trip = getCurrentTrip();
-    if (remove.dataset.itemType === "activity") trip.saved = trip.saved.filter((item) => item.id !== remove.dataset.removeItinerary);
-    else trip.itinerary = trip.itinerary.filter((item) => item.id !== remove.dataset.removeItinerary);
-    saveState();
+  const wasEditing = Boolean(wizard.editingId);
+  wizard = null;
+  selectedDay = null;
+  toast(wasEditing ? "Viagem atualizada" : "Viagem criada!");
+  navigate({ screen: "trip", tab: "about" }, { replace: true });
+}
+
+function exitWizard() {
+  wizard = null;
+  goBack();
+}
+
+// ---------------------------------------------------------------------------
+// Eventos
+// ---------------------------------------------------------------------------
+
+document.addEventListener("click", (event) => {
+  const back = event.target.closest("[data-back]");
+  if (back) {
+    goBack();
+    return;
+  }
+  const openTripButton = event.target.closest("[data-open-trip]");
+  if (openTripButton) {
+    openTrip(openTripButton.dataset.openTrip);
+    return;
+  }
+  const tabButton = event.target.closest("[data-tab]");
+  if (tabButton && route.screen === "trip") {
+    navigate({ tab: tabButton.dataset.tab }, { replace: true });
+    return;
+  }
+  if (event.target.closest("[data-open-deck]")) {
+    navigate({ screen: "deck" });
+    return;
+  }
+  const placeButton = event.target.closest("[data-place]");
+  if (placeButton && !sheet.contains(placeButton)) {
+    openPlaceSheet(placeButton.dataset.place);
+    return;
+  }
+  const lodging = event.target.closest("[data-lodging]");
+  if (lodging) {
+    openLodgingSheet(Number(lodging.dataset.lodging));
+    return;
+  }
+  const dayButton = event.target.closest("[data-day]");
+  if (dayButton) {
+    selectedDay = dayButton.dataset.day;
     renderItinerary();
-  }
-});
-document.querySelector("#itinerary-content").addEventListener("change", (event) => {
-  const daySelect = event.target.closest("[data-day-id]");
-  if (daySelect) {
-    moveItineraryItem(daySelect.dataset.dayId, daySelect.dataset.dayType, daySelect.value);
     return;
   }
-  const input = event.target.closest("[data-time-id]");
-  if (!input) return;
-  const trip = getCurrentTrip();
-  const collection = input.dataset.timeType === "activity" ? trip.saved : trip.itinerary;
-  const item = collection.find((entry) => entry.id === input.dataset.timeId);
-  if (item) item.time = input.value;
-  saveState();
-});
-document.querySelector("#itinerary-content").addEventListener("dragend", () => {
-  document.querySelectorAll(".is-drop-target").forEach((element) => element.classList.remove("is-drop-target"));
-});
-document.querySelector("#generate-itinerary").addEventListener("click", generateItinerary);
-document.querySelector("#expense-form").elements.date.value = getBrasiliaDateKey();
-document.querySelector("#expense-form").elements.currency.addEventListener("change", (event) => {
-  document.querySelector("#expense-form").elements.exchangeRate.value = event.target.value === "BRL" ? "1" : "";
-});
-document.querySelector("#expense-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const trip = getCurrentTrip();
-  const data = new FormData(event.currentTarget);
-  const amount = Number(data.get("amount"));
-  const exchangeRate = Number(data.get("exchangeRate"));
-  const description = String(data.get("description")).trim();
-  if (!description) {
-    announce("Descreva a despesa.");
+  const stopButton = event.target.closest("[data-stop]");
+  if (stopButton) {
+    openStopSheet(stopButton.dataset.stop, stopButton.dataset.stopType);
     return;
   }
-  if (!(amount > 0) || !(exchangeRate > 0)) {
-    announce("Informe um valor e uma cotação maiores que zero.");
-    return;
+  const removeExpense = event.target.closest("[data-remove-expense]");
+  if (removeExpense) {
+    const trip = getCurrentTrip();
+    trip.expenses = trip.expenses.filter((expense) => expense.id !== removeExpense.dataset.removeExpense);
+    saveState();
+    renderExpenses();
+    toast("Despesa removida");
   }
-  trip.expenses.push({
-    id: `despesa-${Date.now()}`,
-    description,
-    category: String(data.get("category")),
-    amount,
-    currency: String(data.get("currency")),
-    exchangeRate,
-    amountBRL: amount * exchangeRate,
-    date: String(data.get("date"))
-  });
-  if (!saveState()) return;
-  event.currentTarget.reset();
-  event.currentTarget.elements.date.value = getBrasiliaDateKey();
-  event.currentTarget.elements.exchangeRate.value = 1;
-  renderExpenses();
-  renderAbout();
-  announce("Despesa registrada.");
 });
-document.querySelector("#expense-list").addEventListener("click", (event) => {
-  const button = event.target.closest("[data-remove-expense]");
-  if (!button) return;
-  const trip = getCurrentTrip();
-  trip.expenses = trip.expenses.filter((expense) => expense.id !== button.dataset.removeExpense);
-  saveState();
-  renderExpenses();
-  renderAbout();
+
+$("#previous-inspiration").addEventListener("click", () => changeInspiration(-1));
+$("#next-inspiration").addEventListener("click", () => changeInspiration(1));
+$("#toggle-home-amounts").addEventListener("click", toggleAmounts);
+$("#toggle-budget-visibility").addEventListener("click", toggleAmounts);
+$("#toggle-expense-visibility").addEventListener("click", toggleAmounts);
+$("#new-trip-button").addEventListener("click", startNewTrip);
+$("#edit-trip-button").addEventListener("click", editTrip);
+$("#city-filter").addEventListener("change", (event) => {
+  deckCity = event.target.value;
+  renderDeck();
 });
-document.querySelector("#display-currency").addEventListener("change", (event) => {
+$("#skip-activity").addEventListener("click", () => triggerSwipe("skip"));
+$("#maybe-activity").addEventListener("click", () => triggerSwipe("maybe"));
+$("#like-activity").addEventListener("click", () => triggerSwipe("like"));
+$("#add-itinerary-button").addEventListener("click", openManualEventSheet);
+$("#generate-itinerary").addEventListener("click", generateItinerary);
+$("#expense-fab").addEventListener("click", openExpenseSheet);
+$("#display-currency").addEventListener("change", (event) => {
   state.displayCurrency = event.target.value;
-  const rateField = document.querySelector("#display-exchange-rate");
-  rateField.value = event.target.value === "BRL" ? "1" : "";
-  state.displayCurrencyRate = Number(rateField.value) || 0;
+  if (event.target.value === "BRL") state.displayCurrencyRate = 1;
   saveState();
   renderExpenses();
 });
-document.querySelector("#display-exchange-rate").addEventListener("change", (event) => {
+$("#display-exchange-rate").addEventListener("change", (event) => {
   state.displayCurrencyRate = Number(event.target.value) || 0;
   saveState();
   renderExpenses();
 });
-document.querySelectorAll("[data-checklist]").forEach((input) => input.addEventListener("change", () => {
+$("#guide-content").addEventListener("change", (event) => {
+  const input = event.target.closest("[data-checklist]");
+  if (!input) return;
   const trip = getCurrentTrip();
   trip.checklist[input.dataset.checklist] = input.checked;
   saveState();
-}));
+  renderGuide();
+});
+$("#guide-content").addEventListener("click", async (event) => {
+  const trip = getCurrentTrip();
+  if (event.target.closest("#download-checklist")) {
+    const blob = new Blob([checklistText(trip)], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `checklist-${slugify(trip.name || "viagem")}.txt`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+  if (event.target.closest("#share-checklist")) {
+    const text = checklistText(trip);
+    try {
+      if (navigator.share) await navigator.share({ title: `Checklist — ${trip.name}`, text });
+      else {
+        await navigator.clipboard.writeText(text);
+        toast("Checklist copiado");
+      }
+    } catch (error) {
+      if (error?.name !== "AbortError") toast("Não foi possível compartilhar");
+    }
+  }
+});
+$("#wizard-back").addEventListener("click", () => {
+  if (wizard && wizard.step > 0) {
+    wizard.step -= 1;
+    renderWizard();
+    window.scrollTo(0, 0);
+  } else exitWizard();
+});
+$("#wizard-close").addEventListener("click", exitWizard);
+$("#wizard-next").addEventListener("click", () => {
+  const steps = wizardSteps();
+  if (!stepIsValid(steps[wizard.step])) return;
+  if (wizard.step === steps.length - 1) saveWizard();
+  else {
+    wizard.step += 1;
+    renderWizard();
+    window.scrollTo(0, 0);
+  }
+});
+
 document.addEventListener("keydown", (event) => {
-  if (activeView !== "trip" || activeTab !== "discover" || event.altKey || event.ctrlKey || event.metaKey) return;
+  if (route.screen !== "deck" || sheet.open || event.altKey || event.ctrlKey || event.metaKey) return;
   if (event.target.closest("input, select, textarea, [contenteditable='true']")) return;
   if (!currentActivityId) return;
   if (event.key === "ArrowLeft") triggerSwipe("skip");
@@ -1575,14 +2356,22 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-document.querySelector("#new-trip-button").addEventListener("click", startNewTrip);
-document.querySelector("#trip-form").addEventListener("input", () => {
-  if (elements.formStatus.textContent === storageNotice) elements.formStatus.textContent = "";
-});
+function updateClock() {
+  $("#brazil-clock").textContent = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", hour12: false
+  }).format(new Date());
+}
+
+// ---------------------------------------------------------------------------
+// Início do app
+// ---------------------------------------------------------------------------
+
+hydrateIcons();
 renderInspiration();
-renderHome();
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  window.setInterval(randomInspiration, 15000);
+  window.setInterval(() => { if (route.screen === "home" && !document.hidden) changeInspiration(1); }, INSPIRATION_INTERVAL_MS);
 }
 updateClock();
-clockTimer = window.setInterval(updateClock, 30000);
+window.setInterval(updateClock, 30000);
+window.history.replaceState({ ...route }, "");
+render();

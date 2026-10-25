@@ -2,251 +2,226 @@
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f6f4ee">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f5f3ee">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="description" content="Planeje viagens com gratidão, propósito e tudo organizado em um só lugar.">
     <title>Viagem na Mão — viajar também é agradecer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script src="icones.js" defer></script>
     <script src="dados/fontes-abertas.js" defer></script>
     <script src="dados/atracoes-cidades.js" defer></script>
+    <script src="dados/osm-lugares.js" defer></script>
+    <script src="dados/guia-paises.js" defer></script>
     <script src="script.js" defer></script>
   </head>
   <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <a class="brand" href="#inicio" data-home aria-label="Viagem na Mão, início">
-          <span class="brand-mark" aria-hidden="true">v<span>m</span></span>
-          <span>viagem<span class="brand-light"> na mão</span></span>
-        </a>
-        <nav id="trip-navigation" class="main-nav" aria-label="Seções da viagem" hidden>
-          <button class="nav-link" type="button" data-tab="about">Sobre a viagem</button>
-          <button class="nav-link" type="button" data-tab="itinerary">Roteiro</button>
-          <button class="nav-link" type="button" data-tab="discover">Descobrir</button>
-          <button class="nav-link" type="button" data-tab="expenses">Custos</button>
-          <button class="nav-link" type="button" data-tab="before">Antes de ir</button>
-        </nav>
-        <div class="topbar-actions">
-          <button id="home-button" class="text-button" type="button" data-home hidden>Minhas viagens</button>
-          <span class="timezone-indicator"><span aria-hidden="true">◷</span> Brasília <span id="brazil-clock">--:--</span> · 24h</span>
+    <div class="app" id="app">
+
+      <!-- Início -->
+      <section class="screen" id="screen-home" data-screen="home" aria-labelledby="home-title">
+        <div class="hero" id="hero">
+          <img class="hero-img is-active" id="hero-img-a" alt="">
+          <img class="hero-img" id="hero-img-b" alt="" aria-hidden="true">
+          <div class="hero-shade"></div>
+          <header class="hero-top">
+            <span class="brand"><span class="brand-mark" aria-hidden="true">v<span>m</span></span>viagem<span class="brand-light"> na mão</span></span>
+            <span class="clock"><svg class="icon" data-icon="clock"></svg><span id="brazil-clock">--:--</span> Brasília</span>
+          </header>
+          <div class="hero-copy">
+            <p class="hero-kicker" id="home-title">Viajar também é agradecer</p>
+            <blockquote class="hero-quote" id="reflection-message" aria-live="polite"></blockquote>
+            <p class="hero-place"><svg class="icon" data-icon="map-pin"></svg><span id="hero-location"></span></p>
+          </div>
+          <div class="hero-controls">
+            <button class="icon-btn icon-btn-glass" id="previous-inspiration" type="button" aria-label="Imagem anterior"><svg class="icon" data-icon="chevron-left"></svg></button>
+            <div class="hero-dots" id="hero-dots" aria-hidden="true"></div>
+            <button class="icon-btn icon-btn-glass" id="next-inspiration" type="button" aria-label="Próxima imagem"><svg class="icon" data-icon="chevron-right"></svg></button>
+          </div>
         </div>
-      </header>
 
-      <main id="main-content">
-        <section id="home-view" class="view is-visible" aria-labelledby="home-title">
-          <section class="inspiration-hero" aria-label="Inspiração para viajar">
-            <img id="hero-image" class="hero-image" src="" alt="" fetchpriority="high">
-            <div class="hero-shade"></div>
-            <div class="hero-copy">
-              <p class="hero-kicker"><span>✦</span> VIAJAR TAMBÉM É AGRADECER</p>
-              <h1 id="home-title">A vida é feita<br>de <em>caminhos</em> e encontros.</h1>
-              <blockquote id="reflection-message" aria-live="polite"></blockquote>
-              <div class="hero-caption"><span id="hero-location"></span><span class="hero-pause">INSPIRAÇÃO PARA SUA PRÓXIMA JORNADA</span></div>
+        <div class="screen-body home-body">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Suas viagens</p>
+              <h1 class="section-title">Uma viagem de cada vez.</h1>
             </div>
-            <div class="hero-controls">
-              <button id="previous-inspiration" type="button" aria-label="Imagem anterior">←</button>
-              <span id="inspiration-position" aria-live="polite"></span>
-              <button id="next-inspiration" type="button" aria-label="Próxima imagem">→</button>
-            </div>
-          </section>
-
-          <section class="home-section" aria-labelledby="trips-heading">
-            <div class="home-section-heading">
-              <div>
-                <p class="eyebrow"><span class="eyebrow-dot"></span> SUA VIDA, SUAS VIAGENS</p>
-                <h2 id="trips-heading">Uma viagem de cada vez.<br><span>Memórias para sempre.</span></h2>
-              </div>
-              <div class="home-actions">
-                <button id="toggle-home-amounts" class="icon-button" type="button" aria-label="Ocultar valores" title="Ocultar valores">◉</button>
-                <button id="new-trip-button" class="primary-button" type="button">+ Planejar nova viagem</button>
-              </div>
-            </div>
-            <div id="trip-cards" class="trip-cards"></div>
-          </section>
-          <div class="home-verse" aria-live="polite" aria-atomic="true">
-            <p id="home-verse-text"></p>
-            <span id="home-verse-reference"></span>
+            <button class="icon-btn" id="toggle-home-amounts" type="button" aria-label="Ocultar valores"><svg class="icon" data-icon="eye"></svg></button>
           </div>
-        </section>
+          <div id="trip-cards" class="trip-list"></div>
+          <figure class="verse-card">
+            <blockquote id="home-verse-text"></blockquote>
+            <figcaption id="home-verse-reference"></figcaption>
+          </figure>
+          <p class="footnote">Fotos ilustrativas: Unsplash. Fotos de lugares: Wikimedia Commons, com crédito em cada uma.</p>
+        </div>
+        <div class="fab-bar">
+          <button class="btn btn-primary btn-block" id="new-trip-button" type="button"><svg class="icon" data-icon="plus"></svg> Planejar nova viagem</button>
+        </div>
+      </section>
 
-        <section id="trip-view" class="view" hidden aria-labelledby="trip-heading">
-          <div class="trip-cover">
-            <img id="trip-cover-image" src="" alt="" fetchpriority="high">
-            <div class="trip-cover-shade"></div>
-            <div class="trip-cover-copy">
-              <button class="back-link" type="button" data-home>← Minhas viagens</button>
-              <p id="trip-cover-destination" class="hero-kicker"></p>
-              <h1 id="trip-heading"></h1>
-              <p id="trip-cover-dates"></p>
+      <!-- Viagem (abas) -->
+      <section class="screen" id="screen-trip" data-screen="trip" hidden aria-labelledby="trip-heading">
+        <header class="app-bar">
+          <button class="icon-btn" type="button" data-back aria-label="Voltar para minhas viagens"><svg class="icon" data-icon="arrow-left"></svg></button>
+          <div class="app-bar-title"><span class="app-bar-kicker" id="trip-bar-dates"></span><h1 id="trip-heading"></h1></div>
+          <button class="icon-btn" type="button" id="edit-trip-button" aria-label="Editar viagem"><svg class="icon" data-icon="pencil"></svg></button>
+        </header>
+
+        <div class="screen-body trip-body">
+          <!-- Resumo -->
+          <div class="tab-panel" id="tab-about" data-tab-panel="about">
+            <div class="cover">
+              <img id="trip-cover-image" alt="">
+              <div class="cover-shade"></div>
+              <div class="cover-copy">
+                <p class="cover-cities" id="trip-cover-destination"></p>
+                <p class="cover-dates" id="trip-cover-dates"></p>
+              </div>
+              <span class="chip chip-glass cover-countdown" id="trip-cover-countdown"></span>
+              <a id="trip-cover-credit" class="photo-credit" target="_blank" rel="noopener noreferrer" hidden></a>
             </div>
-            <div id="trip-cover-countdown" class="cover-countdown"></div>
-            <a id="trip-cover-credit" class="photo-credit cover-credit" target="_blank" rel="noopener noreferrer" hidden></a>
+            <button class="discover-cta" type="button" data-open-deck>
+              <span class="discover-cta-icon"><svg class="icon" data-icon="compass"></svg></span>
+              <span><strong>Descobrir lugares</strong><small id="discover-cta-count"></small></span>
+              <svg class="icon" data-icon="chevron-right"></svg>
+            </button>
+            <div class="card">
+              <div class="card-head"><h2><svg class="icon" data-icon="route"></svg> Por onde você vai passar</h2></div>
+              <ol class="timeline" id="trip-destination-list"></ol>
+            </div>
+            <div class="card" id="saved-strip-card">
+              <div class="card-head"><h2><svg class="icon" data-icon="heart"></svg> Ideias guardadas</h2><button class="link-btn" type="button" data-tab="discover">Ver todas</button></div>
+              <div class="h-scroll" id="saved-strip"></div>
+            </div>
+            <div class="card budget-card">
+              <div class="card-head"><h2><svg class="icon" data-icon="wallet"></svg> Orçamento</h2><button class="icon-btn icon-btn-sm" id="toggle-budget-visibility" type="button" aria-label="Ocultar valores"><svg class="icon" data-icon="eye"></svg></button></div>
+              <strong class="budget-total" id="trip-budget-total"></strong>
+              <div class="progress"><span id="trip-budget-progress"></span></div>
+              <div class="budget-caption"><span id="trip-budget-spent"></span><span id="trip-budget-left"></span></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h2><svg class="icon" data-icon="users"></svg> Com quem e como</h2></div>
+              <div class="chips" id="travel-details"></div>
+              <div class="chips" id="trip-interests"></div>
+            </div>
           </div>
 
-          <section id="tab-about" class="trip-tab" aria-labelledby="about-title">
-            <div class="tab-heading">
-              <div><p class="eyebrow"><span class="eyebrow-dot"></span> SUA VIAGEM EM UM SÓ LUGAR</p><h2 id="about-title">Sobre a viagem</h2></div>
-              <button id="edit-trip-button" class="secondary-button" type="button">Editar viagem</button>
+          <!-- Roteiro -->
+          <div class="tab-panel" id="tab-itinerary" data-tab-panel="itinerary" hidden>
+            <div class="day-strip" id="day-strip" role="tablist" aria-label="Dias da viagem"></div>
+            <div class="day-header" id="day-header"></div>
+            <ol class="stops" id="itinerary-content"></ol>
+            <div class="row-actions">
+              <button class="btn btn-secondary" id="add-itinerary-button" type="button"><svg class="icon" data-icon="plus"></svg> Compromisso</button>
+              <button class="btn btn-secondary" id="generate-itinerary" type="button"><svg class="icon" data-icon="sparkles"></svg> Sugerir roteiro</button>
             </div>
-            <div class="about-grid">
-              <div class="about-main">
-                <div class="about-card">
-                  <div class="about-card-heading"><span class="section-icon">⌖</span><div><h3>Por onde você vai passar?</h3><p id="trip-overview-dates"></p></div></div>
-                  <div id="trip-destination-list" class="trip-destination-list"></div>
-                </div>
-                <div class="about-card">
-                  <div class="about-card-heading"><span class="section-icon">♡</span><div><h3>Com quem e como?</h3><p>Um resumo para deixar os dias com a sua cara.</p></div></div>
-                  <div id="travel-details" class="detail-chips"></div>
-                </div>
-                <div class="about-card">
-                  <div class="about-card-heading"><span class="section-icon">✳</span><div><h3>O propósito da viagem</h3><p>Interesses que ajudam a orientar suas descobertas.</p></div></div>
-                  <div id="trip-interests" class="detail-chips"></div>
-                </div>
-              </div>
-              <aside class="trip-budget-card">
-                <p class="section-kicker">VISÃO FINANCEIRA</p>
-                <h3>Orçamento da viagem</h3>
-                <div class="budget-total"><strong id="trip-budget-total"></strong><button id="toggle-budget-visibility" type="button" aria-label="Ocultar valores" title="Ocultar valores">◉</button></div>
-                <div class="budget-track"><span id="trip-budget-progress"></span></div>
-                <div class="budget-caption"><span id="trip-budget-spent"></span><span id="trip-budget-left"></span></div>
-                <button class="sidebar-link" type="button" data-tab="expenses">Ver custos detalhados <span>→</span></button>
-              </aside>
-            </div>
-          </section>
+            <p class="footnote">Sugestão automática por regras simples, sem IA. Tempos de carro e a pé: <a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener noreferrer">OSRM / FOSSGIS</a>, dados © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">colaboradores do OpenStreetMap</a>, sem trânsito, uso de teste não comercial.</p>
+          </div>
 
-          <section id="tab-itinerary" class="trip-tab" hidden aria-labelledby="itinerary-title">
-            <div class="tab-heading">
-              <div><p class="eyebrow"><span class="eyebrow-dot"></span> CADA DIA, NO SEU RITMO</p><h2 id="itinerary-title">Roteiro da viagem</h2></div>
-              <button id="add-itinerary-button" class="secondary-button" type="button">+ Compromisso manual</button>
+          <!-- Descobrir (resumo; o swipe abre em tela própria) -->
+          <div class="tab-panel" id="tab-discover" data-tab-panel="discover" hidden>
+            <div class="discover-hero">
+              <span class="discover-hero-icon"><svg class="icon" data-icon="compass"></svg></span>
+              <h2>Descubra sua viagem</h2>
+              <p id="discover-summary"></p>
+              <button class="btn btn-primary btn-block" type="button" data-open-deck><svg class="icon" data-icon="layers"></svg> Começar a descobrir</button>
             </div>
-            <div class="itinerary-tools">
-              <p>Arraste uma parada para outro dia ou ajuste data e horário. Os horários seguem Brasília.</p>
-              <button id="generate-itinerary" class="primary-button" type="button">✦ Montar sugestão automática</button>
-            </div>
-            <p class="prototype-note">A sugestão automática usa regras simples do protótipo, não inteligência artificial nem trânsito. Tempos de carro e a pé entre atrações: <a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener noreferrer">OSRM / FOSSGIS</a>, com dados © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">colaboradores do OpenStreetMap</a>; não consideram trânsito e servem só para teste não comercial.</p>
-            <form id="manual-event-form" class="manual-event-form" hidden>
-              <h3>Novo compromisso</h3>
-              <div class="expense-fields">
-                <label class="field">Nome<input id="manual-event-title" name="title" maxlength="100" required placeholder="Ex.: Check-in no hotel"></label>
-                <label class="field">Categoria<input name="category" maxlength="60" placeholder="Ex.: Transporte"></label>
-                <label class="field">Dia<select name="date" id="manual-event-date" required></select></label>
-                <label class="field">Horário<input name="time" type="time" value="09:00" required></label>
-              </div>
-              <div class="manual-form-actions"><button class="secondary-button" id="cancel-manual-event" type="button">Cancelar</button><button class="primary-button" type="submit">Adicionar ao roteiro</button></div>
-            </form>
-            <div id="itinerary-content" class="itinerary-content"></div>
-          </section>
+            <h3 class="list-title">Curtidas <span class="count-pill" id="discovery-saved-count">0</span></h3>
+            <div class="place-grid" id="saved-preview-list"></div>
+            <h3 class="list-title">Talvez depois <span class="count-pill" id="maybe-count">0</span></h3>
+            <div class="place-grid" id="maybe-preview-list"></div>
+          </div>
 
-          <section id="tab-discover" class="trip-tab" hidden aria-labelledby="discover-title">
-            <div class="tab-heading">
-              <div><p class="eyebrow"><span class="eyebrow-dot"></span> UM LUGAR PODE VIRAR HISTÓRIA</p><h2 id="discover-title">Descubra sua viagem</h2><p class="tab-description">Curta, passe ou deixe no “talvez” para decidir depois.</p></div>
-              <label class="compact-field">Cidade<select id="city-filter" aria-label="Filtrar atividades por cidade"><option value="all">Todas as cidades</option></select></label>
-            </div>
-            <div class="discover-layout">
-              <section class="discovery-column" aria-label="Atividades para descobrir">
-                <div class="filter-row"><span id="discovery-position" class="discovery-position" aria-live="polite"></span></div>
-                <div id="activity-stage" class="activity-stage" aria-live="polite"></div>
-                <div class="swipe-actions" aria-label="Escolha o que fazer com esta atividade">
-                  <button id="skip-activity" class="round-action skip-action" type="button" aria-label="Não quero">×</button>
-                  <button id="maybe-activity" class="round-action maybe-action" type="button" aria-label="Talvez, lembrar depois">♡</button>
-                  <span class="swipe-hint">← passar · ↓ talvez · curtir →</span>
-                  <button id="like-activity" class="round-action like-action" type="button" aria-label="Quero conhecer">♥</button>
-                </div>
-                <p id="swipe-feedback" class="swipe-feedback" role="status" aria-live="polite"></p>
-              </section>
-              <aside class="trip-sidebar">
-                <div class="sidebar-top"><div><span class="section-kicker">SUA SELEÇÃO</span><h3>Ideias guardadas</h3></div><span id="discovery-saved-count" class="nav-count">0</span></div>
-                <div id="saved-preview-list" class="saved-preview-list"></div>
-                <h4 class="maybe-heading">Talvez depois <span id="maybe-count"></span></h4>
-                <div id="maybe-preview-list" class="saved-preview-list"></div>
-                <p class="sidebar-note">Valores, horários e avaliações precisam ser confirmados com os locais.</p>
-              </aside>
-            </div>
-          </section>
-
-          <section id="tab-expenses" class="trip-tab" hidden aria-labelledby="expenses-title">
-            <div class="tab-heading"><div><p class="eyebrow"><span class="eyebrow-dot"></span> CADA ESCOLHA, SEM SURPRESA</p><h2 id="expenses-title">Custos da viagem</h2><p class="tab-description">Registre despesas e acompanhe o orçamento na moeda que fizer sentido.</p></div></div>
-            <div class="finance-overview">
-              <article><span>ORÇAMENTO</span><strong id="finance-budget"></strong></article>
-              <article><span>GASTOS REGISTRADOS</span><strong id="finance-spent"></strong></article>
-              <article><span>PREVISÃO TOTAL</span><strong id="finance-forecast"></strong></article>
-              <label class="compact-field">Moeda de exibição<select id="display-currency"><option value="BRL">Real (BRL)</option><option value="USD">Dólar (USD)</option><option value="EUR">Euro (EUR)</option><option value="GBP">Libra (GBP)</option><option value="ARS">Peso argentino (ARS)</option></select></label>
-              <label class="compact-field">Cotação manual · 1 moeda em R$<input id="display-exchange-rate" type="number" min="0.000001" step="0.000001" value="1"></label>
-            </div>
-            <form id="expense-form" class="expense-form">
-              <h3>Adicionar uma despesa</h3>
-              <div class="expense-fields">
-                <label class="field">Descrição<input name="description" maxlength="100" placeholder="Ex.: Almoço no centro" required></label>
-                <label class="field">Categoria<select name="category" required><option value="transporte">Transporte</option><option value="hospedagem">Hospedagem</option><option value="alimentacao">Alimentação</option><option value="atracoes">Atrações</option><option value="compras">Compras</option><option value="seguro">Seguro</option><option value="outros">Outros</option></select></label>
-                <label class="field">Valor<input name="amount" type="number" min="0.01" step="0.01" required placeholder="0,00"></label>
-                <label class="field">Moeda<select name="currency"><option value="BRL">BRL — Real</option><option value="USD">USD — Dólar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — Libra</option><option value="ARS">ARS — Peso argentino</option></select></label>
-                <label class="field">Data<input name="date" type="date" required></label>
-                <label class="field">Cotação para BRL<input name="exchangeRate" type="number" min="0.000001" step="0.000001" value="1" required></label>
+          <!-- Custos -->
+          <div class="tab-panel" id="tab-expenses" data-tab-panel="expenses" hidden>
+            <div class="money-card">
+              <div class="money-top">
+                <span>Gasto até agora</span>
+                <button class="icon-btn icon-btn-sm icon-btn-glass" id="toggle-expense-visibility" type="button" aria-label="Ocultar valores"><svg class="icon" data-icon="eye"></svg></button>
               </div>
-              <p class="prototype-note">A cotação é manual e deve ser informada pelo usuário; não há consulta de câmbio em tempo real.</p>
-              <button class="primary-button" type="submit">Salvar despesa →</button>
-            </form>
-            <div class="expense-list-heading"><h3>Despesas lançadas</h3><button id="toggle-expense-visibility" class="text-button" type="button">Ocultar valores</button></div>
+              <strong class="money-big" id="finance-spent"></strong>
+              <div class="progress progress-light"><span id="finance-progress"></span></div>
+              <div class="money-grid">
+                <div><span>Orçamento</span><strong id="finance-budget"></strong></div>
+                <div><span>Previsão</span><strong id="finance-forecast"></strong></div>
+                <div><span>Saldo</span><strong id="finance-left"></strong></div>
+              </div>
+            </div>
+            <div class="card" id="category-card">
+              <div class="card-head"><h2><svg class="icon" data-icon="receipt"></svg> Por categoria</h2></div>
+              <div class="category-bars" id="category-bars"></div>
+            </div>
+            <details class="card disclosure">
+              <summary><svg class="icon" data-icon="banknote"></svg> Moeda de exibição <span id="display-currency-label"></span><svg class="icon chevron" data-icon="chevron-down"></svg></summary>
+              <div class="field-row">
+                <label class="field">Moeda<select id="display-currency"><option value="BRL">Real (BRL)</option><option value="USD">Dólar (USD)</option><option value="EUR">Euro (EUR)</option><option value="GBP">Libra (GBP)</option><option value="ARS">Peso argentino (ARS)</option></select></label>
+                <label class="field">1 unidade em R$<input id="display-exchange-rate" type="number" inputmode="decimal" min="0.000001" step="0.000001" value="1"></label>
+              </div>
+              <p class="footnote">Cotação manual, informada por você. Não há câmbio em tempo real.</p>
+            </details>
+            <h3 class="list-title">Despesas</h3>
             <div id="expense-list" class="expense-list"></div>
-          </section>
+          </div>
 
-          <section id="tab-before" class="trip-tab" hidden aria-labelledby="before-title">
-            <div class="tab-heading"><div><p class="eyebrow"><span class="eyebrow-dot"></span> VIAJAR COM CUIDADO TAMBÉM É VIAJAR BEM</p><h2 id="before-title">Bom saber antes de ir</h2><p class="tab-description">Uma lista de preparação para revisar conforme o destino e as suas necessidades.</p></div></div>
-            <div class="before-grid">
-              <article class="before-card"><span class="before-icon">▣</span><h3>Documentos e regras de entrada</h3><p>Confira documentos, vistos, validade exigida e regras oficiais para cada país e conexão. Exigências mudam; consulte consulados e órgãos governamentais antes de comprar.</p><a href="https://www.gov.br/mre/pt-br/assuntos/portal-consular" target="_blank" rel="noopener noreferrer">Portal Consular do Itamaraty ↗</a></article>
-              <article class="before-card"><span class="before-icon">♡</span><h3>Saúde e seguro viagem</h3><p>Verifique recomendações de saúde, cobertura, exclusões e assistência adequada ao destino e às atividades planejadas. Requisitos variam por país.</p><a href="https://www.gov.br/anvisa/pt-br/assuntos/paf" target="_blank" rel="noopener noreferrer">Orientações da Anvisa ↗</a></article>
-              <article class="before-card"><span class="before-icon">⌁</span><h3>Internet e conectividade</h3><p>Pesquise chip físico ou eSIM, cobertura, compatibilidade do aparelho e opções de acesso offline antes de viajar.</p><label class="check-row"><input type="checkbox" data-checklist="internet"> Pesquisei minha conexão</label></article>
-              <article class="before-card"><span class="before-icon">$</span><h3>Cartão global e moeda</h3><p>Compare tarifas, câmbio, limites, suporte e condições do cartão. Os detalhes abaixo são um link promocional fornecido pelo projeto, sem validação automática do benefício.</p><a href="https://www.nomadglobal.com/" target="_blank" rel="noopener noreferrer">Conhecer Nomad · cupom #viagemnamao ↗</a><label class="check-row"><input type="checkbox" data-checklist="cartao"> Revisei minhas opções de pagamento</label></article>
-              <article class="before-card"><span class="before-icon">⌖</span><h3>Endereços e deslocamentos</h3><p>Salve hospedagens, contatos importantes, trajetos e mapas offline. Confirme horários de check-in e transporte com os prestadores.</p><label class="check-row"><input type="checkbox" data-checklist="enderecos"> Salvei meus endereços</label></article>
-              <article class="before-card"><span class="before-icon">✳</span><h3>Seu jeito de viajar</h3><p>Considere acessibilidade, ritmo, descanso, crianças, idosos, alimentação e atividades que pedem reserva antecipada.</p><label class="check-row"><input type="checkbox" data-checklist="ritmo"> Revisei o ritmo do roteiro</label></article>
-            </div>
-            <p class="prototype-note">Conteúdo geral de preparação, não orientação legal, médica, consular ou financeira. Confirme requisitos com fontes oficiais do destino e com os prestadores. O cupom informado não é verificado nem garantido pelo protótipo.</p>
-          </section>
-        </section>
+          <!-- Guia -->
+          <div class="tab-panel" id="tab-before" data-tab-panel="before" hidden>
+            <div id="guide-content"></div>
+          </div>
+        </div>
 
-        <section id="trip-form-view" class="view" hidden aria-labelledby="trip-form-title">
-          <div class="page-intro"><p class="eyebrow"><span class="eyebrow-dot"></span> UM NOVO CAPÍTULO</p><h1 id="trip-form-title">Vamos sonhar<br><span>essa viagem?</span></h1><p class="intro-copy">Comece pelo essencial. Você pode editar tudo depois.</p></div>
-          <form id="trip-form" class="trip-form">
-            <datalist id="destination-city-options"></datalist>
-            <div class="form-section">
-              <div class="form-section-heading"><span class="form-number">01</span><div><h2>O plano</h2><p>Quando, para onde e qual é a sua previsão de gastos?</p></div></div>
-              <div class="form-grid">
-                <label class="field field-wide">Nome da viagem<input id="trip-name" name="tripName" maxlength="60" placeholder="Ex.: Férias de verão" required></label>
-                <label class="field">Data de início<input id="trip-start" name="tripStart" type="date" required></label>
-                <label class="field">Data de volta<input id="trip-end" name="tripEnd" type="date" required></label>
-                <label class="field">Orçamento total<input id="trip-budget" name="tripBudget" type="number" min="0" step="50" placeholder="Ex.: 3500"></label>
-                <label class="field">Moeda do orçamento<select id="trip-currency" name="tripCurrency"><option value="BRL">BRL — Real brasileiro</option><option value="USD">USD — Dólar americano</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — Libra esterlina</option><option value="ARS">ARS — Peso argentino</option></select></label>
-                <label class="field">Cotação manual · 1 moeda em R$<input id="budget-exchange-rate" name="budgetExchangeRate" type="number" min="0.000001" step="0.000001" value="1" required></label>
-                <label class="field">País principal<input id="trip-country" name="tripCountry" maxlength="60" placeholder="Ex.: Brasil"></label>
-              </div>
-            </div>
-            <div class="form-section">
-              <div class="form-section-heading"><span class="form-number">02</span><div><h2>Suas cidades e hospedagens</h2><p>Inclua as datas de cada parada e, se já souber, o endereço.</p></div></div>
-              <div id="destinations-list" class="destinations-list"></div>
-              <button id="add-destination" class="add-destination" type="button">+ Adicionar cidade</button>
-            </div>
-            <div class="form-section">
-              <div class="form-section-heading"><span class="form-number">03</span><div><h2>Como você vai viajar?</h2><p>Um pouco de contexto ajuda a planejar com mais carinho.</p></div></div>
-              <div class="form-grid">
-                <label class="field">Transporte principal<select id="trip-transport"><option value="">Ainda não decidi</option><option>Avião</option><option>Carro próprio</option><option>Carro alugado</option><option>Ônibus</option><option>Trem</option><option>Navio / cruzeiro</option><option>Outro</option></select></label>
-                <label class="field">Vai alugar carro?<select id="trip-rental-car"><option value="nao">Não / ainda não sei</option><option value="sim">Sim</option></select></label>
-                <label class="field field-wide">Quem vai viajar com você?<input id="trip-companions" maxlength="120" placeholder="Ex.: Minha família, 2 adultos"></label>
-                <label class="check-row"><input id="trip-with-children" type="checkbox"> Crianças na viagem</label>
-                <label class="check-row"><input id="trip-with-seniors" type="checkbox"> Idosos na viagem</label>
-              </div>
-            </div>
-            <div class="form-section">
-              <div class="form-section-heading"><span class="form-number">04</span><div><h2>O que você quer viver?</h2><p>Marque seus interesses, incluindo compras se fizer parte dos planos.</p></div></div>
-              <fieldset class="interest-fieldset"><legend class="visually-hidden">Selecione seus interesses</legend><div id="interest-options" class="interest-options"></div></fieldset>
-            </div>
-            <div class="form-actions"><p id="form-status" class="form-status" role="status" aria-live="polite"></p><button class="primary-button" type="submit">Salvar viagem <span>→</span></button></div>
-          </form>
-        </section>
-      </main>
+        <button class="fab" id="expense-fab" type="button" aria-label="Adicionar despesa" hidden><svg class="icon" data-icon="plus"></svg></button>
 
-      <footer class="app-footer"><span class="footer-brand">viagem<span> na mão</span></span><span>UM BOM ROTEIRO TEM A SUA CARA.</span><span>FEITO PARA IR MAIS LONGE <span class="footer-star">✳</span></span></footer>
+        <nav class="tab-bar" id="trip-navigation" aria-label="Seções da viagem">
+          <button type="button" data-tab="about"><svg class="icon" data-icon="house"></svg><span>Resumo</span></button>
+          <button type="button" data-tab="itinerary"><svg class="icon" data-icon="route"></svg><span>Roteiro</span></button>
+          <button type="button" data-tab="discover"><svg class="icon" data-icon="compass"></svg><span>Descobrir</span></button>
+          <button type="button" data-tab="expenses"><svg class="icon" data-icon="wallet"></svg><span>Custos</span></button>
+          <button type="button" data-tab="before"><svg class="icon" data-icon="luggage"></svg><span>Guia</span></button>
+        </nav>
+      </section>
+
+      <!-- Descobrir: swipe em tela exclusiva -->
+      <section class="screen screen-deck" id="screen-deck" data-screen="deck" hidden aria-labelledby="deck-title">
+        <header class="app-bar">
+          <button class="icon-btn" type="button" data-back aria-label="Voltar"><svg class="icon" data-icon="arrow-left"></svg></button>
+          <div class="app-bar-title"><span class="app-bar-kicker" id="discovery-position" aria-live="polite"></span><h1 id="deck-title">Descobrir</h1></div>
+          <label class="select-chip"><svg class="icon" data-icon="map-pin"></svg><select id="city-filter" aria-label="Filtrar por cidade"><option value="all">Todas</option></select></label>
+        </header>
+        <div class="deck" id="activity-stage" aria-live="polite"></div>
+        <div class="deck-actions" aria-label="Escolha o que fazer com este lugar">
+          <button id="skip-activity" class="round-btn round-skip" type="button" aria-label="Não curti"><svg class="icon" data-icon="x"></svg></button>
+          <button id="maybe-activity" class="round-btn round-maybe" type="button" aria-label="Talvez, decidir depois"><svg class="icon" data-icon="bookmark"></svg></button>
+          <button id="like-activity" class="round-btn round-like" type="button" aria-label="Curti, quero conhecer"><svg class="icon" data-icon="heart"></svg></button>
+        </div>
+        <p class="deck-hint">← não curti · ↓ talvez · curti →</p>
+        <p id="swipe-feedback" class="toast" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- Cadastro / edição da viagem em etapas -->
+      <section class="screen" id="screen-form" data-screen="form" hidden aria-labelledby="wizard-title">
+        <header class="app-bar">
+          <button class="icon-btn" type="button" id="wizard-back" aria-label="Voltar"><svg class="icon" data-icon="arrow-left"></svg></button>
+          <div class="app-bar-title"><span class="app-bar-kicker" id="wizard-step-label"></span><h1 id="wizard-title"></h1></div>
+          <button class="icon-btn" type="button" id="wizard-close" aria-label="Fechar sem salvar"><svg class="icon" data-icon="x"></svg></button>
+        </header>
+        <div class="wizard-progress"><span id="wizard-progress"></span></div>
+        <div class="screen-body wizard-body" id="wizard-body"></div>
+        <div class="wizard-footer">
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+          <button class="btn btn-primary btn-block" type="button" id="wizard-next">Continuar <svg class="icon" data-icon="arrow-right"></svg></button>
+        </div>
+      </section>
+
+      <!-- Janelas que sobem de baixo -->
+      <dialog class="sheet" id="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-content" id="sheet-content"></div>
+      </dialog>
+
       <div id="app-announcement" class="visually-hidden" role="status" aria-live="polite"></div>
     </div>
   </body>

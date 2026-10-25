@@ -4,23 +4,17 @@ Protótipo estático para planejar várias viagens, organizar um roteiro, descob
 
 ## O que já dá para fazer
 
-- Definir o nome e as datas da viagem, o orçamento e as cidades visitadas.
-- Guardar datas e endereços das hospedagens de cada cidade.
-- Registrar transporte, carro alugado, acompanhantes, crianças, idosos e interesses como natureza, cultura, gastronomia, aventura e compras.
-- Ver uma página inicial com mensagens de gratidão, 10 paisagens inspiradoras e 10 versículos em rotação a cada 15 segundos, várias viagens e contagem regressiva.
-- Explorar cartões, descartar ideias, guardar em “Talvez depois” ou adicionar atividades ao roteiro com botões, setas do teclado (← passar, → curtir, ↓ talvez) ou arrastando o cartão (direita, esquerda e para baixo).
-- Organizar compromissos por dia e horário, arrastar paradas entre dias (ou escolher o dia na lista, que também funciona no celular) ou criar compromissos manuais.
-- Usar uma sugestão automática local para distribuir atividades guardadas; ela não usa IA, trânsito ou dados de distância.
-- Registrar despesas de transporte, hospedagem, alimentação, atrações, compras, seguro e outros.
-- Informar moeda e cotação manual, ocultar valores e consultar orçamento, gastos e previsão.
-- Consultar uma lista geral de preparação para a viagem e marcar itens revisados.
-- Manter as escolhas no armazenamento local do navegador.
-- Encontrar 94 sugestões de atrações em 21 destinos de teste: Rio de Janeiro, Paraty, Gramado, Canela, Florianópolis, Curitiba, São Paulo, Foz do Iguaçu, Salvador, Recife, Olinda, Fortaleza, Brasília, Belo Horizonte, Bonito, Manaus, Porto Alegre, João Pessoa, Natal, Búzios e Aquiraz.
-- Descobrir algumas ideias de eventos sazonais, sem datas presumidas.
-- Abrir buscas da atração no Google Maps e no Tripadvisor para conferir informações atuais.
-- Descobrir cerca de 1.640 atrações em 100 cidades (60 no Brasil e 40 no exterior), encontradas num raio de até 50 km do centro de cada cidade a partir de Wikidata, Wikipedia e Wikimedia Commons. O cartão mostra a distância até o centro da cidade da viagem.
-- Ver, em 74 das 94 atrações do catálogo editorial, dados de fontes abertas: foto real com autor e licença (Wikimedia Commons), resumo e link da Wikipedia, site oficial (Wikidata) e coordenadas.
-- Ver no roteiro o tempo de carro e a pé entre paradas consecutivas que têm coordenadas, calculado pelo OSRM (servidor público da FOSSGIS, dados OpenStreetMap, sem trânsito). Enquanto calcula ou se o serviço falhar, mostra a distância em linha reta.
+O app é pensado primeiro para o celular: cada tela tem barra superior com botão voltar (o voltar do celular também funciona) e, dentro da viagem, uma barra de abas embaixo (Resumo, Roteiro, Descobrir, Custos e Guia).
+
+- **Início:** fotos inspiradoras em tela grande com frases de gratidão (troca a cada 30 segundos), versículo do dia e a lista de viagens com contagem regressiva.
+- **Cadastro em etapas:** escolher cidades numa lista com busca (103 cidades no Brasil e no exterior, ou uma cidade digitada), datas num calendário de faixa (ida e volta no mesmo calendário), noites por cidade, quem vai e como, interesses e orçamento (com moeda e cotação manual).
+- **Resumo:** capa com foto real do destino, roteiro das cidades com hospedagem editável, ideias guardadas, orçamento e perfil da viagem.
+- **Descobrir:** tela exclusiva de cartões no estilo "swipe" (direita = curti, esquerda = não curti, baixo = talvez), por toque, mouse, botões ou setas do teclado, com detalhes do lugar numa janela que sobe de baixo. A aba mostra as curtidas e o "talvez depois".
+- **Roteiro:** um dia por vez (faixa de dias no topo), paradas por horário, tempo de carro e a pé entre paradas (OSRM), mover parada de dia ou horário, compromissos manuais e uma sugestão automática por regras simples (sem IA).
+- **Custos:** resumo de gasto, orçamento, previsão e saldo; gastos por categoria; despesas agrupadas por dia; nova despesa com valor em destaque, moeda e cotação manual; moeda de exibição; opção de ocultar valores.
+- **Guia:** para cada país da viagem, clima nas datas (Open-Meteo), documentos, visto, autorização eletrônica, seguro, vacinas, moeda, tomadas, idioma, emergência, trânsito e gorjeta, com fontes oficiais e data da pesquisa; checklist personalizado (passaporte, visto, seguro, adaptador, PID se alugar carro, autorização para menores etc.) que dá para marcar, baixar e compartilhar.
+- **Lugares:** catálogo editorial (94 atrações), cerca de 1.700 atrações de Wikidata/Wikipedia/Commons num raio de até 50 km de cada cidade e lugares do OpenStreetMap (restaurantes, cafés, bares, mercados, praias, mirantes, parques, museus e shoppings), com fotos reais creditadas quando existem.
+- Os dados ficam no armazenamento local do navegador (sem conta nem sincronização).
 
 ## Executar
 
@@ -57,6 +51,18 @@ Essas fontes não têm notas, preços nem horários, então o app continua sem e
 
 Limites conhecidos: a quantidade varia muito por cidade (há cidades com 1 a 5 atrações e Caldas Novas ficou sem nenhuma); a categoria vem do tipo no Wikidata e pode não ser a ideal; a descrição é o resumo da Wikipedia, com crédito CC BY-SA 4.0 no cartão; restaurantes e lojas quase não aparecem.
 
+### Lugares do OpenStreetMap
+
+`dados/osm-lugares.js` é gerado por `node ferramentas/gerar-osm.mjs` (depois de `gerar-atracoes-cidades.mjs`, que define as cidades). Para cada cidade, uma consulta ao Overpass público busca: restaurantes, cafés, bares, sorveterias e mercados com horário cadastrado (até 8 km do centro), atrações, museus, galerias e shoppings (até 15 km), praias (até 25 km) e mirantes, cachoeiras, picos e parques com Wikidata (até 50 km). Por cidade guarda os mais completos de cada grupo (12 de comida, 10 de natureza, 8 de cultura, 4 de diversão e 3 de compras), sem repetir o que já veio do Wikidata. O cartão mostra o tipo, a cozinha e o horário informado no OSM, com o crédito "© colaboradores do OpenStreetMap" (licença ODbL). O OSM não tem descrições, notas nem preços. A consulta leva cerca de 1 minuto por cidade; o resultado de cada cidade fica em `ferramentas/.cache/osm/`.
+
+### Guia do destino e clima
+
+`dados/guia-paises.js` reúne, por país, documentos aceitos, validade do passaporte, visto, autorização eletrônica, seguro, vacinas, comprovantes, moeda, tomadas, idioma, emergência, mão de direção e gorjeta para brasileiros, pesquisados em fontes oficiais (com links e data). Regras mudam: o app sempre pede para confirmar com o consulado e fontes oficiais. O clima vem da [Open-Meteo](https://open-meteo.com/) (sem chave, CC BY 4.0, gratuita para uso não comercial): previsão quando a viagem está a até 14 dias; senão, as mesmas datas do ano anterior. As dicas do que levar são regras simples a partir das temperaturas e da chuva, não IA. Uma etapa futura pode gerar textos personalizados com IA por meio de um backend (a chave da API nunca fica no navegador).
+
+### Ícones e imagens
+
+Os ícones são do [Lucide](https://lucide.dev/) (licença ISC), copiados para `icones.js` para funcionar sem internet. As imagens ilustrativas ficam em `imagens/` (fotos do [Unsplash](https://unsplash.com/license), que permite uso e hospedagem). Fotos de lugares vêm do Wikimedia Commons, com autor e licença exibidos.
+
 ### Tempos de deslocamento (OSRM)
 
 O roteiro consulta `routing.openstreetmap.de` (perfis `routed-car` e `routed-foot`) direto do navegador, uma requisição por vez com intervalo de 1,1 s, e guarda os resultados na chave `viagem-na-mao-rotas-v1` do `localStorage` (separada dos dados das viagens). O servidor é gratuito para **uso não comercial** e sem garantia de disponibilidade ([termos](https://routing.openstreetmap.de/about.html)); antes de cobrar assinatura, troque por uma instância própria do OSRM, por um serviço pago ou pela Routes API via backend. Os tempos não consideram trânsito.
@@ -92,10 +98,14 @@ As viagens e despesas ficam neste navegador e não são sincronizadas entre disp
 
 ## Arquivos
 
-- `index.html`: estrutura e telas do app.
+- `index.html`: telas do app (início, viagem com abas, descobrir, cadastro em etapas e janelas de baixo).
 - `styles.css`: identidade visual e layout responsivo.
 - `script.js`: catálogo de demonstração, filtros, roteiro e armazenamento local.
 - `dados/fontes-abertas.js`: dados gerados de Wikipedia, Wikidata e Commons (não editar à mão).
 - `ferramentas/gerar-fontes-abertas.mjs`: script que gera o arquivo acima.
 - `dados/atracoes-cidades.js`: atrações de 100 cidades (gerado, não editar à mão).
 - `ferramentas/gerar-atracoes-cidades.mjs`: script que gera o arquivo acima e define a lista de cidades.
+- `dados/osm-lugares.js` e `ferramentas/gerar-osm.mjs`: lugares do OpenStreetMap (gerado, não editar à mão).
+- `dados/guia-paises.js`: regras de entrada e informações práticas por país.
+- `icones.js`: ícones Lucide usados no app.
+- `imagens/`: imagens ilustrativas hospedadas no projeto.
