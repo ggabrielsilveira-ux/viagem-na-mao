@@ -1,0 +1,16 @@
+{
+  "name": "Viagem na Mão",
+  "short_name": "Viagem na Mão",
+  "description": "Planeje viagens, descubra lugares, controle custos e guarde memórias.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f3ee",
+  "theme_color": "#15563F",
+  "icons": [
+    { "src": "marca/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "marca/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "marca/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

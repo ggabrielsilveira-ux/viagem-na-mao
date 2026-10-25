@@ -14,7 +14,10 @@ O app é pensado primeiro para o celular: cada tela tem barra superior com botã
 - **Custos:** resumo de gasto, orçamento, previsão e saldo; gastos por categoria; despesas agrupadas por dia; nova despesa com valor em destaque, moeda e cotação manual; moeda de exibição; opção de ocultar valores.
 - **Guia:** para cada país da viagem, clima nas datas (Open-Meteo), documentos, visto, autorização eletrônica, seguro, vacinas, moeda, tomadas, idioma, emergência, trânsito e gorjeta, com fontes oficiais e data da pesquisa; checklist personalizado (passaporte, visto, seguro, adaptador, PID se alugar carro, autorização para menores etc.) que dá para marcar, baixar e compartilhar.
 - **Lugares:** catálogo editorial (94 atrações), cerca de 1.700 atrações de Wikidata/Wikipedia/Commons num raio de até 50 km de cada cidade e lugares do OpenStreetMap (restaurantes, cafés, bares, mercados, praias, mirantes, parques, museus e shoppings), com fotos reais creditadas quando existem.
-- Os dados ficam no armazenamento local do navegador (sem conta nem sincronização).
+- **Meu Baú de Memórias:** sexta aba da viagem (e um cartão no Resumo). Guardar momento com fotos e/ou texto, data do acontecimento editável (inclusive dias anteriores), lugar e título opcionais, linha do tempo por dia, editar e excluir com confirmação, aviso ao sair sem salvar. Também dá para guardar um momento a partir de uma parada do roteiro. Privado: fica só neste aparelho e nada é publicado.
+- **Mensagens contextuais:** frases curtas no dia de viagem, no orçamento apertado e no Baú, vindas de `dados/mensagens.js`. Cada contexto tem pelo menos três frases e o app evita repetir as últimas usadas.
+- **Ajustes (engrenagem na tela inicial):** como instalar o app na tela inicial do celular, backup de tudo (viagens, roteiros, custos, memórias e fotos) num arquivo `.json` e restauração do backup (juntar ou substituir).
+- Os dados ficam neste aparelho: textos no armazenamento local do navegador e fotos do Baú no IndexedDB (sem conta nem sincronização).
 
 ## Executar
 
@@ -59,6 +62,10 @@ Limites conhecidos: a quantidade varia muito por cidade (há cidades com 1 a 5 a
 
 `dados/guia-paises.js` reúne, por país, documentos aceitos, validade do passaporte, visto, autorização eletrônica, seguro, vacinas, comprovantes, moeda, tomadas, idioma, emergência, mão de direção e gorjeta para brasileiros, pesquisados em fontes oficiais (com links e data). Regras mudam: o app sempre pede para confirmar com o consulado e fontes oficiais. O clima vem da [Open-Meteo](https://open-meteo.com/) (sem chave, CC BY 4.0, gratuita para uso não comercial): previsão quando a viagem está a até 14 dias; senão, as mesmas datas do ano anterior. As dicas do que levar são regras simples a partir das temperaturas e da chuva, não IA. Uma etapa futura pode gerar textos personalizados com IA por meio de um backend (a chave da API nunca fica no navegador).
 
+### Marca
+
+A pasta `marca/` traz o kit do manual de identidade visual (versão 1.0, proposta inicial de 24/10/2026): símbolo, ícone do app, logo horizontal sobre fundo claro e verde, versão monocromática e os PNGs do ícone usados na instalação (`manifest.webmanifest`). A paleta do app segue o manual: verde-floresta `#15563F`, verde-menta `#56D7AE`, coral `#FF8068` e creme `#FFFDF5`; o coral é usado só em preenchimentos, não em texto pequeno, por contraste. Nome, tipografia e acabamento ainda dependem de validação antes do uso comercial.
+
 ### Ícones e imagens
 
 Os ícones são do [Lucide](https://lucide.dev/) (licença ISC), copiados para `icones.js` para funcionar sem internet. As imagens ilustrativas ficam em `imagens/` (fotos do [Unsplash](https://unsplash.com/license), que permite uso e hospedagem). Fotos de lugares vêm do Wikimedia Commons, com autor e licença exibidos.
@@ -94,7 +101,7 @@ Sem esses acessos, o app pode abrir buscas externas para consulta, mas não deve
 
 Esta demonstração não consulta nem copia automaticamente dados de Google ou Tripadvisor. A sugestão de roteiro usa regras simples locais e não é gerada por IA nem otimiza a ordem das paradas. Os tempos de carro e a pé vêm do OSRM público (teste não comercial) e não consideram trânsito. Cotação de moedas é informada manualmente; não há taxa de câmbio ao vivo. O guia pré-viagem é geral e não substitui orientação oficial ou profissional. O link/cupom Nomad está sujeito às condições do parceiro e não tem benefício validado pelo protótipo.
 
-As viagens e despesas ficam neste navegador e não são sincronizadas entre dispositivos. A estimativa combina despesas lançadas com preço conhecido das atividades salvas; não precifica itens marcados “Consulte valor” nem inclui despesas futuras ainda não registradas. Os valores são tratados em reais para consolidação; para outras moedas, o usuário fornece a cotação manual. A data e o relógio da interface usam o fuso `America/Sao_Paulo` e formato de 24 horas nesta versão.
+As viagens, despesas e memórias ficam neste navegador e não são sincronizadas entre dispositivos; trocar de aparelho ou limpar os dados do navegador apaga tudo, por isso existe o backup em Ajustes. No iPhone, o Safari pode apagar dados de sites pouco usados depois de cerca de 7 dias; instalar na tela inicial evita isso. Compartilhar memórias, álbum, PDF e vídeo ficam para as próximas etapas. A estimativa combina despesas lançadas com preço conhecido das atividades salvas; não precifica itens marcados “Consulte valor” nem inclui despesas futuras ainda não registradas. Os valores são tratados em reais para consolidação; para outras moedas, o usuário fornece a cotação manual. A data e o relógio da interface usam o fuso `America/Sao_Paulo` e formato de 24 horas nesta versão.
 
 ## Arquivos
 
@@ -107,5 +114,7 @@ As viagens e despesas ficam neste navegador e não são sincronizadas entre disp
 - `ferramentas/gerar-atracoes-cidades.mjs`: script que gera o arquivo acima e define a lista de cidades.
 - `dados/osm-lugares.js` e `ferramentas/gerar-osm.mjs`: lugares do OpenStreetMap (gerado, não editar à mão).
 - `dados/guia-paises.js`: regras de entrada e informações práticas por país.
+- `dados/mensagens.js`: biblioteca de mensagens por contexto (pode ser editada à mão).
+- `manifest.webmanifest` e `marca/`: instalação na tela inicial e arquivos da marca.
 - `icones.js`: ícones Lucide usados no app.
 - `imagens/`: imagens ilustrativas hospedadas no projeto.

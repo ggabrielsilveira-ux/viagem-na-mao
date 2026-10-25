@@ -303,7 +303,8 @@ const blankTrip = () => ({
   dismissed: [],
   itinerary: [],
   expenses: [],
-  checklist: {}
+  checklist: {},
+  memories: []
 });
 
 function migrateTrip(value) {
@@ -317,13 +318,14 @@ function migrateTrip(value) {
   trip.expenses = Array.isArray(trip.expenses) ? trip.expenses : [];
   trip.interests = Array.isArray(trip.interests) ? trip.interests : [];
   trip.checklist = trip.checklist && typeof trip.checklist === "object" ? trip.checklist : {};
+  trip.memories = Array.isArray(trip.memories) ? trip.memories.filter((memory) => memory && memory.id) : [];
   return trip;
 }
 
 let storageNotice = "";
 
 function readStoredState() {
-  const initial = { trips: [], currentTripId: null, hideAmounts: false, displayCurrency: "BRL", displayCurrencyRate: 1 };
+  const initial = { trips: [], currentTripId: null, hideAmounts: false, displayCurrency: "BRL", displayCurrencyRate: 1, messageHistory: {}, flags: {}, lastBackupAt: null };
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (!stored) return initial;
@@ -334,6 +336,9 @@ function readStoredState() {
       initial.hideAmounts = Boolean(value.hideAmounts);
       initial.displayCurrency = value.displayCurrency || "BRL";
       initial.displayCurrencyRate = Number(value.displayCurrencyRate) || 1;
+      initial.messageHistory = value.messageHistory && typeof value.messageHistory === "object" ? value.messageHistory : {};
+      initial.flags = value.flags && typeof value.flags === "object" ? value.flags : {};
+      initial.lastBackupAt = value.lastBackupAt || null;
       return initial;
     }
     if (value.trip) {
@@ -726,13 +731,17 @@ function navigate(next, { replace = false } = {}) {
 }
 
 function goBack() {
-  if (sheet.open) closeSheet();
+  if (sheet.open && !closeSheet()) return;
   if ((window.history.state?.depth || 0) > 0) window.history.back();
   else navigate({ screen: "home" }, { replace: true });
 }
 
 window.addEventListener("popstate", (event) => {
-  if (sheet.open) closeSheet();
+  if (sheet.open && !closeSheet()) {
+    // A pessoa ainda está decidindo se descarta a memória: desfaz o voltar.
+    window.history.pushState({ ...route }, "");
+    return;
+  }
   route = event.state || { screen: "home", tab: "about", depth: 0 };
   render({ scroll: true });
 });
@@ -770,7 +779,7 @@ function showTab(tabName) {
     else button.removeAttribute("aria-current");
   });
   $("#expense-fab").hidden = tabName !== "expenses";
-  ({ about: renderAbout, itinerary: renderItinerary, discover: renderDiscoverTab, expenses: renderExpenses, before: renderGuide })[tabName]?.();
+  ({ about: renderAbout, itinerary: renderItinerary, discover: renderDiscoverTab, expenses: renderExpenses, before: renderGuide, memories: renderMemories })[tabName]?.();
 }
 
 // ---------------------------------------------------------------------------
@@ -907,6 +916,8 @@ function renderAbout() {
   $("#saved-strip").innerHTML = saved.map(({ activity }) => `<button class="mini-place" type="button" data-place="${escapeHtml(activity.id)}"><img src="${escapeHtml(imageOf(activity))}" alt="" loading="lazy"><span>${escapeHtml(activity.name)}</span></button>`).join("");
   addImageFallbacks($("#saved-strip"));
   renderBudgetCard(trip);
+  renderMemoriesCard(trip);
+  renderTripMessage(trip);
   const details = [
     trip.transport && `${icon(TRANSPORT_ICONS[trip.transport] || "route")} ${escapeHtml(trip.transport)}`,
     trip.companions && `${icon("users")} ${escapeHtml(trip.companions)}`,
@@ -1211,7 +1222,11 @@ function attachSwipeHandlers(card) {
 const sheet = $("#sheet");
 const sheetContent = $("#sheet-content");
 
+// Quando definida, decide se a janela pode fechar (ex.: memória com alterações não salvas).
+let sheetGuard = null;
+
 function openSheet(html, onReady) {
+  sheetGuard = null;
   sheetContent.innerHTML = html;
   hydrateIcons(sheetContent);
   addImageFallbacks(sheetContent);
@@ -1220,9 +1235,19 @@ function openSheet(html, onReady) {
   onReady?.(sheetContent);
 }
 
-function closeSheet() {
-  if (sheet.open) sheet.close();
+function closeSheet({ force = false } = {}) {
+  if (!sheet.open) return true;
+  if (!force && sheetGuard && !sheetGuard()) return false;
+  sheetGuard = null;
+  sheet.close();
+  return true;
 }
+
+sheet.addEventListener("cancel", (event) => {
+  if (!sheetGuard) return;
+  event.preventDefault();
+  closeSheet();
+});
 
 sheet.addEventListener("click", (event) => {
   if (event.target === sheet) closeSheet();
@@ -1372,6 +1397,7 @@ function openStopSheet(id, type) {
       <label class="field">Horário<input id="stop-time" type="time" value="${escapeHtml(item.time || "09:00")}"></label>
     </div>
     ${type === "activity" ? `<button class="btn btn-secondary btn-block" type="button" id="stop-details">${icon("info")} Ver detalhes do lugar</button>` : ""}
+    <button class="btn btn-secondary btn-block" type="button" id="stop-memory">${icon("book-heart")} Guardar momento no Baú</button>
     <div class="row-actions"><button class="btn btn-danger" type="button" id="stop-remove">${icon("trash-2")} Remover</button><button class="btn btn-primary" type="button" id="stop-save">${icon("check")} Salvar</button></div>`, (root) => {
     root.querySelector("#stop-save").addEventListener("click", () => {
       const date = root.querySelector("#stop-day").value;
@@ -1399,6 +1425,7 @@ function openStopSheet(id, type) {
       toast("Parada removida");
     });
     root.querySelector("#stop-details")?.addEventListener("click", () => openPlaceSheet(id));
+    root.querySelector("#stop-memory").addEventListener("click", () => openMemoryEditor({ date: item.date, place: title || "", origin: "depoisPasseio" }));
   });
 }
 
@@ -1504,6 +1531,9 @@ function renderExpenses() {
   $("#display-currency").value = state.displayCurrency || "BRL";
   $("#display-exchange-rate").value = state.displayCurrencyRate || 1;
   $("#display-currency-label").textContent = state.displayCurrency || "BRL";
+  const tight = budget > 0 && forecast >= budget * 0.9;
+  $("#budget-message").hidden = !tight;
+  if (tight) $("#budget-message").textContent = messageFor("orcamentoApertado", trip.id);
 
   const totals = {};
   trip.expenses.forEach((expense) => { totals[expense.category] = (totals[expense.category] || 0) + (Number(expense.amountBRL) || 0); });
@@ -2217,6 +2247,643 @@ function exitWizard() {
 }
 
 // ---------------------------------------------------------------------------
+// Mensagens contextuais (frases em dados/mensagens.js)
+// ---------------------------------------------------------------------------
+
+const MESSAGE_LIBRARY = window.MESSAGES || {};
+const sessionMessages = new Map();
+
+// Escolhe uma frase do contexto sem repetir as últimas usadas. Dentro da mesma sessão,
+// o mesmo contexto e escopo mantêm a frase, para o texto não mudar a cada toque.
+function messageFor(context, scope = "") {
+  const key = `${context}|${scope}`;
+  if (sessionMessages.has(key)) return sessionMessages.get(key);
+  const list = MESSAGE_LIBRARY[context] || [];
+  if (!list.length) return "";
+  const recent = Array.isArray(state.messageHistory[context]) ? state.messageHistory[context] : [];
+  const avoid = recent.slice(-Math.min(2, list.length - 1));
+  const options = list.map((_, index) => index).filter((index) => !avoid.includes(index));
+  const index = options[Math.floor(Math.random() * options.length)];
+  state.messageHistory[context] = [...recent, index].slice(-3);
+  saveState();
+  sessionMessages.set(key, list[index]);
+  return list[index];
+}
+
+function tripPhase(trip) {
+  if (!trip.startDate || !trip.endDate) return "sem-data";
+  const today = getBrasiliaDateKey();
+  if (today < trip.startDate) return "antes";
+  if (today > trip.endDate) return "depois";
+  return "durante";
+}
+
+function renderTripMessage(trip) {
+  const element = $("#trip-message");
+  const text = tripPhase(trip) === "durante" ? messageFor("diaDeViagem", `${trip.id}|${getBrasiliaDateKey()}`) : "";
+  element.hidden = !text;
+  element.textContent = text;
+}
+
+// ---------------------------------------------------------------------------
+// Fotos do Baú: ficam só neste aparelho (IndexedDB), reduzidas para caber bem
+// ---------------------------------------------------------------------------
+
+const PHOTO_DB_NAME = "viagem-na-mao-fotos";
+const PHOTO_STORE = "fotos";
+const PHOTO_MAX_SIDE = 1600;
+const MEMORY_MAX_PHOTOS = 6;
+let photoDbPromise = null;
+const photoUrls = new Map();
+
+function openPhotoDb() {
+  if (!photoDbPromise) {
+    photoDbPromise = new Promise((resolve, reject) => {
+      if (!window.indexedDB) {
+        reject(new Error("Este navegador não permite guardar fotos."));
+        return;
+      }
+      const request = window.indexedDB.open(PHOTO_DB_NAME, 1);
+      request.onupgradeneeded = () => request.result.createObjectStore(PHOTO_STORE);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    photoDbPromise.catch(() => { photoDbPromise = null; });
+  }
+  return photoDbPromise;
+}
+
+async function photoTransaction(mode, run) {
+  const db = await openPhotoDb();
+  await new Promise((resolve, reject) => {
+    const transaction = db.transaction(PHOTO_STORE, mode);
+    run(transaction.objectStore(PHOTO_STORE));
+    transaction.oncomplete = resolve;
+    transaction.onerror = () => reject(transaction.error);
+    transaction.onabort = () => reject(transaction.error || new Error("Gravação cancelada."));
+  });
+}
+
+const putPhotos = (entries) => photoTransaction("readwrite", (store) => entries.forEach(([id, blob]) => store.put(blob, id)));
+const deletePhotos = (ids) => (ids.length ? photoTransaction("readwrite", (store) => ids.forEach((id) => store.delete(id))) : Promise.resolve());
+
+async function getPhoto(id) {
+  let request;
+  await photoTransaction("readonly", (store) => { request = store.get(id); });
+  return request.result || null;
+}
+
+async function listPhotoIds() {
+  let request;
+  await photoTransaction("readonly", (store) => { request = store.getAllKeys(); });
+  return request.result || [];
+}
+
+async function photoUrl(id) {
+  if (!photoUrls.has(id)) {
+    const blob = await getPhoto(id);
+    photoUrls.set(id, blob ? URL.createObjectURL(blob) : "");
+  }
+  return photoUrls.get(id);
+}
+
+function forgetPhotoUrl(id) {
+  if (photoUrls.get(id)) URL.revokeObjectURL(photoUrls.get(id));
+  photoUrls.delete(id);
+}
+
+// Imagens com data-photo-id recebem a foto guardada assim que ela é lida.
+function hydratePhotos(root) {
+  root.querySelectorAll("img[data-photo-id]").forEach(async (img) => {
+    try {
+      const url = await photoUrl(img.dataset.photoId);
+      if (url) img.src = url;
+      else img.classList.add("is-missing");
+    } catch {
+      img.classList.add("is-missing");
+    }
+  });
+}
+
+async function compressPhoto(file) {
+  const source = URL.createObjectURL(file);
+  try {
+    const image = await new Promise((resolve, reject) => {
+      const element = new Image();
+      element.onload = () => resolve(element);
+      element.onerror = () => reject(new Error("Formato de imagem não suportado."));
+      element.src = source;
+    });
+    const scale = Math.min(1, PHOTO_MAX_SIDE / Math.max(image.naturalWidth, image.naturalHeight));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(image.naturalWidth * scale);
+    canvas.height = Math.round(image.naturalHeight * scale);
+    canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+    return await new Promise((resolve, reject) => canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Não foi possível preparar a foto."))), "image/jpeg", 0.82));
+  } finally {
+    URL.revokeObjectURL(source);
+  }
+}
+
+async function requestPersistentStorage() {
+  try {
+    if (navigator.storage?.persist && !(await navigator.storage.persisted())) await navigator.storage.persist();
+  } catch {
+    // Sem suporte: o backup continua sendo a proteção.
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Meu Baú de Memórias
+// ---------------------------------------------------------------------------
+
+let bauFirstVisitMessage = "";
+
+function sortedMemories(trip) {
+  return [...trip.memories].sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.createdAt || "").localeCompare(b.createdAt || ""));
+}
+
+function memoryDayLabel(trip, date) {
+  if (!date) return "Sem data";
+  const label = capitalize(formatDate(date, { weekday: "long", day: "numeric", month: "long" }));
+  const index = getTripDays(trip).indexOf(date);
+  return index >= 0 ? `${label} · Dia ${index + 1}` : label;
+}
+
+function defaultMemoryDate(trip) {
+  const today = getBrasiliaDateKey();
+  return trip.endDate && today > trip.endDate ? trip.endDate : today;
+}
+
+function memoryPhotosHtml(ids, max = 3) {
+  const shown = ids.slice(0, max);
+  return `<div class="memory-photos count-${shown.length}">${shown.map((id) => `<img data-photo-id="${escapeHtml(id)}" alt="">`).join("")}${ids.length > max ? `<span class="memory-more">+${ids.length - max}</span>` : ""}</div>`;
+}
+
+function renderMemoriesCard(trip) {
+  const memories = sortedMemories(trip);
+  const photos = memories.flatMap((memory) => memory.photos || []).slice(-4);
+  const subtitle = memories.length
+    ? `${memories.length} ${memories.length === 1 ? "memória guardada" : "memórias guardadas"} · só você vê`
+    : tripPhase(trip) === "depois" ? messageFor("viagemEncerrada", trip.id) : "A viagem passa. As histórias ficam.";
+  const card = $("#memories-card");
+  card.innerHTML = `<button class="memories-card-main" type="button" data-tab="memories">
+      <span class="memories-card-icon">${icon("book-heart")}</span>
+      <span><strong>Meu Baú</strong><small>${escapeHtml(subtitle)}</small></span>${icon("chevron-right")}
+    </button>
+    ${photos.length ? `<div class="memories-thumbs">${photos.map((id) => `<img data-photo-id="${escapeHtml(id)}" alt="">`).join("")}</div>` : ""}
+    <button class="btn btn-secondary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar momento</button>`;
+  hydratePhotos(card);
+}
+
+function renderMemories() {
+  const trip = getCurrentTrip();
+  const memories = sortedMemories(trip);
+  if (!state.flags.bauOpened) {
+    state.flags.bauOpened = true;
+    saveState();
+    bauFirstVisitMessage = MESSAGE_LIBRARY.bauPrimeiraAbertura?.[0] || "";
+  }
+  const lead = bauFirstVisitMessage || (memories.length ? messageFor("reverMemorias", trip.id) : messageFor("bauVazio", trip.id));
+  const byDate = {};
+  memories.forEach((memory) => { (byDate[memory.date || ""] ||= []).push(memory); });
+  const backupOld = !state.lastBackupAt || daysBetween(state.lastBackupAt.slice(0, 10), getBrasiliaDateKey()) > 14;
+  const container = $("#memories-content");
+  container.innerHTML = `
+    <div class="memories-hero">
+      <span class="memories-hero-icon">${icon("book-heart")}</span>
+      <h2>Meu Baú</h2>
+      <p>${escapeHtml(lead)}</p>
+      <span class="private-pill">${icon("lock")} Privado · guardado só neste aparelho</span>
+      <button class="btn btn-primary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar momento</button>
+    </div>
+    ${memories.length ? Object.keys(byDate).sort().map((date) => `
+      <section class="memory-day">
+        <h3>${escapeHtml(memoryDayLabel(trip, date))}</h3>
+        ${byDate[date].map((memory) => `<button class="memory-card" type="button" data-memory="${escapeHtml(memory.id)}">
+          ${memory.photos?.length ? memoryPhotosHtml(memory.photos) : ""}
+          <span class="memory-body">
+            ${memory.title ? `<strong>${escapeHtml(memory.title)}</strong>` : ""}
+            ${memory.text ? `<span class="memory-snippet">${escapeHtml(memory.text)}</span>` : ""}
+            <small>${memory.place ? `${icon("map-pin")} ${escapeHtml(memory.place)} · ` : ""}${icon("lock")} Privado</small>
+          </span>
+        </button>`).join("")}
+      </section>`).join("") : `<div class="memories-empty">${icon("images")}<p>Fotos e textos que você guardar aparecem aqui, organizados por dia. Dá para registrar depois também: escolha a data em que aconteceu.</p></div>`}
+    ${memories.length && backupOld ? `<div class="backup-tip">${icon("download")}<p>Suas memórias ficam só neste aparelho. Faça um backup de vez em quando para não perdê-las.</p><button class="link-btn" type="button" data-open-settings>Fazer backup</button></div>` : ""}`;
+  hydratePhotos(container);
+}
+
+function openMemoryDetail(id) {
+  const trip = getCurrentTrip();
+  const memory = trip.memories.find((item) => item.id === id);
+  if (!memory) return;
+  const created = memory.createdAt ? new Date(memory.createdAt) : null;
+  const edited = memory.updatedAt && memory.updatedAt !== memory.createdAt ? new Date(memory.updatedAt) : null;
+  const stamp = (date) => new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "short", year: "numeric" }).format(date);
+  openSheet(`
+    ${memory.photos?.length ? `<div class="memory-gallery">${memory.photos.map((photoId, index) => `<img data-photo-id="${escapeHtml(photoId)}" alt="Foto ${index + 1} da memória">`).join("")}</div>` : ""}
+    ${sheetTitle(memory.title || "Memória")}
+    <div class="chips"><span class="chip">${icon("calendar")} ${escapeHtml(memoryDayLabel(trip, memory.date))}</span>${memory.place ? `<span class="chip">${icon("map-pin")} ${escapeHtml(memory.place)}</span>` : ""}<span class="chip">${icon("lock")} Privado</span></div>
+    ${memory.text ? `<p class="sheet-text memory-text">${escapeHtml(memory.text)}</p>` : ""}
+    ${created ? `<p class="footnote">Guardada em ${escapeHtml(stamp(created))}${edited ? ` · editada em ${escapeHtml(stamp(edited))}` : ""}.</p>` : ""}
+    <div class="row-actions" id="memory-actions"><button class="btn btn-danger" type="button" id="memory-delete">${icon("trash-2")} Excluir</button><button class="btn btn-primary" type="button" id="memory-edit">${icon("pencil")} Editar</button></div>
+    <div class="confirm-box" id="memory-confirm" hidden>
+      <p><strong>Excluir esta memória?</strong> As fotos e o texto saem do seu Baú e não dá para desfazer.</p>
+      <div class="row-actions"><button class="btn btn-secondary" type="button" id="memory-cancel-delete">Cancelar</button><button class="btn btn-danger" type="button" id="memory-confirm-delete">${icon("trash-2")} Excluir</button></div>
+    </div>`, (root) => {
+    hydratePhotos(root);
+    root.querySelector("#memory-edit").addEventListener("click", () => openMemoryEditor({ id }));
+    root.querySelector("#memory-delete").addEventListener("click", () => {
+      root.querySelector("#memory-actions").hidden = true;
+      root.querySelector("#memory-confirm").hidden = false;
+    });
+    root.querySelector("#memory-cancel-delete").addEventListener("click", () => {
+      root.querySelector("#memory-actions").hidden = false;
+      root.querySelector("#memory-confirm").hidden = true;
+    });
+    root.querySelector("#memory-confirm-delete").addEventListener("click", () => {
+      const previous = trip.memories;
+      trip.memories = trip.memories.filter((item) => item.id !== id);
+      if (!saveState()) {
+        trip.memories = previous;
+        return;
+      }
+      deletePhotos(memory.photos || []).catch(() => {});
+      (memory.photos || []).forEach(forgetPhotoUrl);
+      closeSheet({ force: true });
+      showTab(route.tab);
+      toast("Memória excluída");
+    });
+  });
+}
+
+function openMemoryEditor({ id = null, date = "", place = "", origin = "" } = {}) {
+  const trip = getCurrentTrip();
+  const existing = id ? trip.memories.find((item) => item.id === id) : null;
+  if (id && !existing) return;
+  const today = getBrasiliaDateKey();
+  const draft = {
+    photos: (existing?.photos || []).map((photoId) => ({ id: photoId })),
+    date: existing?.date || date || defaultMemoryDate(trip),
+    title: existing?.title || "",
+    place: existing?.place || place,
+    text: existing?.text || ""
+  };
+  if (draft.date > today) draft.date = today;
+  const snapshot = () => JSON.stringify({ photos: draft.photos.map((photo) => photo.id || photo.url), date: draft.date, title: draft.title.trim(), place: draft.place.trim(), text: draft.text.trim() });
+  const initial = snapshot();
+  const scope = `${trip.id}|${id || Date.now()}`;
+  const groupTrip = /amigos|família/i.test(trip.companions || "");
+  const questionContext = groupTrip ? "amigosFamilia" : "perguntas";
+  let question = messageFor(questionContext, scope);
+  const phase = tripPhase(trip);
+  const lead = existing ? ""
+    : origin ? messageFor(origin, scope)
+    : draft.date < today ? messageFor("retroativo", scope)
+    : phase === "durante" && new Date().getHours() >= 18 ? messageFor("finalDoDia", `${trip.id}|${today}`)
+    : "";
+  const places = [...new Set([...tripCities(trip), ...getTripActivities(trip).map(({ activity }) => activity.name)])];
+  let saving = false;
+
+  openSheet(`${sheetTitle(existing ? "Editar memória" : "Guardar momento")}
+    ${lead ? `<p class="memory-lead">${escapeHtml(lead)}</p>` : ""}
+    <div class="photo-picker" id="memory-photos"></div>
+    <p class="field-hint" id="memory-photo-hint"></p>
+    <label class="field">O que você quer lembrar?<textarea id="memory-text" rows="5" maxlength="4000" placeholder="${escapeHtml(question)}">${escapeHtml(draft.text)}</textarea></label>
+    <button class="link-btn inspiration-btn" type="button" id="memory-question">${icon("sparkles")} Outra pergunta para inspirar</button>
+    <div class="field-row">
+      <label class="field">Quando aconteceu?<input id="memory-date" type="date" value="${escapeHtml(draft.date)}" max="${today}"></label>
+      <label class="field">Lugar (opcional)<input id="memory-place" maxlength="80" list="memory-places" value="${escapeHtml(draft.place)}" placeholder="Ex.: Lisboa"></label>
+    </div>
+    <datalist id="memory-places">${places.map((name) => `<option value="${escapeHtml(name)}"></option>`).join("")}</datalist>
+    <label class="field">Título (opcional)<input id="memory-title" maxlength="80" value="${escapeHtml(draft.title)}" placeholder="Ex.: Pôr do sol no mirante"></label>
+    <p class="privacy-note">${icon("lock")} Só você vê. Fica guardado neste aparelho e nada é publicado.</p>
+    <div class="confirm-box" id="memory-discard" hidden>
+      <p><strong>Sair sem guardar?</strong> O que você escreveu ou escolheu nesta memória vai se perder.</p>
+      <div class="row-actions"><button class="btn btn-secondary" type="button" id="memory-keep">Continuar editando</button><button class="btn btn-danger" type="button" id="memory-drop">Descartar</button></div>
+    </div>
+    <p class="form-status" id="memory-status" role="status" aria-live="polite"></p>
+    <button class="btn btn-primary btn-block" type="button" id="memory-save">${icon("book-heart")} Guardar no meu Baú</button>`, (root) => {
+    const picker = root.querySelector("#memory-photos");
+    const status = root.querySelector("#memory-status");
+    const save = root.querySelector("#memory-save");
+    const fields = { text: root.querySelector("#memory-text"), date: root.querySelector("#memory-date"), place: root.querySelector("#memory-place"), title: root.querySelector("#memory-title") };
+    const readFields = () => Object.entries(fields).forEach(([key, input]) => { draft[key] = input.value; });
+    const hasContent = () => draft.photos.length > 0 || draft.text.trim().length > 0;
+    const update = () => {
+      readFields();
+      save.disabled = saving || !hasContent() || !draft.date;
+    };
+    const releaseNewPhotos = () => draft.photos.forEach((photo) => { if (photo.blob) URL.revokeObjectURL(photo.url); });
+    const renderPicker = () => {
+      picker.innerHTML = draft.photos.map((photo, index) => `<div class="picker-thumb"><img ${photo.url ? `src="${photo.url}"` : `data-photo-id="${escapeHtml(photo.id)}"`} alt="Foto ${index + 1}"><button class="picker-remove" type="button" data-remove-photo="${index}" aria-label="Tirar foto ${index + 1}">${icon("x")}</button></div>`).join("")
+        + (draft.photos.length < MEMORY_MAX_PHOTOS ? `<label class="picker-add">${icon("image-plus")}<span>${draft.photos.length ? "Mais fotos" : "Adicionar fotos"}</span><input class="visually-hidden" type="file" accept="image/*" multiple id="memory-file"></label>` : "");
+      hydratePhotos(picker);
+      root.querySelector("#memory-photo-hint").textContent = draft.photos.length ? messageFor("aoRegistrarFoto", scope) : messageFor("semFoto", scope);
+      update();
+    };
+    renderPicker();
+
+    picker.addEventListener("change", async (event) => {
+      const input = event.target.closest("#memory-file");
+      if (!input) return;
+      const chosen = [...input.files];
+      const files = chosen.slice(0, MEMORY_MAX_PHOTOS - draft.photos.length);
+      status.textContent = "Preparando fotos…";
+      let failed = 0;
+      for (const file of files) {
+        try {
+          const blob = await compressPhoto(file);
+          draft.photos.push({ blob, url: URL.createObjectURL(blob) });
+        } catch {
+          failed += 1;
+        }
+      }
+      status.textContent = [
+        failed ? `Não consegui abrir ${failed === 1 ? "uma foto" : `${failed} fotos`}. Tente uma imagem JPG ou PNG.` : "",
+        chosen.length > files.length ? `Cada memória guarda até ${MEMORY_MAX_PHOTOS} fotos.` : ""
+      ].filter(Boolean).join(" ");
+      renderPicker();
+    });
+    picker.addEventListener("click", (event) => {
+      const remove = event.target.closest("[data-remove-photo]");
+      if (!remove) return;
+      const [photo] = draft.photos.splice(Number(remove.dataset.removePhoto), 1);
+      if (photo?.blob) URL.revokeObjectURL(photo.url);
+      renderPicker();
+    });
+    Object.values(fields).forEach((input) => input.addEventListener("input", update));
+    root.querySelector("#memory-question").addEventListener("click", () => {
+      const list = MESSAGE_LIBRARY[questionContext] || [];
+      question = list[(list.indexOf(question) + 1) % list.length] || question;
+      fields.text.placeholder = question;
+      fields.text.focus();
+    });
+
+    sheetGuard = () => {
+      if (saving) return false;
+      readFields();
+      if (snapshot() === initial) {
+        releaseNewPhotos();
+        return true;
+      }
+      root.querySelector("#memory-discard").hidden = false;
+      root.querySelector("#memory-discard").scrollIntoView({ block: "center", behavior: "smooth" });
+      return false;
+    };
+    root.querySelector("#memory-keep").addEventListener("click", () => { root.querySelector("#memory-discard").hidden = true; });
+    root.querySelector("#memory-drop").addEventListener("click", () => {
+      releaseNewPhotos();
+      closeSheet({ force: true });
+    });
+
+    save.addEventListener("click", async () => {
+      readFields();
+      if (!hasContent()) {
+        status.textContent = "Adicione uma foto ou escreva algo para guardar.";
+        return;
+      }
+      saving = true;
+      save.disabled = true;
+      status.textContent = "Guardando…";
+      const newPhotos = draft.photos.filter((photo) => photo.blob).map((photo) => ({ photo, id: `foto-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` }));
+      try {
+        if (newPhotos.length) await putPhotos(newPhotos.map(({ photo, id: photoId }) => [photoId, photo.blob]));
+      } catch (error) {
+        console.error("Não foi possível guardar as fotos.", error);
+        saving = false;
+        update();
+        status.textContent = "Não consegui guardar as fotos neste aparelho (espaço cheio ou navegação privada). Nada foi salvo.";
+        return;
+      }
+      const photoIds = draft.photos.map((photo) => newPhotos.find((entry) => entry.photo === photo)?.id || photo.id);
+      const now = new Date().toISOString();
+      const memory = {
+        id: existing?.id || `memoria-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        date: draft.date,
+        title: draft.title.trim(),
+        place: draft.place.trim(),
+        text: draft.text.trim(),
+        photos: photoIds,
+        visibility: "private",
+        createdAt: existing?.createdAt || now,
+        updatedAt: now
+      };
+      const previous = trip.memories;
+      trip.memories = existing ? trip.memories.map((item) => (item.id === memory.id ? memory : item)) : [...trip.memories, memory];
+      if (!saveState()) {
+        trip.memories = previous;
+        deletePhotos(newPhotos.map((entry) => entry.id)).catch(() => {});
+        saving = false;
+        update();
+        status.textContent = "Não consegui salvar neste aparelho. Nada foi guardado; tente de novo.";
+        return;
+      }
+      newPhotos.forEach(({ photo, id: photoId }) => photoUrls.set(photoId, photo.url));
+      const removed = (existing?.photos || []).filter((photoId) => !photoIds.includes(photoId));
+      deletePhotos(removed).catch(() => {});
+      removed.forEach(forgetPhotoUrl);
+      requestPersistentStorage();
+      saving = false;
+      closeSheet({ force: true });
+      showTab(route.tab);
+      toast(messageFor("memoriaGuardada", `${memory.id}|${now}`));
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Ajustes: instalar na tela inicial e backup dos dados
+// ---------------------------------------------------------------------------
+
+let installPrompt = null;
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  installPrompt = event;
+});
+
+const isStandalone = () => window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+const isAppleMobile = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+function allMemoryPhotoIds(trips = state.trips) {
+  return [...new Set(trips.flatMap((trip) => trip.memories.flatMap((memory) => memory.photos || [])))];
+}
+
+async function buildBackup() {
+  const photos = [];
+  let missing = 0;
+  for (const id of allMemoryPhotoIds()) {
+    const blob = await getPhoto(id).catch(() => null);
+    if (blob) photos.push({ id, data: await blobToDataUrl(blob) });
+    else missing += 1;
+  }
+  const { lastBackupAt, ...data } = state;
+  return { app: "viagem-na-mao", formato: 1, exportadoEm: new Date().toISOString(), dados: data, fotos: photos, fotosFaltando: missing };
+}
+
+async function readBackupFile(file) {
+  const value = JSON.parse(await file.text());
+  if (value?.app !== "viagem-na-mao" || !Array.isArray(value?.dados?.trips)) throw new Error("Este arquivo não é um backup do Viagem na Mão.");
+  return value;
+}
+
+async function applyBackup(backup, mode) {
+  const incoming = backup.dados.trips.map(migrateTrip);
+  const entries = [];
+  for (const photo of backup.fotos || []) {
+    if (typeof photo?.id === "string" && /^data:image\//.test(photo.data || "")) entries.push([photo.id, await (await fetch(photo.data)).blob()]);
+  }
+  if (entries.length) await putPhotos(entries);
+  const previousTrips = state.trips;
+  const previousCurrent = state.currentTripId;
+  if (mode === "replace") {
+    state.trips = incoming;
+    state.currentTripId = incoming.some((trip) => trip.id === backup.dados.currentTripId) ? backup.dados.currentTripId : incoming[0]?.id || null;
+  } else {
+    // Juntar: entram as viagens que faltam e, nas que já existem, as memórias que faltam.
+    state.trips = previousTrips.map((trip) => {
+      const twin = incoming.find((item) => item.id === trip.id);
+      if (!twin) return trip;
+      const known = new Set(trip.memories.map((memory) => memory.id));
+      return { ...trip, memories: [...trip.memories, ...twin.memories.filter((memory) => !known.has(memory.id))] };
+    });
+    const known = new Set(previousTrips.map((trip) => trip.id));
+    state.trips.push(...incoming.filter((trip) => !known.has(trip.id)));
+    state.currentTripId ||= state.trips[0]?.id || null;
+  }
+  if (!saveState()) {
+    state.trips = previousTrips;
+    state.currentTripId = previousCurrent;
+    throw new Error("Não consegui salvar os dados restaurados neste aparelho.");
+  }
+  if (mode === "replace") {
+    const keep = new Set(allMemoryPhotoIds());
+    const stored = await listPhotoIds().catch(() => []);
+    const orphans = stored.filter((id) => !keep.has(id));
+    deletePhotos(orphans).catch(() => {});
+    orphans.forEach(forgetPhotoUrl);
+  }
+}
+
+async function openSettingsSheet() {
+  let persisted = null;
+  try { persisted = await navigator.storage?.persisted?.(); } catch { persisted = null; }
+  const memoryCount = state.trips.reduce((sum, trip) => sum + trip.memories.length, 0);
+  const lastBackup = state.lastBackupAt ? new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "long", year: "numeric" }).format(new Date(state.lastBackupAt)) : "";
+  let install;
+  if (isStandalone()) install = `<p class="settings-ok">${icon("circle-check")} O app já está instalado neste aparelho.</p>`;
+  else if (installPrompt) install = `<button class="btn btn-primary btn-block" type="button" id="install-app">${icon("smartphone")} Instalar o app</button>`;
+  else if (isAppleMobile()) install = `<ol class="settings-steps"><li>Abra este link no <strong>Safari</strong>.</li><li>Toque em <strong>Compartilhar</strong> ${icon("share-2")} na barra do navegador.</li><li>Escolha <strong>Adicionar à Tela de Início</strong>.</li></ol>`;
+  else install = `<p class="muted">No menu do navegador, escolha <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong>.</p>`;
+
+  openSheet(`${sheetTitle("Ajustes")}
+    <section class="settings-section">
+      <h3>${icon("smartphone")} Instalar na tela inicial</h3>
+      <p class="muted">Abre como app, em tela cheia, e ajuda a proteger seus dados no aparelho.</p>
+      ${install}
+    </section>
+    <section class="settings-section">
+      <h3>${icon("download")} Backup dos seus dados</h3>
+      <p class="muted">Viagens, roteiros, custos e memórias ficam só neste aparelho. Guarde uma cópia no Arquivos, no Drive ou no e-mail.</p>
+      <p class="settings-meta">${state.trips.length} ${state.trips.length === 1 ? "viagem" : "viagens"} · ${memoryCount} ${memoryCount === 1 ? "memória" : "memórias"} · ${lastBackup ? `último backup em ${escapeHtml(lastBackup)}` : "nenhum backup ainda"}</p>
+      <p class="settings-meta">${persisted ? `${icon("shield-check")} Armazenamento protegido: o navegador não apaga seus dados sozinho.` : `${icon("info")} O navegador pode apagar dados de sites pouco usados (no iPhone, depois de cerca de 7 dias sem abrir pelo Safari). Instalar na tela inicial e fazer backup evita isso.`}</p>
+      <div class="row-actions">
+        <button class="btn btn-primary" type="button" id="backup-download">${icon("download")} Baixar backup</button>
+        <label class="btn btn-secondary">${icon("upload")} Restaurar<input class="visually-hidden" type="file" accept=".json,application/json" id="backup-file"></label>
+      </div>
+      <div class="confirm-box" id="restore-box" hidden></div>
+      <p class="form-status" id="backup-status" role="status" aria-live="polite"></p>
+    </section>`, (root) => {
+    const status = root.querySelector("#backup-status");
+    root.querySelector("#install-app")?.addEventListener("click", async () => {
+      const prompt = installPrompt;
+      installPrompt = null;
+      await prompt.prompt();
+      closeSheet();
+    });
+    root.querySelector("#backup-download").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      status.textContent = "Preparando backup…";
+      try {
+        const backup = await buildBackup();
+        const name = `viagem-na-mao-backup-${getBrasiliaDateKey()}.json`;
+        const file = new File([JSON.stringify(backup)], name, { type: "application/json" });
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file], title: "Backup do Viagem na Mão" });
+        } else {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(file);
+          link.download = name;
+          link.click();
+          window.setTimeout(() => URL.revokeObjectURL(link.href), 4000);
+        }
+        state.lastBackupAt = new Date().toISOString();
+        saveState();
+        status.textContent = `Backup pronto${backup.fotosFaltando ? ` (${backup.fotosFaltando} foto(s) não encontradas neste aparelho)` : ""}. Guarde o arquivo num lugar seguro.`;
+      } catch (error) {
+        status.textContent = error?.name === "AbortError" ? "Backup cancelado." : "Não consegui gerar o backup. Tente de novo.";
+      } finally {
+        button.disabled = false;
+      }
+    });
+    root.querySelector("#backup-file").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      event.target.value = "";
+      if (!file) return;
+      const box = root.querySelector("#restore-box");
+      let backup;
+      try {
+        backup = await readBackupFile(file);
+      } catch (error) {
+        box.hidden = true;
+        status.textContent = error instanceof SyntaxError ? "Não consegui ler este arquivo." : error.message;
+        return;
+      }
+      const memories = backup.dados.trips.reduce((sum, trip) => sum + (Array.isArray(trip.memories) ? trip.memories.length : 0), 0);
+      const when = backup.exportadoEm ? new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "long", year: "numeric" }).format(new Date(backup.exportadoEm)) : "data desconhecida";
+      status.textContent = "";
+      box.hidden = false;
+      box.innerHTML = `<p><strong>Backup de ${escapeHtml(when)}</strong>: ${backup.dados.trips.length} ${backup.dados.trips.length === 1 ? "viagem" : "viagens"}, ${memories} ${memories === 1 ? "memória" : "memórias"}, ${(backup.fotos || []).length} fotos.</p>
+        <p class="muted"><strong>Juntar</strong> acrescenta o que falta e mantém tudo o que já está aqui. <strong>Substituir</strong> troca os dados deste aparelho pelos do backup.</p>
+        <div class="row-actions"><button class="btn btn-secondary" type="button" data-restore="replace">Substituir</button><button class="btn btn-primary" type="button" data-restore="merge">Juntar</button></div>`;
+      box.onclick = async (clickEvent) => {
+        const button = clickEvent.target.closest("[data-restore]");
+        if (!button) return;
+        if (button.dataset.restore === "replace" && !button.dataset.confirmed) {
+          button.dataset.confirmed = "1";
+          button.className = "btn btn-danger";
+          button.textContent = "Confirmar troca";
+          status.textContent = "Substituir apaga as viagens e memórias atuais deste aparelho. Toque em Confirmar troca para seguir.";
+          return;
+        }
+        box.querySelectorAll("button").forEach((item) => { item.disabled = true; });
+        status.textContent = "Restaurando…";
+        try {
+          await applyBackup(backup, button.dataset.restore);
+          closeSheet({ force: true });
+          render({ scroll: false });
+          toast("Backup restaurado");
+        } catch (error) {
+          console.error("Falha ao restaurar backup.", error);
+          box.querySelectorAll("button").forEach((item) => { item.disabled = false; });
+          status.textContent = error.message || "Não consegui restaurar o backup.";
+        }
+      };
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Eventos
 // ---------------------------------------------------------------------------
 
@@ -2261,6 +2928,19 @@ document.addEventListener("click", (event) => {
     openStopSheet(stopButton.dataset.stop, stopButton.dataset.stopType);
     return;
   }
+  if (event.target.closest("[data-new-memory]")) {
+    openMemoryEditor();
+    return;
+  }
+  const memoryButton = event.target.closest("[data-memory]");
+  if (memoryButton) {
+    openMemoryDetail(memoryButton.dataset.memory);
+    return;
+  }
+  if (event.target.closest("[data-open-settings]")) {
+    openSettingsSheet();
+    return;
+  }
   const removeExpense = event.target.closest("[data-remove-expense]");
   if (removeExpense) {
     const trip = getCurrentTrip();
@@ -2277,6 +2957,7 @@ $("#toggle-home-amounts").addEventListener("click", toggleAmounts);
 $("#toggle-budget-visibility").addEventListener("click", toggleAmounts);
 $("#toggle-expense-visibility").addEventListener("click", toggleAmounts);
 $("#new-trip-button").addEventListener("click", startNewTrip);
+$("#settings-button").addEventListener("click", openSettingsSheet);
 $("#edit-trip-button").addEventListener("click", editTrip);
 $("#city-filter").addEventListener("change", (event) => {
   deckCity = event.target.value;
@@ -2372,3 +3053,4 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 }
 window.history.replaceState({ ...route }, "");
 render();
+if (state.trips.length) requestPersistentStorage();

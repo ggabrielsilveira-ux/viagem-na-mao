@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Símbolo Viagem na Mão: coração bicolor atravessado por estrada">
+  <defs><clipPath id="heart"><path d="M256 122C213 60 120 47 75 102C-8 203 75 320 256 448C437 320 520 203 437 102C392 47 299 60 256 122Z"/></clipPath></defs>
+  <g clip-path="url(#heart)">
+    <rect x="0" y="0" width="256" height="512" fill="#56D7AE"/>
+    <rect x="256" y="0" width="256" height="512" fill="#FF8068"/>
+    <circle cx="152" cy="169" r="35" fill="#15563F"/>
+    <circle cx="360" cy="169" r="35" fill="#15563F"/>
+    <path d="M213 477C182 412 198 351 244 310C288 271 341 274 368 220" fill="none" stroke="#FFFDF5" stroke-width="47" stroke-linecap="round"/>
+    <circle cx="368" cy="220" r="14" fill="#FFFDF5"/>
+  </g>
+</svg>

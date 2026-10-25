@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 330" role="img" aria-label="Viagem na Mão - logo horizontal sobre fundo claro">
+  <rect width="1100" height="330" fill="#FFFDF5"/>
+  <g transform="translate(18 13) scale(.59)">
+    <rect width="512" height="512" rx="108" fill="#15563F"/>
+    <defs><clipPath id="heart"><path d="M256 148C222 97 144 89 108 133C43 216 111 312 256 416C401 312 469 216 404 133C368 89 290 97 256 148Z"/></clipPath></defs>
+    <g clip-path="url(#heart)"><rect width="256" height="512" fill="#56D7AE"/><rect x="256" width="256" height="512" fill="#FF8068"/><circle cx="171" cy="185" r="28" fill="#15563F"/><circle cx="341" cy="185" r="28" fill="#15563F"/><path d="M220 438C194 387 207 337 244 304C282 271 326 276 348 230" fill="none" stroke="#FFFDF5" stroke-width="39" stroke-linecap="round"/></g>
+  </g>
+  <g font-family="DejaVu Sans, Arial, sans-serif" font-weight="bold" letter-spacing="-2">
+    <text x="355" y="139" font-size="97" fill="#15563F">viagem</text>
+    <text x="355" y="254" font-size="96" fill="#56D7AE">na <tspan fill="#FF8068">mão</tspan></text>
+  </g>
+</svg>
