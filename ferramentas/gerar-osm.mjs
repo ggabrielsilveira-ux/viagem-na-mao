@@ -16,7 +16,9 @@ import vm from "node:vm";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const USER_AGENT = "ViagemNaMao/0.1 (prototipo nao comercial; https://github.com/ggabrielsilveira-ux/viagem-na-mao)";
 // Instância principal e espelho público; alterna entre elas a cada tentativa.
-const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter"];
+const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter"];
+// Com SO_CACHE=1, usa só as cidades já baixadas (útil quando os servidores estão fora).
+const ONLY_CACHE = process.env.SO_CACHE === "1";
 const CACHE_DIR = join(ROOT, "ferramentas", ".cache", "osm");
 const NEAR_KM = 50;
 const PAUSE_MS = 5000;
@@ -99,6 +101,7 @@ out center tags;`;
 async function fetchCity(name, center) {
   const file = join(CACHE_DIR, `${normalize(name).replace(/ /g, "-")}.json`);
   if (existsSync(file)) return JSON.parse(readFileSync(file, "utf8"));
+  if (ONLY_CACHE) return null;
   for (let attempt = 0; attempt < 4; attempt++) {
     let response;
     try {
@@ -216,7 +219,7 @@ async function main() {
       seenNames.add(key);
       groups[group] = (groups[group] || 0) + 1;
       const id = `osm-${element.type[0]}${element.id}`;
-      if (!places.has(id)) places.set(id, { element, kind, name, coordinates: [lat, lon] });
+      if (!places.has(id)) places.set(id, { element, kind, name, coordinates: [lat, lon], foundIn: city });
     }
     console.log(`${city.name}: ${Object.entries(groups).map(([group, count]) => `${group} ${count}`).join(", ") || "nada"}`);
   }
@@ -230,6 +233,8 @@ async function main() {
       .map((city) => [city.name, Math.round(distanceKm(place.coordinates, city.coordinates))])
       .filter(([, km]) => km <= NEAR_KM)
       .sort((a, b) => a[1] - b[1]);
+    // Lugar na borda da busca: fica com a cidade em que foi encontrado.
+    if (!nearCities.length) nearCities.push([place.foundIn.name, Math.round(distanceKm(place.coordinates, place.foundIn.coordinates))]);
     const result = {
       id,
       name: place.name,

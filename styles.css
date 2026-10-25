@@ -434,7 +434,7 @@ a.photo-credit:hover { text-decoration: underline; }
 .stops { display: grid; gap: 0; }
 .stop { display: grid; grid-template-columns: 56px 1fr; gap: 12px; }
 .stop-time { padding-top: 14px; color: var(--ink-2); font-family: var(--font-display); font-size: 14px; font-weight: 800; text-align: right; }
-.stop-card { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.stop-card { display: grid; grid-template-columns: 18px 56px 1fr auto; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
 .stop-card img, .stop-icon { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; }
 .stop-icon { display: grid; place-items: center; color: var(--brand-2); background: var(--brand-soft); }
 .stop-info { min-width: 0; }
@@ -981,7 +981,15 @@ img.is-missing { visibility: hidden; }
 /* Descobrir: listas recolhidas */
 .discover-group .place-grid { margin-top: 14px; }
 .discover-group summary .count-pill { margin-left: 4px; }
-/* Roteiro: mover parada */
-.stop-move .btn { min-height: 44px; }
 .album-preview[data-format="carousel"] img { height: 188px; }
 .discover-group summary .count-pill { color: var(--brand); font-weight: 800; }
+
+/* Roteiro: arrastar paradas */
+.stop-card { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.drag-handle { display: grid; place-items: center; margin-right: -6px; color: #b3b8b2; cursor: grab; touch-action: none; }
+.drag-handle .icon { width: 18px; height: 18px; }
+.stop-home .home-card { grid-template-columns: 56px 1fr; }
+.stops.is-reordering .travel-leg { display: none; }
+.stops.is-reordering .stop { transition: transform 160ms ease; }
+.stop.is-dragging { position: relative; z-index: 5; transition: none !important; }
+.stop.is-dragging .stop-card { border-color: var(--brand-2); box-shadow: 0 16px 34px rgba(21, 32, 27, 0.22); }

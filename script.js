@@ -1620,9 +1620,10 @@ function renderItinerary() {
   $("#itinerary-content").innerHTML = (home ? homeRow("Saída da hospedagem") : notice) + schedule.map((item) => {
     const leg = item.coordinates && previous ? legRow(previous, item.coordinates) : "";
     if (item.coordinates) previous = item.coordinates;
-    return `${leg}<li class="stop">
+    return `${leg}<li class="stop" data-drag-id="${escapeHtml(item.id)}">
       <span class="stop-time">${escapeHtml(item.time || "09:00")}</span>
       <div class="stop-card">
+        <span class="drag-handle" aria-hidden="true">${icon("grip-vertical")}</span>
         ${item.image ? `<img src="${escapeHtml(item.image)}" alt="">` : `<span class="stop-icon">${icon(item.type === "manual" ? eventCategory(item)[1] : "calendar-days")}</span>`}
         <div class="stop-info"><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.subtitle || item.category || "Compromisso")}</small></div>
         <button class="icon-btn icon-btn-sm" type="button" data-stop="${escapeHtml(item.id)}" data-stop-type="${item.type}" aria-label="Opções de ${escapeHtml(item.title)}">${icon("ellipsis")}</button>
@@ -1630,6 +1631,7 @@ function renderItinerary() {
   }).join("") + (home && previous && previous !== home.coordinates ? legRow(previous, home.coordinates) + homeRow("Volta para a hospedagem") : "");
   addImageFallbacks($("#itinerary-content"));
   requestRoutes($("#itinerary-content"));
+  if (schedule.length > 1) attachStopDrag($("#itinerary-content"), trip, selectedDay);
 }
 
 function dayOptions(trip, selected) {
@@ -1652,7 +1654,6 @@ function openStopSheet(id, type) {
       <label class="field">Horário<input id="stop-time" type="time" value="${escapeHtml(item.time || "09:00")}"></label>
     </div>
     ${type === "activity" ? `<button class="btn btn-secondary btn-block" type="button" id="stop-details">${icon("info")} Ver detalhes do lugar</button>` : ""}
-    <div class="row-actions stop-move"><button class="btn btn-secondary" type="button" data-move="-1">${icon("arrow-up")} Mais cedo</button><button class="btn btn-secondary" type="button" data-move="1">${icon("arrow-down")} Mais tarde</button></div>
     <button class="btn btn-secondary btn-block" type="button" id="stop-memory">${icon("book-heart")} Guardar momento no Baú</button>
     <div class="row-actions"><button class="btn btn-danger" type="button" id="stop-remove">${icon("trash-2")} Remover</button><button class="btn btn-primary" type="button" id="stop-save">${icon("check")} Salvar</button></div>`, (root) => {
     root.querySelector("#stop-save").addEventListener("click", () => {
@@ -1681,10 +1682,6 @@ function openStopSheet(id, type) {
       toast("Parada removida");
     });
     root.querySelector("#stop-details")?.addEventListener("click", () => openPlaceSheet(id));
-    root.querySelectorAll("[data-move]").forEach((button) => button.addEventListener("click", () => {
-      const moved = moveStop(trip, item.date, id, Number(button.dataset.move));
-      if (moved) root.querySelector("#stop-time").value = moved;
-    }));
     root.querySelector("#stop-memory").addEventListener("click", () => openMemoryEditor({ date: item.date, place: title || "", origin: "depoisPasseio" }));
   });
 }
@@ -1718,8 +1715,7 @@ function openEventForm(eventId = null) {
     <p class="geo-status" id="event-geo-status"></p>
     <div class="field-row"><label class="field">Dia<select id="event-day">${dayOptions(trip, draft.date)}</select></label><label class="field">Horário<input id="event-time" type="time" value="${escapeHtml(draft.time || "09:00")}"></label></div>
     <p class="form-status" id="event-status" role="status" aria-live="polite"></p>
-    ${existing ? `<div class="row-actions stop-move"><button class="btn btn-secondary" type="button" data-move="-1">${icon("arrow-up")} Mais cedo</button><button class="btn btn-secondary" type="button" data-move="1">${icon("arrow-down")} Mais tarde</button></div>
-    <button class="btn btn-secondary btn-block" type="button" id="stop-memory">${icon("book-heart")} Guardar momento no Baú</button>` : ""}
+    ${existing ? `<button class="btn btn-secondary btn-block" type="button" id="stop-memory">${icon("book-heart")} Guardar momento no Baú</button>` : ""}
     <div class="${existing ? "row-actions" : ""}">${existing ? `<button class="btn btn-danger" type="button" id="event-remove">${icon("trash-2")} Remover</button>` : ""}<button class="btn btn-primary${existing ? "" : " btn-block"}" type="button" id="event-save">${icon(existing ? "check" : "plus")} ${existing ? "Salvar" : "Adicionar ao roteiro"}</button></div>`, (root) => {
     const address = root.querySelector("#event-address");
     const geoStatus = root.querySelector("#event-geo-status");
@@ -1786,10 +1782,6 @@ function openEventForm(eventId = null) {
       }
     });
     root.querySelector("#stop-memory")?.addEventListener("click", () => openMemoryEditor({ date: draft.date, place: draft.title, origin: "depoisPasseio" }));
-    root.querySelectorAll("[data-move]").forEach((button) => button.addEventListener("click", () => {
-      const moved = moveStop(trip, draft.date, draft.id, Number(button.dataset.move));
-      if (moved) root.querySelector("#event-time").value = moved;
-    }));
     root.querySelector("#event-save").addEventListener("click", () => {
       draft.title = root.querySelector("#event-title").value.trim();
       draft.address = address.value.trim();
@@ -1821,32 +1813,114 @@ function openEventForm(eventId = null) {
   });
 }
 
-// Move uma parada para antes ou depois da vizinha trocando os horários das duas.
-// Com horários iguais, a parada movida fica 30 minutos antes ou depois.
-function moveStop(trip, date, id, direction) {
+// Nova ordem do dia: os horários existentes ficam no lugar e as paradas são
+// redistribuídas neles; horários repetidos ganham 15 minutos para manter a ordem.
+function reorderDay(trip, date, orderedIds) {
   const schedule = daySchedule(trip, date);
-  const index = schedule.findIndex((item) => item.id === id);
-  const neighbor = schedule[index + direction];
-  if (index < 0 || !neighbor) {
-    toast(direction < 0 ? "Esta já é a primeira parada do dia" : "Esta já é a última parada do dia");
-    return null;
-  }
-  const record = (item) => (item.type === "activity" ? trip.saved : trip.itinerary).find((entry) => entry.id === item.id);
-  const mine = record(schedule[index]);
-  const other = record(neighbor);
-  const myTime = mine.time || "09:00";
-  const otherTime = other.time || "09:00";
-  if (myTime !== otherTime) {
-    mine.time = otherTime;
-    other.time = myTime;
-  } else {
-    const [hours, minutes] = myTime.split(":").map(Number);
-    const total = Math.min(23 * 60 + 59, Math.max(0, hours * 60 + minutes + direction * 30));
-    mine.time = `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
-  }
+  const toMinutes = (time) => { const [hours, minutes] = time.split(":").map(Number); return hours * 60 + minutes; };
+  const toTime = (total) => `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+  const slots = schedule.map((item) => toMinutes(item.time || "09:00")).sort((a, b) => a - b);
+  for (let index = 1; index < slots.length; index++) if (slots[index] <= slots[index - 1]) slots[index] = Math.min(slots[index - 1] + 15, 23 * 60 + 59);
+  orderedIds.forEach((id, index) => {
+    const item = schedule.find((entry) => entry.id === id);
+    const record = item && (item.type === "activity" ? trip.saved : trip.itinerary).find((entry) => entry.id === id);
+    if (record) record.time = toTime(slots[index]);
+  });
   saveState();
   renderItinerary();
-  return mine.time;
+}
+
+// Arrastar paradas: no toque, segurar meio segundo; no mouse, clicar e arrastar.
+function attachStopDrag(list, trip, date) {
+  list.dragContext = { trip, date };
+  if (list.dragReady) return;
+  list.dragReady = true;
+  let pending = null;
+  let drag = null;
+  let suppressClick = false;
+  const stops = () => [...list.querySelectorAll("li.stop[data-drag-id]")];
+  const begin = (li, pointerId, clientY) => {
+    // Esconder os trechos de deslocamento sobe a parada; a diferença mantém ela sob o dedo.
+    const topBefore = li.getBoundingClientRect().top;
+    list.classList.add("is-reordering");
+    const items = stops();
+    drag = { li, pointerId, startY: clientY, offset: topBefore - li.getBoundingClientRect().top, from: items.indexOf(li), to: items.indexOf(li), items, step: li.getBoundingClientRect().height + 12 };
+    drag.mids = items.map((item) => { const rect = item.getBoundingClientRect(); return rect.top + rect.height / 2; });
+    li.classList.add("is-dragging");
+    try { li.setPointerCapture(pointerId); } catch { /* ponteiro já liberado */ }
+    navigator.vibrate?.(15);
+  };
+  const move = (clientY) => {
+    const dy = clientY - drag.startY;
+    drag.li.style.transform = `translateY(${dy + drag.offset}px)`;
+    // Nova posição: quantas outras paradas ficam acima do centro da que está sendo arrastada.
+    const center = drag.mids[drag.from] + dy + drag.offset;
+    const to = drag.mids.filter((mid, index) => index !== drag.from && mid < center).length;
+    drag.to = to;
+    drag.items.forEach((item, index) => {
+      if (item === drag.li) return;
+      let shift = 0;
+      if (drag.from < to && index > drag.from && index <= to) shift = -drag.step;
+      if (drag.from > to && index >= to && index < drag.from) shift = drag.step;
+      item.style.transform = shift ? `translateY(${shift}px)` : "";
+    });
+  };
+  const finish = () => {
+    const { items, from, to, li } = drag;
+    drag = null;
+    list.classList.remove("is-reordering");
+    li.classList.remove("is-dragging");
+    items.forEach((item) => { item.style.transform = ""; });
+    suppressClick = true;
+    window.setTimeout(() => { suppressClick = false; }, 350);
+    if (from === to) return;
+    const ids = items.map((item) => item.dataset.dragId);
+    const [moved] = ids.splice(from, 1);
+    ids.splice(to, 0, moved);
+    reorderDay(list.dragContext.trip, list.dragContext.date, ids);
+    toast("Ordem atualizada");
+  };
+  list.addEventListener("pointerdown", (event) => {
+    const li = event.target.closest("li.stop[data-drag-id]");
+    if (!li || drag || (event.pointerType === "mouse" && event.button !== 0)) return;
+    const onHandle = Boolean(event.target.closest(".drag-handle"));
+    if (event.target.closest("button") && !onHandle) return;
+    pending = { li, pointerId: event.pointerId, x: event.clientX, y: event.clientY, timer: null, mouse: event.pointerType === "mouse" || onHandle };
+    if (!pending.mouse) pending.timer = window.setTimeout(() => { if (pending) { begin(pending.li, pending.pointerId, pending.y); pending = null; } }, 450);
+  });
+  list.addEventListener("pointermove", (event) => {
+    if (drag && event.pointerId === drag.pointerId) {
+      move(event.clientY);
+      return;
+    }
+    if (!pending || event.pointerId !== pending.pointerId) return;
+    const distance = Math.hypot(event.clientX - pending.x, event.clientY - pending.y);
+    if (pending.mouse && distance > 4) {
+      begin(pending.li, pending.pointerId, pending.y);
+      pending = null;
+      move(event.clientY);
+    } else if (!pending.mouse && distance > 10) {
+      window.clearTimeout(pending.timer);
+      pending = null;
+    }
+  });
+  const release = (event) => {
+    if (pending && event.pointerId === pending.pointerId) {
+      window.clearTimeout(pending.timer);
+      pending = null;
+    }
+    if (drag && event.pointerId === drag.pointerId) finish();
+  };
+  list.addEventListener("pointerup", release);
+  list.addEventListener("pointercancel", release);
+  // Enquanto arrasta, a tela não rola.
+  list.addEventListener("touchmove", (event) => { if (drag) event.preventDefault(); }, { passive: false });
+  list.addEventListener("click", (event) => {
+    if (!suppressClick) return;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+  list.addEventListener("contextmenu", (event) => { if (drag || pending) event.preventDefault(); });
 }
 
 function generateItinerary() {
