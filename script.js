@@ -284,20 +284,20 @@ const reflections = [
 const HERO_DESTINATIONS = [
   { name: "Torre Eiffel", place: "Paris, França", image: "imagens/destinos/eiffel.jpg", author: "Tristan Nitot", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Tour_eiffel_at_sunrise_from_the_trocadero.jpg" },
   { name: "Museu do Louvre", place: "Paris, França", image: "imagens/destinos/louvre.jpg", author: "Benh LIEU SONG (Flickr)", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Louvre_Museum_Wikimedia_Commons.jpg" },
-  { name: "Grande Muralha da China", place: "Pequim (arredores), China", image: "imagens/destinos/muralha.jpg", author: "CEphoto, Uwe Aranas", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Badaling_China_Great-Wall-of-China-01.jpg" },
-  { name: "Coliseu", place: "Roma, Itália", image: "imagens/destinos/coliseu.jpg", author: "Diliff", license: "CC BY-SA 2.5", page: "https://commons.wikimedia.org/wiki/File:Colosseum_in_Rome-April_2007-1-_copie_2B.jpg" },
+  { name: "Grande Muralha da China", place: "Pequim (arredores), China", image: "imagens/destinos/muralha.jpg", author: "Luka Peternel", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Jinshanling-facing-east-2019-Luka-Peternel.jpg" },
+  { name: "Coliseu", place: "Roma, Itália", image: "imagens/destinos/coliseu.jpg", author: "Anil Öztas", license: "CC BY 4.0", page: "https://commons.wikimedia.org/wiki/File:Rom_(IT),_Kolosseum_--_2024_--_0971.jpg" },
   { name: "Taj Mahal", place: "Agra, Índia", image: "imagens/destinos/taj.jpg", author: "Diego Delso", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:El_Taj_Mahal-Agra_India0023.JPG" },
-  { name: "Estátua da Liberdade", place: "Nova York, Estados Unidos", image: "imagens/destinos/liberdade.jpg", author: "Carlos Delgado", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Statue_of_Liberty_-_03.jpg" },
+  { name: "Estátua da Liberdade", place: "Nova York, Estados Unidos", image: "imagens/destinos/liberdade.jpg", author: "銀河市長", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Statue_of_liberty_front.jpg" },
   { name: "Pirâmides de Gizé", place: "Gizé, Egito", image: "imagens/destinos/gize.jpg", author: "Ricardo Liberato", license: "CC BY-SA 2.0", page: "https://commons.wikimedia.org/wiki/File:All_Gizah_Pyramids.jpg" },
-  { name: "Cristo Redentor", place: "Rio de Janeiro, Brasil", image: "imagens/destinos/cristo.jpg", author: "Arne Müseler", license: "CC BY-SA 3.0 de", page: "https://commons.wikimedia.org/wiki/File:Christ_the_Redeemer_-_Cristo_Redentor.jpg" },
+  { name: "Cristo Redentor", place: "Rio de Janeiro, Brasil", image: "imagens/destinos/cristo.jpg", author: "Nico Kaiser", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:Cristo_Redentor_-_Rio_de_Janeiro,_Brasil.jpg" },
   { name: "Basílica da Sagrada Família", place: "Barcelona, Espanha", image: "imagens/destinos/sagrada.jpg", author: "Bernard Gagnon", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Sagrada_Familia_03.jpg" },
   { name: "Palácio de Versalhes", place: "Versalhes, França", image: "imagens/destinos/versalhes.jpg", author: "Myrabella", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Chateau_Versailles_Galerie_des_Glaces.jpg" },
-  { name: "Ópera de Sydney", place: "Sydney, Austrália", image: "imagens/destinos/sydney.jpg", author: "Thomas Adams", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Sydneyoperahouse_at_night.jpg" },
-  { name: "Muro de Berlim", place: "Berlim, Alemanha", image: "imagens/destinos/berlim.jpg", author: "Gzen92", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:East_Side_Gallery_-_Dmitri_Vrubel_-_Le_baiser_(Berlin).jpg" },
-  { name: "Alhambra", place: "Granada, Espanha", image: "imagens/destinos/alhambra.jpg", author: "Jebulon", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Patio_de_los_Arrayanes_detail_Alhambra_Granada_Spain.jpg" },
-  { name: "Basílica de São Pedro", place: "Cidade do Vaticano", image: "imagens/destinos/saopedro.jpg", author: "Jebulon", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Basilica_Sancti_Petri_blue_hour.jpg" },
-  { name: "Times Square", place: "Nova York, Estados Unidos", image: "imagens/destinos/times.jpg", author: "Ermell", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Times_Square_nachts-20120518-RM-015143.jpg" },
-  { name: "Aurora boreal", place: "Rovaniemi, Finlândia", image: "imagens/destinos/rovaniemi.jpg", author: "Ninara", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:Rovaniemi,_Finland_(49987283203).jpg" },
+  { name: "Ópera de Sydney", place: "Sydney, Austrália", image: "imagens/destinos/sydney.jpg", focus: "44% 50%", author: "Dietmar Rabich", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Sydney_(AU),_Opera_House_--_2019_--_2152.jpg" },
+  { name: "Muro de Berlim", place: "Berlim, Alemanha", image: "imagens/destinos/berlim.jpg", focus: "25% 50%", author: "Pudelek (Marcin Szala)", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Berlin_Wall_near_East_Side_Gallery.JPG" },
+  { name: "Alhambra", place: "Granada, Espanha", image: "imagens/destinos/alhambra.jpg", author: "Jebulon", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Dawn_Charles_V_Palace_Alhambra_Granada_Andalusia_Spain.jpg" },
+  { name: "Basílica de São Pedro", place: "Cidade do Vaticano", image: "imagens/destinos/saopedro.jpg", author: "Alvesgaspar", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Basilica_di_San_Pietro_in_Vaticano_September_2015-1a.jpg" },
+  { name: "Times Square", place: "Nova York, Estados Unidos", image: "imagens/destinos/times.jpg", author: "Anthony Quintano", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:The_Night_Before_New_Year%27s_Eve_High_Above_Times_Square.jpg" },
+  { name: "Vila do Papai Noel", place: "Rovaniemi, Finlândia", image: "imagens/destinos/rovaniemi.jpg", author: "flightlog", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:Santa_Claus_Village_in_Rovaniemi_20120209_01.jpg" },
   { name: "Aurora boreal (vila de Ersfjordbotn)", place: "Tromsø (arredores), Noruega", image: "imagens/destinos/ersfjordbotn.jpg", author: "Rainer Sparenberg/IAU OAE", license: "CC BY 4.0", page: "https://commons.wikimedia.org/wiki/File:Aurorae_(still_images),_Second_Place_(ann21047b).jpg" },
   { name: "Dolomitas", place: "Itália", image: "imagens/destinos/dolomitas.jpg", author: "Wolfgang Moroder", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Frea_pass_Sella_group_Dolomites.jpg" }
 ];
@@ -818,6 +818,7 @@ function renderInspiration() {
   const current = $(".hero-img.is-active");
   const next = current?.id === "hero-img-a" ? $("#hero-img-b") : $("#hero-img-a");
   next.src = item.image;
+  next.style.objectPosition = destination.focus || "50% 50%";
   next.alt = `${destination.name}, ${destination.place}`;
   const swap = () => {
     next.classList.add("is-active");

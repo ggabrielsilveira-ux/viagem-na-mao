@@ -195,7 +195,7 @@ img { display: block; max-width: 100%; }
 .hero-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(10, 18, 14, 0.32) 0%, rgba(10, 18, 14, 0) 18%, rgba(10, 18, 14, 0) 58%, rgba(10, 18, 14, 0.62) 100%);
+  background: linear-gradient(180deg, rgba(10, 18, 14, 0.32) 0%, rgba(10, 18, 14, 0) 18%, rgba(10, 18, 14, 0) 60%, rgba(10, 18, 14, 0.72) 100%);
 }
 .hero-top {
   position: absolute;
@@ -210,7 +210,7 @@ img { display: block; max-width: 100%; }
 .brand { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-display); font-size: 17px; font-weight: 800; letter-spacing: -0.4px; }
 .brand-light { font-weight: 500; opacity: 0.85; }
 .brand-mark { width: 34px; height: 34px; border-radius: 9px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25); }
-.hero-copy { position: absolute; right: 22px; bottom: 86px; left: 22px; }
+.hero-copy { position: absolute; right: 16px; bottom: 112px; left: 16px; padding: 14px 16px 15px; border-radius: 18px; background: rgba(10, 18, 14, 0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 .hero-kicker { margin-bottom: 8px; color: rgba(255, 255, 255, 0.82); font-size: 10px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
 .hero-quote {
   max-width: 340px;
@@ -221,9 +221,11 @@ img { display: block; max-width: 100%; }
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45);
   transition: opacity 600ms ease;
 }
-.hero-place { display: flex; align-items: center; gap: 6px; margin-top: 10px; color: rgba(255, 255, 255, 0.85); font-size: 12px; font-weight: 600; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5); }
-.hero-place .icon { width: 15px; height: 15px; }
-.hero-controls { position: absolute; right: 18px; bottom: 22px; left: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hero-place { display: flex; min-width: 0; align-items: center; gap: 5px; color: #fff; font-size: 12px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6); }
+.hero-place span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hero-place .icon { width: 14px; height: 14px; flex: none; }
+.hero-meta { position: absolute; right: 18px; bottom: 12px; left: 18px; display: grid; gap: 2px; }
+.hero-controls { position: absolute; right: 18px; bottom: 50px; left: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .hero-dots { display: flex; gap: 6px; }
 .hero-dots span { width: 6px; height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.4); transition: width 300ms ease, background 300ms ease; }
 .hero-dots span.is-active { width: 22px; background: #fff; }
@@ -852,4 +854,4 @@ img.is-missing { visibility: hidden; }
 .settings-steps .icon { width: 15px; height: 15px; vertical-align: -2px; }
 .settings-section label.btn { cursor: pointer; }
 .memories-hero .btn-primary { color: var(--brand); background: #FFFDF5; box-shadow: none; }
-.hero-credit { display: block; overflow: hidden; margin-top: 6px; color: rgba(255, 255, 255, 0.7); font-size: 10px; text-decoration: none; text-overflow: ellipsis; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); white-space: nowrap; }
+.hero-credit { display: block; overflow: hidden; color: rgba(255, 255, 255, 0.72); font-size: 10px; text-decoration: none; text-overflow: ellipsis; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); white-space: nowrap; }
