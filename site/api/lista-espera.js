@@ -19,7 +19,9 @@ export default async function handler(request, response) {
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return response.status(400).json({ erro: "E-mail inválido." });
   if (body.consentimento !== true) return response.status(400).json({ erro: "É preciso aceitar receber e-mails." });
 
-  const result = await fetch(`${SUPABASE_URL}/rest/v1/lista_espera?on_conflict=email`, {
+  // Aceita a URL com ou sem "/rest/v1/" no final.
+  const baseUrl = SUPABASE_URL.trim().replace(/\/+$/, "").replace(/\/rest\/v1$/, "");
+  const result = await fetch(`${baseUrl}/rest/v1/lista_espera?on_conflict=email`, {
     method: "POST",
     headers: {
       apikey: SUPABASE_SERVICE_ROLE_KEY,
