@@ -467,6 +467,15 @@ function formatCurrency(value, currency = "BRL", maximumFractionDigits = 0) {
   }
 }
 
+// Número com vírgula para mostrar em campos (6.2 → "6,2").
+function decimalText(value) {
+  return String(value ?? "").replace(".", ",");
+}
+
+function rateText(rate) {
+  return Number(rate) > 0 ? Number(rate).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 6, useGrouping: false }) : "";
+}
+
 function money(value, currency = "BRL", digits = 0) {
   return displayAmounts ? formatCurrency(value, currency, digits) : "••••";
 }
@@ -814,6 +823,32 @@ function getBudgetInBRL(trip) {
   return (Number(trip?.budget) || 0) * (Number(trip?.budgetExchangeRate) || 1);
 }
 
+// Moeda da viagem: a do orçamento. Cotação = quanto vale 1 unidade em reais.
+const tripCurrency = (trip) => trip?.currency || "BRL";
+const tripRate = (trip) => (tripCurrency(trip) === "BRL" ? 1 : Number(trip?.budgetExchangeRate) || 0);
+
+// Despesa na moeda da viagem: usa o valor original quando a moeda é a mesma.
+function expenseInTrip(trip, expense) {
+  if ((expense.currency || "BRL") === tripCurrency(trip)) return Number(expense.amount) || 0;
+  const rate = tripRate(trip);
+  return rate > 0 ? (Number(expense.amountBRL) || 0) / rate : 0;
+}
+
+function spentInTrip(trip) {
+  return (trip?.expenses || []).reduce((total, expense) => total + expenseInTrip(trip, expense), 0);
+}
+
+function forecastInTrip(trip) {
+  const rate = tripRate(trip) || 1;
+  return spentInTrip(trip) + getTripActivities(trip).reduce((total, item) => total + (item.activity.cost || 0), 0) / rate;
+}
+
+// Mostra na moeda da viagem ou, se a pessoa preferir, em reais pela cotação informada.
+function tripMoney(trip, value, digits = 0) {
+  if (trip.showInBRL && tripCurrency(trip) !== "BRL") return money(value * tripRate(trip), "BRL", digits);
+  return money(value, tripCurrency(trip), digits);
+}
+
 function photoOf(activity) {
   const photo = getOpenData(activity.id)?.photo;
   return photo && safeUrl(photo.url) ? photo : null;
@@ -1062,7 +1097,7 @@ function renderHome() {
   container.innerHTML = trips.map((trip) => {
     const cities = tripCities(trip);
     const cover = coverFor(trip);
-    const budget = getBudgetInBRL(trip);
+    const budget = Number(trip.budget) || 0;
     return `<article class="trip-card">
       <img src="${escapeHtml(cover.image)}" alt="" loading="lazy">
       <div class="trip-card-shade"></div>
@@ -1074,7 +1109,7 @@ function renderHome() {
       <button class="trip-card-body" type="button" data-open-trip="${escapeHtml(trip.id)}">
         <span class="trip-card-cities">${escapeHtml(cities.join(" · ") || trip.country || "Destino a definir")}</span>
         <span class="trip-card-name">${escapeHtml(trip.name || "Minha viagem")}</span>
-        <span class="trip-card-meta"><span>${escapeHtml(formatRange(trip.startDate, trip.endDate, false))}</span><span>${budget ? `Orçamento <strong>${escapeHtml(money(budget))}</strong>` : `Gastos <strong>${escapeHtml(money(getExpensesTotal(trip)))}</strong>`}</span></span>
+        <span class="trip-card-meta"><span>${escapeHtml(formatRange(trip.startDate, trip.endDate, false))}</span><span>${budget ? `Orçamento <strong>${escapeHtml(money(budget, tripCurrency(trip)))}</strong>` : `Gastos <strong>${escapeHtml(money(spentInTrip(trip), tripCurrency(trip)))}</strong>`}</span></span>
       </button>
     </article>`;
   }).join("");
@@ -1153,14 +1188,18 @@ function renderAbout() {
 
 function renderBudgetCard(trip) {
   setAmountToggle($("#toggle-budget-visibility"));
-  const budgetBRL = getBudgetInBRL(trip);
-  const forecast = getTripForecastBRL(trip);
-  $("#trip-budget-total").textContent = budgetBRL ? money(trip.budget, trip.currency) : "Sem orçamento definido";
-  $("#trip-budget-spent").textContent = `Gastos: ${money(getExpensesTotal(trip))}`;
-  $("#trip-budget-left").textContent = budgetBRL ? `Saldo: ${money(budgetBRL - forecast)}` : "";
+  const currency = tripCurrency(trip);
+  const budget = Number(trip.budget) || 0;
+  const forecast = forecastInTrip(trip);
+  $("#trip-budget-total").textContent = budget ? money(budget, currency) : "Sem orçamento definido";
+  $("#trip-budget-spent").textContent = `Gastos: ${money(spentInTrip(trip), currency)}`;
+  $("#trip-budget-left").textContent = budget ? `Saldo: ${money(budget - forecast, currency)}` : "";
+  const hint = $("#trip-budget-hint");
+  hint.hidden = currency === "BRL" || !budget || !displayAmounts;
+  if (!hint.hidden) hint.textContent = `≈ ${formatCurrency(budget * tripRate(trip), "BRL")} · cotação 1 ${currency} = ${formatCurrency(tripRate(trip), "BRL", 2)}`;
   const bar = $("#trip-budget-progress");
-  bar.style.width = budgetBRL ? `${Math.min(100, (forecast / budgetBRL) * 100)}%` : "0%";
-  bar.classList.toggle("is-over", budgetBRL > 0 && forecast > budgetBRL);
+  bar.style.width = budget ? `${Math.min(100, (forecast / budget) * 100)}%` : "0%";
+  bar.classList.toggle("is-over", budget > 0 && forecast > budget);
 }
 
 // ---------------------------------------------------------------------------
@@ -1987,38 +2026,40 @@ function categoryIcon(category) {
   return ({ Natureza: "trees", Praia: "waves", Cultura: "landmark", Arte: "palette", "Diversão": "sparkles", Compras: "shopping-bag", Gastronomia: "utensils", Passeio: "camera", "Passeio urbano": "footprints", Aventura: "mountain" })[category] || "map-pin";
 }
 
-function displayValue(amountBRL) {
-  const rate = state.displayCurrency === "BRL" ? 1 : Number(state.displayCurrencyRate);
-  if (!displayAmounts) return "••••";
-  return rate > 0 ? formatCurrency(amountBRL / rate, state.displayCurrency) : "Informe a cotação";
-}
 
 function renderExpenses() {
   const trip = getCurrentTrip();
   setAmountToggle($("#toggle-expense-visibility"));
-  const spent = getExpensesTotal(trip);
-  const forecast = getTripForecastBRL(trip);
-  const budget = getBudgetInBRL(trip);
-  $("#finance-spent").textContent = displayValue(spent);
-  $("#finance-budget").textContent = budget ? displayValue(budget) : "—";
-  $("#finance-forecast").textContent = displayValue(forecast);
-  $("#finance-left").textContent = budget ? displayValue(budget - forecast) : "—";
+  const currency = tripCurrency(trip);
+  const spent = spentInTrip(trip);
+  const forecast = forecastInTrip(trip);
+  const budget = Number(trip.budget) || 0;
+  $("#finance-spent").textContent = tripMoney(trip, spent, 2);
+  $("#finance-budget").textContent = budget ? tripMoney(trip, budget) : "—";
+  $("#finance-forecast").textContent = tripMoney(trip, forecast);
+  $("#finance-left").textContent = budget ? tripMoney(trip, budget - forecast) : "—";
   $("#finance-progress").style.width = budget ? `${Math.min(100, (forecast / budget) * 100)}%` : "0%";
-  $("#display-currency").value = state.displayCurrency || "BRL";
-  $("#display-exchange-rate").value = state.displayCurrencyRate || 1;
-  $("#display-currency-label").textContent = state.displayCurrency || "BRL";
+  const foreign = currency !== "BRL";
+  $("#trip-currency-label").textContent = foreign ? `${currency} · 1 ${currency} = ${formatCurrency(tripRate(trip), "BRL", 2)}` : "Real (BRL)";
+  $("#currency-options").hidden = !foreign;
+  $("#currency-brl-note").hidden = foreign;
+  if (foreign) {
+    $("#view-currency").innerHTML = [[false, currency], [true, "R$"]].map(([inBRL, label]) => `<button type="button" data-view-brl="${inBRL}" class="${Boolean(trip.showInBRL) === inBRL ? "is-selected" : ""}">${label}</button>`).join("");
+    $("#rate-code").textContent = currency;
+    if (document.activeElement !== $("#trip-rate")) $("#trip-rate").value = rateText(tripRate(trip));
+  }
   const tight = budget > 0 && forecast >= budget * 0.9;
   $("#budget-message").hidden = !tight;
   if (tight) $("#budget-message").textContent = messageFor("orcamentoApertado", trip.id);
 
   const totals = {};
-  trip.expenses.forEach((expense) => { totals[expense.category] = (totals[expense.category] || 0) + (Number(expense.amountBRL) || 0); });
+  trip.expenses.forEach((expense) => { totals[expense.category] = (totals[expense.category] || 0) + expenseInTrip(trip, expense); });
   const ranked = Object.entries(totals).sort((a, b) => b[1] - a[1]);
   $("#category-card").hidden = !ranked.length;
   $("#category-bars").innerHTML = ranked.map(([category, total]) => {
     const [label, iconName] = EXPENSE_CATEGORIES[category] || [category, "receipt"];
     const share = spent ? Math.round((total / spent) * 100) : 0;
-    return `<div class="category-bar"><span class="cat-icon">${icon(iconName)}</span><div><strong>${escapeHtml(label)}</strong><div class="progress"><span style="width:${share}%"></span></div></div><em>${escapeHtml(displayValue(total))}</em></div>`;
+    return `<div class="category-bar"><span class="cat-icon">${icon(iconName)}</span><div><strong>${escapeHtml(label)}</strong><div class="progress"><span style="width:${share}%"></span></div></div><em>${escapeHtml(tripMoney(trip, total))}</em></div>`;
   }).join("");
 
   const byDate = {};
@@ -2026,8 +2067,8 @@ function renderExpenses() {
   const dates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
   $("#expense-list").innerHTML = dates.length ? dates.map((date) => `<section class="expense-day"><h4>${escapeHtml(capitalize(formatDate(date, { weekday: "long", day: "numeric", month: "long" })) || "Sem data")}</h4><div class="expense-group">${byDate[date].map((expense) => {
     const [label, iconName] = EXPENSE_CATEGORIES[expense.category] || [expense.category, "receipt"];
-    const original = expense.currency !== "BRL" ? `<small>${escapeHtml(money(expense.amount, expense.currency, 2))}</small>` : "";
-    return `<div class="expense-row"><span class="cat-icon">${icon(iconName)}</span><div style="min-width:0"><strong>${escapeHtml(expense.description)}</strong><small>${escapeHtml(label)}</small></div><div class="expense-amount"><strong>${escapeHtml(money(expense.amountBRL, "BRL", 2))}</strong>${original}</div><button class="remove-btn" type="button" data-remove-expense="${escapeHtml(expense.id)}" aria-label="Remover despesa ${escapeHtml(expense.description)}">${icon("trash-2")}</button></div>`;
+    const original = (expense.currency || "BRL") !== (trip.showInBRL ? "BRL" : currency) ? `<small>${escapeHtml(money(expense.amount, expense.currency || "BRL", 2))}</small>` : "";
+    return `<div class="expense-row"><span class="cat-icon">${icon(iconName)}</span><div style="min-width:0"><strong>${escapeHtml(expense.description)}</strong><small>${escapeHtml(label)}</small></div><div class="expense-amount"><strong>${escapeHtml(tripMoney(trip, expenseInTrip(trip, expense), 2))}</strong>${original}</div><button class="remove-btn" type="button" data-remove-expense="${escapeHtml(expense.id)}" aria-label="Remover despesa ${escapeHtml(expense.description)}">${icon("trash-2")}</button></div>`;
   }).join("")}</div></section>`).join("")
     : `<div class="day-empty">${icon("receipt")}<p style="margin-top:8px">Nenhuma despesa ainda. Toque no <strong>+</strong> para registrar transporte, hospedagem, comida e passeios.</p></div>`;
 }
@@ -2037,11 +2078,14 @@ function openExpenseSheet() {
   const today = getBrasiliaDateKey();
   const defaultDate = trip.startDate && today >= trip.startDate && today <= trip.endDate ? today : (trip.startDate && today < trip.startDate ? today : trip.startDate || today);
   let category = "alimentacao";
-  let currency = "BRL";
+  let currency = tripCurrency(trip);
+  const defaultRate = (code) => (code === tripCurrency(trip) ? rateText(tripRate(trip)) : "");
   openSheet(`${sheetTitle("Nova despesa")}
-    <div class="amount-input"><span id="expense-currency-symbol">R$</span><input id="expense-amount" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0,00" aria-label="Valor"></div>
+    <label class="btn btn-secondary btn-block receipt-btn">${icon("camera")} Ler recibo pela foto<input class="visually-hidden" type="file" accept="image/*" id="receipt-file"></label>
+    <div class="receipt-box" id="receipt-box" hidden></div>
+    <div class="amount-input"><span id="expense-currency-symbol">${currency === "BRL" ? "R$" : currency}</span><input id="expense-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" aria-label="Valor"></div>
     <div class="segmented" id="expense-currency">${CURRENCIES.map((code) => `<button type="button" data-currency="${code}" class="${code === currency ? "is-selected" : ""}">${code}</button>`).join("")}</div>
-    <label class="field" id="expense-rate-field" hidden>Cotação · 1 unidade em R$<input id="expense-rate" type="number" inputmode="decimal" min="0.000001" step="0.000001" placeholder="Ex.: 5,40"></label>
+    <label class="field" id="expense-rate-field"${currency === "BRL" ? " hidden" : ""}><span>Cotação · 1 <span id="expense-rate-code">${currency}</span> em R$</span><input id="expense-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: 6,20" value="${defaultRate(currency)}"></label>
     <div class="cat-chips" id="expense-categories">${Object.entries(EXPENSE_CATEGORIES).map(([key, [label, iconName]]) => `<button type="button" class="cat-chip${key === category ? " is-selected" : ""}" data-category="${key}">${icon(iconName)}${escapeHtml(label)}</button>`).join("")}</div>
     <label class="field">Descrição<input id="expense-description" maxlength="100" placeholder="Ex.: Almoço no centro"></label>
     <label class="field">Data<input id="expense-date" type="date" value="${escapeHtml(defaultDate)}"></label>
@@ -2054,6 +2098,43 @@ function openExpenseSheet() {
       root.querySelectorAll("[data-currency]").forEach((item) => item.classList.toggle("is-selected", item === button));
       root.querySelector("#expense-rate-field").hidden = currency === "BRL";
       root.querySelector("#expense-currency-symbol").textContent = currency === "BRL" ? "R$" : currency;
+      root.querySelector("#expense-rate-code").textContent = currency;
+      root.querySelector("#expense-rate").value = defaultRate(currency);
+    });
+    root.querySelector("#receipt-file").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      event.target.value = "";
+      if (!file) return;
+      const box = root.querySelector("#receipt-box");
+      box.hidden = false;
+      box.className = "receipt-box";
+      box.innerHTML = `<p>${icon("sparkles")} Lendo o recibo… <span id="receipt-progress"></span></p><small>Na primeira vez o app baixa o leitor (uns 5 MB). A foto não sai do aparelho.</small>`;
+      try {
+        const text = await readReceiptText(file, (fraction) => {
+          const progress = box.querySelector("#receipt-progress");
+          if (progress) progress.textContent = `${Math.round(fraction * 100)}%`;
+        });
+        const found = parseReceipt(text, trip);
+        if (found.amount) root.querySelector("#expense-amount").value = decimalText(found.amount.toFixed(2));
+        if (found.currency && found.currency !== currency && CURRENCIES.includes(found.currency)) root.querySelector(`#expense-currency [data-currency="${found.currency}"]`).click();
+        if (found.category) root.querySelector(`#expense-categories [data-category="${found.category}"]`).click();
+        if (found.description) root.querySelector("#expense-description").value = found.description;
+        if (found.date) root.querySelector("#expense-date").value = found.date;
+        const items = [
+          found.amount ? `valor ${formatCurrency(found.amount, found.currency, 2)}` : "",
+          found.date ? `data ${formatDate(found.date, { day: "numeric", month: "short" })}` : "",
+          found.description ? `“${found.description}”` : "",
+          found.category ? EXPENSE_CATEGORIES[found.category][0].toLowerCase() : ""
+        ].filter(Boolean);
+        box.className = `receipt-box ${items.length ? "is-ok" : "is-warn"}`;
+        box.innerHTML = items.length
+          ? `<p>${icon("circle-check")} Encontrei: ${escapeHtml(items.join(" · "))}</p><small>Confira os campos abaixo e ajuste o que precisar antes de salvar.</small>`
+          : `<p>${icon("info")} Não consegui ler os dados deste recibo.</p><small>Tente uma foto mais de perto, reta e com boa luz, ou preencha à mão.</small>`;
+      } catch (error) {
+        console.error("Falha ao ler o recibo.", error);
+        box.className = "receipt-box is-warn";
+        box.innerHTML = `<p>${icon("info")} ${escapeHtml(error.message || "Não consegui ler o recibo.")}</p><small>Você pode preencher os campos à mão.</small>`;
+      }
     });
     root.querySelector("#expense-categories").addEventListener("click", (event) => {
       const button = event.target.closest("[data-category]");
@@ -2062,8 +2143,8 @@ function openExpenseSheet() {
       root.querySelectorAll("[data-category]").forEach((item) => item.classList.toggle("is-selected", item === button));
     });
     root.querySelector("#expense-save").addEventListener("click", () => {
-      const amount = Number(root.querySelector("#expense-amount").value);
-      const exchangeRate = currency === "BRL" ? 1 : Number(root.querySelector("#expense-rate").value);
+      const amount = parseDecimal(root.querySelector("#expense-amount").value);
+      const exchangeRate = currency === "BRL" ? 1 : parseDecimal(root.querySelector("#expense-rate").value);
       const description = root.querySelector("#expense-description").value.trim() || EXPENSE_CATEGORIES[category][0];
       if (!(amount > 0)) {
         toast("Informe um valor maior que zero");
@@ -2082,6 +2163,137 @@ function openExpenseSheet() {
     });
     window.setTimeout(() => root.querySelector("#expense-amount").focus(), 80);
   });
+}
+
+// ---------------------------------------------------------------------------
+// Ler recibo: o texto da foto é lido no próprio aparelho (Tesseract.js, código
+// aberto, Apache 2.0) e regras simples sugerem valor, data, descrição e
+// categoria. A foto não sai do aparelho; a pessoa confere antes de salvar.
+// ---------------------------------------------------------------------------
+
+const OCR = {
+  script: "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js",
+  workerPath: "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js",
+  corePath: "https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1",
+  langPath: "https://cdn.jsdelivr.net/npm/@tesseract.js-data/por@1.0.0/4.0.0_best_int"
+};
+let ocrLoader = null;
+
+function loadOcr() {
+  ocrLoader ||= new Promise((resolve, reject) => {
+    if (window.Tesseract) return resolve(window.Tesseract);
+    const script = document.createElement("script");
+    script.src = OCR.script;
+    script.onload = () => resolve(window.Tesseract);
+    script.onerror = () => { ocrLoader = null; reject(new Error("Não consegui baixar o leitor de recibos. Confira a internet.")); };
+    document.head.appendChild(script);
+  });
+  return ocrLoader;
+}
+
+// Reduz e realça a foto para a leitura ficar mais rápida e certeira.
+async function prepareReceiptImage(file) {
+  const source = URL.createObjectURL(file);
+  try {
+    const image = await loadImage(source);
+    const scale = Math.min(1, 1800 / Math.max(image.naturalWidth, image.naturalHeight));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(image.naturalWidth * scale);
+    canvas.height = Math.round(image.naturalHeight * scale);
+    const context = canvas.getContext("2d");
+    context.filter = "grayscale(1) contrast(1.35)";
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return canvas;
+  } finally {
+    URL.revokeObjectURL(source);
+  }
+}
+
+async function readReceiptText(file, onProgress) {
+  const Tesseract = await loadOcr();
+  const canvas = await prepareReceiptImage(file);
+  const worker = await Tesseract.createWorker("por", 1, {
+    workerPath: OCR.workerPath,
+    corePath: OCR.corePath,
+    langPath: OCR.langPath,
+    logger: (message) => { if (message.status === "recognizing text") onProgress?.(message.progress); }
+  });
+  try {
+    const { data } = await worker.recognize(canvas);
+    return data.text || "";
+  } finally {
+    await worker.terminate();
+  }
+}
+
+const RECEIPT_CATEGORIES = [
+  ["transporte", /\b(uber|bolt|cabify|t[aá]xi|taxi|metr[oô]|comboio|trem|[oô]nibus|autocarro|bus|bilhete de transporte|gasolina|combust[ií]vel|posto|parking|estacionamento|ped[aá]gio|portagem|aeroporto|ryanair|tap|latam|gol|azul)\b/i],
+  ["hospedagem", /\b(hotel|hostel|pousada|airbnb|booking|apartamento|alojamento|resort|inn)\b/i],
+  ["alimentacao", /\b(restaurante|rest\.|bar|caf[eé]|pastelaria|padaria|pizz\w*|lanchonete|snack|bistr[oô]|cervejaria|taberna|tasca|churrascaria|sushi|gelado|sorvete|almo[cç]o|jantar|couvert|gorjeta|servi[cç]o de mesa|food|burger|mcdonald|starbucks)\b/i],
+  ["atracoes", /\b(museu|museo|ingresso|entrada|ticket|bilheteira|tour|passeio|parque|castelo|pal[aá]cio|igreja|monumento|show|teatro|cinema)\b/i],
+  ["compras", /\b(loja|shop|store|supermercado|mercado|farm[aá]cia|continente|pingo doce|lidl|carrefour|auchan|el corte ingl[eé]s|zara|souvenir|lembran[cç]a)\b/i],
+  ["seguro", /\b(seguro|insurance|ap[oó]lice)\b/i]
+];
+
+// Interpreta números escritos como 1.234,56 · 1,234.56 · 12,50 · 12.50 · 1.500.
+function parseDecimal(value) {
+  let text = String(value ?? "").trim().replace(/[^\d.,-]/g, "");
+  if (!text) return NaN;
+  const lastComma = text.lastIndexOf(",");
+  const lastDot = text.lastIndexOf(".");
+  if (lastComma >= 0 && lastDot >= 0) {
+    // Os dois aparecem: o último é o separador decimal.
+    const decimal = lastComma > lastDot ? "," : ".";
+    text = text.split(decimal === "," ? "." : ",").join("").replace(decimal, ".");
+  } else if (lastComma >= 0) {
+    text = (text.match(/,/g) || []).length > 1 ? text.replace(/,/g, "") : text.replace(",", ".");
+  } else if (lastDot >= 0) {
+    const parts = text.split(".");
+    // Vários pontos, ou "1.500" (três dígitos depois do ponto), é separador de milhar.
+    if (parts.length > 2 || (parts[1].length === 3 && parts[0] !== "0" && parts[0] !== "")) text = parts.join("");
+  }
+  return Number(text);
+}
+
+function parseReceipt(text, trip) {
+  const lines = text.split(/\n+/).map((line) => line.replace(/\s+/g, " ").trim()).filter(Boolean);
+  const moneyPattern = /(\d{1,3}(?:[.\s]\d{3})*[.,]\d{2}|\d+[.,]\d{2})(?!\d)/g;
+  const amountsIn = (line) => [...line.matchAll(moneyPattern)].map((match) => parseDecimal(match[1].replace(/\s/g, ""))).filter((value) => value > 0 && value < 100000);
+  let amount = null;
+  const totalLines = lines.filter((line) => /\b(total|a pagar|importe|totale|amount|summe|valor pago|pagar)\b/i.test(line) && !/\b(sub\s?-?total|iva|imposto|desconto|troco|change)\b/i.test(line));
+  for (const line of totalLines.reverse()) {
+    const values = amountsIn(line);
+    if (values.length) { amount = values[values.length - 1]; break; }
+  }
+  if (amount === null) {
+    const all = lines.flatMap(amountsIn);
+    if (all.length) amount = Math.max(...all);
+  }
+
+  const upper = text.toUpperCase();
+  const currency = /€|\bEUR\b/.test(upper) ? "EUR" : /R\$|\bBRL\b/.test(upper) ? "BRL" : /£|\bGBP\b/.test(upper) ? "GBP" : /US\$|\bUSD\b/.test(upper) ? "USD" : /\bARS\b/.test(upper) ? "ARS" : (trip.currency || "BRL");
+
+  let date = "";
+  const today = getBrasiliaDateKey();
+  for (const match of text.matchAll(/\b(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})\b|\b(20\d{2})-(\d{2})-(\d{2})\b/g)) {
+    const [day, month, rawYear] = match[4] ? [match[6], match[5], match[4]] : [match[1], match[2], match[3]];
+    const year = rawYear.length === 2 ? `20${rawYear}` : rawYear;
+    const key = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    if (parseLocalDate(key) && Number(month) <= 12 && Number(day) <= 31 && key <= today && key >= addDays(today, -400)) { date = key; break; }
+  }
+
+  const description = lines.find((line) => /[a-zà-ú]{3,}/i.test(line)
+    && !/\b(nif|nipc|cnpj|cpf|contribuinte|rua|av\.|avenida|tel|telefone|fatura|factura|recibo|cupom|data|hora|www|http|@)\b/i.test(line)
+    && (line.match(/\d/g) || []).length < line.length / 3) || "";
+  const tidy = description.replace(/[^\p{L}\p{N}&' .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 60);
+  const category = RECEIPT_CATEGORIES.find(([, pattern]) => pattern.test(text))?.[0] || "";
+  return {
+    amount,
+    currency,
+    date,
+    description: tidy ? tidy.toLowerCase().replace(/(^|\s)\p{L}/gu, (letter) => letter.toUpperCase()) : "",
+    category
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -2650,7 +2862,7 @@ function stepIsValid(step) {
   if (step === "cities") return data.cities.length > 0;
   if (step === "dates") return Boolean(data.startDate && data.endDate && data.endDate >= data.startDate);
   if (step === "split") return data.cities.reduce((sum, city) => sum + city.nights, 0) === totalNights();
-  if (step === "budget") return Boolean(data.name.trim()) && (data.currency === "BRL" || Number(data.rate) > 0);
+  if (step === "budget") return Boolean(data.name.trim()) && (data.currency === "BRL" || parseDecimal(data.rate) > 0);
   return true;
 }
 
@@ -2868,9 +3080,9 @@ function renderBudgetStep(body) {
   body.innerHTML = `<div class="wizard-intro"><h2>Quase lá!</h2><p>Dê um nome para a viagem e, se quiser, um orçamento.</p></div>
     <label class="field">Nome da viagem<input id="wizard-name" maxlength="60" value="${escapeHtml(data.name)}" placeholder="Ex.: Férias de verão"></label>
     <h3 class="option-group-title">Orçamento total <span class="muted" style="font-weight:600;font-size:13px">(opcional)</span></h3>
-    <div class="amount-input"><span id="budget-symbol">${data.currency === "BRL" ? "R$" : escapeHtml(data.currency)}</span><input id="wizard-budget" type="number" inputmode="decimal" min="0" step="50" value="${escapeHtml(data.budget)}" placeholder="0" aria-label="Orçamento"></div>
+    <div class="amount-input"><span id="budget-symbol">${data.currency === "BRL" ? "R$" : escapeHtml(data.currency)}</span><input id="wizard-budget" type="text" inputmode="decimal" autocomplete="off" value="${escapeHtml(decimalText(data.budget))}" placeholder="0" aria-label="Orçamento"></div>
     <div class="segmented" id="budget-currency">${CURRENCIES.map((code) => `<button type="button" data-currency="${code}" class="${code === data.currency ? "is-selected" : ""}">${code}</button>`).join("")}</div>
-    <label class="field" id="budget-rate-field" style="margin-top:12px"${data.currency === "BRL" ? " hidden" : ""}>Cotação manual · 1 unidade em R$<input id="wizard-rate" type="number" inputmode="decimal" min="0.000001" step="0.000001" value="${data.currency === "BRL" ? 1 : escapeHtml(data.rate)}"></label>`;
+    <label class="field" id="budget-rate-field" style="margin-top:12px"${data.currency === "BRL" ? " hidden" : ""}><span>Cotação manual · 1 <span id="budget-rate-code">${escapeHtml(data.currency)}</span> em R$</span><input id="wizard-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: 6,20" value="${data.currency === "BRL" ? "" : escapeHtml(Number(data.rate) > 0 ? rateText(data.rate) : decimalText(data.rate))}"></label>`;
   body.querySelector("#wizard-name").addEventListener("input", (event) => {
     data.name = event.target.value;
     data.nameEdited = true;
@@ -2888,7 +3100,13 @@ function renderBudgetStep(body) {
     body.querySelectorAll("[data-currency]").forEach((item) => item.classList.toggle("is-selected", item === button));
     body.querySelector("#budget-rate-field").hidden = data.currency === "BRL";
     body.querySelector("#budget-symbol").textContent = data.currency === "BRL" ? "R$" : data.currency;
+    body.querySelector("#budget-rate-code").textContent = data.currency;
     if (data.currency === "BRL") data.rate = 1;
+    else if (Number(data.rate) === 1) {
+      // Vindo do real, a cotação 1 não faz sentido: pede a cotação da moeda nova.
+      data.rate = "";
+      body.querySelector("#wizard-rate").value = "";
+    }
     updateWizardNext();
   });
 }
@@ -2932,9 +3150,9 @@ function saveWizard() {
     departureTime: data.departureTime || "",
     startDate: data.startDate,
     endDate: data.endDate,
-    budget: Number(data.budget) || 0,
+    budget: parseDecimal(data.budget) || 0,
     currency: data.currency,
-    budgetExchangeRate: data.currency === "BRL" ? 1 : Number(data.rate) || 1,
+    budgetExchangeRate: data.currency === "BRL" ? 1 : parseDecimal(data.rate) || 1,
     country: data.cities[0]?.country || getCityInfo(data.cities[0]?.name)?.country || "Brasil",
     destinations,
     transport: data.transport,
@@ -5043,16 +5261,24 @@ $("#like-activity").addEventListener("click", () => triggerSwipe("like"));
 $("#add-itinerary-button").addEventListener("click", openManualEventSheet);
 $("#generate-itinerary").addEventListener("click", generateItinerary);
 $("#expense-fab").addEventListener("click", openExpenseSheet);
-$("#display-currency").addEventListener("change", (event) => {
-  state.displayCurrency = event.target.value;
-  if (event.target.value === "BRL") state.displayCurrencyRate = 1;
+$("#view-currency").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-view-brl]");
+  if (!button) return;
+  getCurrentTrip().showInBRL = button.dataset.viewBrl === "true";
   saveState();
   renderExpenses();
 });
-$("#display-exchange-rate").addEventListener("change", (event) => {
-  state.displayCurrencyRate = Number(event.target.value) || 0;
+$("#trip-rate").addEventListener("change", (event) => {
+  const rate = parseDecimal(event.target.value);
+  if (!(rate > 0)) {
+    toast("Informe a cotação com número, por exemplo 6,20");
+    renderExpenses();
+    return;
+  }
+  getCurrentTrip().budgetExchangeRate = rate;
   saveState();
   renderExpenses();
+  toast("Cotação atualizada");
 });
 $("#retro-content").addEventListener("change", (event) => {
   const toggle = event.target.closest("[data-retro-toggle]");

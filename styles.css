@@ -1010,3 +1010,13 @@ img.is-missing { visibility: hidden; }
 .track-pick { display: grid; flex: 1; gap: 1px; padding: 4px 0; border: 0; color: var(--ink); background: none; text-align: left; }
 .track-pick strong { font-size: 15px; }
 .track-pick small { color: var(--muted); font-size: 12px; }
+
+/* Moeda da viagem e leitura de recibo */
+.budget-hint { margin-top: 6px; color: var(--muted); font-size: 12px; }
+.receipt-btn { cursor: pointer; }
+.receipt-box { display: grid; gap: 4px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); font-size: 14px; line-height: 1.45; }
+.receipt-box p { display: flex; align-items: flex-start; gap: 6px; font-weight: 600; }
+.receipt-box .icon { width: 16px; height: 16px; flex: none; margin-top: 2px; }
+.receipt-box small { color: var(--muted); font-size: 12px; }
+.receipt-box.is-ok { background: var(--brand-soft); color: var(--brand); }
+.receipt-box.is-warn { background: var(--gold-soft); }

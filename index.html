@@ -16,14 +16,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=15">
-    <script src="icones.js?v=15" defer></script>
-    <script src="dados/fontes-abertas.js?v=15" defer></script>
-    <script src="dados/atracoes-cidades.js?v=15" defer></script>
-    <script src="dados/osm-lugares.js?v=15" defer></script>
-    <script src="dados/guia-paises.js?v=15" defer></script>
-    <script src="dados/mensagens.js?v=15" defer></script>
-    <script src="script.js?v=15" defer></script>
+    <link rel="stylesheet" href="styles.css?v=17">
+    <script src="icones.js?v=17" defer></script>
+    <script src="dados/fontes-abertas.js?v=17" defer></script>
+    <script src="dados/atracoes-cidades.js?v=17" defer></script>
+    <script src="dados/osm-lugares.js?v=17" defer></script>
+    <script src="dados/guia-paises.js?v=17" defer></script>
+    <script src="dados/mensagens.js?v=17" defer></script>
+    <script src="script.js?v=17" defer></script>
   </head>
   <body>
     <div class="app" id="app">
@@ -117,6 +117,7 @@
               <strong class="budget-total" id="trip-budget-total"></strong>
               <div class="progress"><span id="trip-budget-progress"></span></div>
               <div class="budget-caption"><span id="trip-budget-spent"></span><span id="trip-budget-left"></span></div>
+              <p class="budget-hint" id="trip-budget-hint" hidden></p>
             </div>
             <div class="card">
               <div class="card-head"><h2><svg class="icon" data-icon="users"></svg> Com quem e como</h2></div>
@@ -179,13 +180,15 @@
               <div class="card-head"><h2><svg class="icon" data-icon="receipt"></svg> Por categoria</h2></div>
               <div class="category-bars" id="category-bars"></div>
             </div>
-            <details class="card disclosure">
-              <summary><svg class="icon" data-icon="banknote"></svg> Moeda de exibição <span id="display-currency-label"></span><svg class="icon chevron" data-icon="chevron-down"></svg></summary>
-              <div class="field-row">
-                <label class="field">Moeda<select id="display-currency"><option value="BRL">Real (BRL)</option><option value="USD">Dólar (USD)</option><option value="EUR">Euro (EUR)</option><option value="GBP">Libra (GBP)</option><option value="ARS">Peso argentino (ARS)</option></select></label>
-                <label class="field">1 unidade em R$<input id="display-exchange-rate" type="number" inputmode="decimal" min="0.000001" step="0.000001" value="1"></label>
+            <details class="card disclosure" id="currency-card">
+              <summary><svg class="icon" data-icon="banknote"></svg> Moeda da viagem <span id="trip-currency-label"></span><svg class="icon chevron" data-icon="chevron-down"></svg></summary>
+              <div id="currency-options">
+                <p class="muted" style="margin-top:12px">Ver os valores em:</p>
+                <div class="segmented" id="view-currency"></div>
+                <label class="field" style="margin-top:12px"><span>Cotação · 1 <span id="rate-code"></span> em R$</span><input id="trip-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: 6,20"></label>
+                <p class="footnote">Cotação manual, informada por você. Despesas lançadas em outra moeda são convertidas por ela.</p>
               </div>
-              <p class="footnote">Cotação manual, informada por você. Não há câmbio em tempo real.</p>
+              <p class="footnote" id="currency-brl-note" style="margin-top:12px">Esta viagem está em reais. Para usar outra moeda, edite o orçamento da viagem.</p>
             </details>
             <h3 class="list-title">Despesas</h3>
             <div id="expense-list" class="expense-list"></div>
