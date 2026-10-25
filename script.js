@@ -412,7 +412,11 @@ let displayAmounts = !state.hideAmounts;
 
 function saveState() {
   try {
+    // Marca a viagem aberta como alterada agora (usado para juntar dados entre aparelhos).
+    const current = state.trips.find((trip) => trip.id === state.currentTripId);
+    if (current) current.updatedAt = new Date().toISOString();
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    window.dispatchEvent(new Event("estado-salvo"));
     return true;
   } catch (error) {
     console.error("Não foi possível salvar os dados da viagem.", error);
@@ -5255,7 +5259,7 @@ async function openSettingsSheet() {
     </section>
     <section class="settings-section">
       <h3>${icon("download")} Backup dos seus dados</h3>
-      <p class="muted">Viagens, roteiros, custos e memórias ficam só neste aparelho. Guarde uma cópia no Arquivos, no Drive ou no e-mail.</p>
+      <p class="muted">Viagens, roteiros, custos e memórias ficam neste aparelho (e na nuvem, se você entrar na conta). Guarde uma cópia no Arquivos, no Drive ou no e-mail.</p>
       <p class="settings-meta">${state.trips.length} ${state.trips.length === 1 ? "viagem" : "viagens"} · ${memoryCount} ${memoryCount === 1 ? "memória" : "memórias"} · ${lastBackup ? `último backup em ${escapeHtml(lastBackup)}` : "nenhum backup ainda"}</p>
       <p class="settings-meta">${persisted ? `${icon("shield-check")} Armazenamento protegido: o navegador não apaga seus dados sozinho.` : `${icon("info")} O navegador pode apagar dados de sites pouco usados (no iPhone, depois de cerca de 7 dias sem abrir pelo Safari). Instalar na tela inicial e fazer backup evita isso.`}</p>
       <div class="row-actions">
@@ -5266,6 +5270,7 @@ async function openSettingsSheet() {
       <p class="form-status" id="backup-status" role="status" aria-live="polite"></p>
     </section>`, (root) => {
     const status = root.querySelector("#backup-status");
+    window.contaUI?.(root);
     root.querySelector("#profile-name").addEventListener("change", (event) => {
       state.profile = { ...(state.profile || {}), name: event.target.value.trim() };
       saveState();

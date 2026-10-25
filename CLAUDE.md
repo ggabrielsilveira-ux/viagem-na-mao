@@ -10,16 +10,15 @@ App de planejamento de viagens para o público brasileiro. Interface e documenta
 - Monetização: assinatura (meta inicial R$ 9,99/mês e R$ 69,90/ano). Custos de API ainda a medir, preço não está fechado.
 
 ## Estado atual
-- Protótipo estático: HTML, CSS e JavaScript nativos, sem framework, sem backend. Abrir `index.html` no navegador.
-- Dados no `localStorage` (chave `viagem-na-mao-v1`), sem conta nem sincronização.
-- Catálogo fixo de 94 atrações em 21 destinos brasileiros, sem APIs, sem avaliações nem preços.
-- Arquivos: `index.html`, `styles.css`, `script.js`, `README.md`.
+- App estático (HTML, CSS e JavaScript nativos, sem framework) em https://app.viagemnamao.com; site de divulgação em https://viagemnamao.com (pasta `site/`, lista de espera via função da Vercel). Ambos publicados pela Vercel a cada push na `main`.
+- Dados no `localStorage` (chave `viagem-na-mao-v1`) e fotos no IndexedDB; contas opcionais com Supabase (`conta.js`, login por código no e-mail, teste fechado) sincronizam o estado e as fotos. Esquema em `ferramentas/supabase-contas.sql`.
+- Catálogo: atrações de 100+ cidades (Wikidata/Wikipedia/Commons e OpenStreetMap), sem avaliações nem preços. Ver README para a lista de arquivos.
 
 ## Regras de trabalho
 - Antes de mudar, ler os arquivos e preservar os dados já salvos no `localStorage` (usar migração, nunca apagar a chave).
 - Alterações pequenas e pontuais. Manter estático enquanto fizer sentido.
 - Nunca apresentar dado de demonstração como real. Nunca inventar nota, preço ou horário.
-- Chaves de API nunca no JavaScript do navegador: só em função serverless/backend.
+- Chaves secretas nunca no JavaScript do navegador: só em função serverless/backend (Vercel). Exceção aprovada: a Publishable key do Supabase (`sb_publishable_...`), que é pública por natureza; a proteção dos dados vem das regras RLS de cada tabela, obrigatórias em toda tabela nova.
 - Respeitar termos de cada API (cache, atribuição, uso comercial). Confirmar antes de propor integração.
 - Validar no navegador, incluindo layout móvel.
 

@@ -25,6 +25,7 @@ O app é pensado primeiro para o celular: cada tela tem barra superior com botã
 - **Fim de viagem e retrospectiva:** depois da data de volta, o Resumo mostra uma celebração discreta ("Rever minha viagem" ou "Guardar minha primeira lembrança", com "Agora não"). A retrospectiva mostra as memórias por dia, com capa e título; no modo de edição dá para escolher o que aparece, a capa e a ordem dentro de cada dia. Fica só neste aparelho.
 - **Mensagens contextuais:** frases curtas no dia de viagem, no orçamento apertado e no Baú, vindas de `dados/mensagens.js`. Cada contexto tem pelo menos três frases e o app evita repetir as últimas usadas.
 - **Ajustes (engrenagem na tela inicial):** como instalar o app na tela inicial do celular, backup de tudo (viagens, roteiros, custos, memórias e fotos) num arquivo `.json` e restauração do backup (juntar ou substituir).
+- **Contas (teste fechado):** em Ajustes, login com código enviado por e-mail (Supabase, só para convidados). Com a conta, viagens, memórias e fotos sincronizam na nuvem e o primeiro login oferece juntar as viagens do aparelho com as da conta. Sem conta, tudo continua só no aparelho. Já existe uma tabela de assinatura (só leitura no app) para a cobrança futura.
 - Os dados ficam neste aparelho: textos no armazenamento local do navegador e fotos do Baú no IndexedDB (sem conta nem sincronização).
 
 ## Executar
