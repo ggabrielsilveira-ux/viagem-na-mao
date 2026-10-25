@@ -333,10 +333,30 @@ const blankTrip = () => ({
   closureDismissed: false
 });
 
+function migrateDestination(value) {
+  const destination = { ...value };
+  let lodgings = Array.isArray(destination.lodgings) ? destination.lodgings.filter((item) => item && typeof item === "object") : [];
+  if (!lodgings.length && (destination.lodgingName || destination.lodgingAddress)) {
+    lodgings = [{ id: `hosp-${destination.id || "cidade"}-1`, name: destination.lodgingName || "", address: destination.lodgingAddress || "", checkIn: destination.startDate || "", checkOut: destination.endDate || "" }];
+  }
+  destination.lodgings = lodgings.map((item, index) => ({
+    id: item.id || `hosp-${destination.id || "cidade"}-${index + 1}`,
+    name: String(item.name || ""),
+    address: String(item.address || ""),
+    checkIn: item.checkIn || "",
+    checkOut: item.checkOut || "",
+    coordinates: Array.isArray(item.coordinates) && item.coordinates.length === 2 ? item.coordinates.map(Number) : null,
+    label: String(item.label || "")
+  }));
+  delete destination.lodgingName;
+  delete destination.lodgingAddress;
+  return destination;
+}
+
 function migrateTrip(value) {
   const trip = { ...blankTrip(), ...(value || {}) };
   trip.id ||= blankTrip().id;
-  trip.destinations = Array.isArray(trip.destinations) ? trip.destinations : [];
+  trip.destinations = Array.isArray(trip.destinations) ? trip.destinations.filter(Boolean).map(migrateDestination) : [];
   trip.saved = Array.isArray(trip.saved) ? trip.saved : [];
   trip.maybe = Array.isArray(trip.maybe) ? trip.maybe : [];
   trip.dismissed = Array.isArray(trip.dismissed) ? trip.dismissed : [];
@@ -1100,12 +1120,13 @@ function renderAbout() {
   $("#trip-destination-list").innerHTML = trip.destinations.length
     ? trip.destinations.map((destination, index) => {
       const nights = destination.startDate && destination.endDate ? daysBetween(destination.startDate, destination.endDate) : 0;
-      const lodging = destination.lodgingName
-        ? `${escapeHtml(destination.lodgingName)}${destination.lodgingAddress ? ` · ${escapeHtml(destination.lodgingAddress)}` : ""}`
-        : "Adicionar hospedagem";
+      const lodgings = sortedLodgings(destination);
+      const gaps = lodgings.length ? uncoveredNights(destination) : [];
       return `<li><span class="timeline-dot">${index + 1}</span>
         <div><strong>${escapeHtml(destination.name)}</strong><small>${escapeHtml(formatRange(destination.startDate, destination.endDate, false))} · ${nightsLabel(nights)}</small>
-        <button class="link-btn lodging" type="button" data-lodging="${index}">${icon("bed-double")} ${lodging}</button></div>
+        ${lodgings.map((lodging) => `<button class="lodging-item" type="button" data-lodging-edit="${index}|${escapeHtml(lodging.id)}">${icon("bed-double")}<span><strong>${escapeHtml(lodging.name || lodging.address || "Hospedagem")}</strong><small>${escapeHtml(lodgingRange(lodging))}${lodging.coordinates ? "" : " · sem localização"}</small></span></button>`).join("")}
+        ${gaps.length ? `<small class="lodging-gap">${icon("info")} Sem hospedagem: ${gaps.map((date) => escapeHtml(formatDate(date, { day: "numeric", month: "short" }))).join(", ")}</small>` : ""}
+        <button class="link-btn lodging" type="button" data-lodging-add="${index}">${icon("plus")} Adicionar hospedagem</button></div>
         <span></span></li>`;
     }).join("")
     : '<li><div class="muted">Ainda não há cidades cadastradas.</div></li>';
@@ -1560,14 +1581,19 @@ function renderItinerary() {
     $("#itinerary-content").innerHTML = '<li class="day-empty">Um espaço em branco também faz parte de uma boa viagem. Curta lugares em Descobrir ou adicione um compromisso.</li>';
     return;
   }
-  let previous = null;
-  $("#itinerary-content").innerHTML = schedule.map((item) => {
-    let leg = "";
-    if (item.coordinates && previous) {
-      const key = routeKey(previous, item.coordinates);
-      const km = distanceKm(previous, item.coordinates);
-      leg = `<li class="travel-leg"><i></i><span>${icon("car")}<b data-route="${escapeHtml(key)}" data-straight-km="${km}" style="font-weight:600">${escapeHtml(routeText(key, km))}</b></span></li>`;
-    }
+  const base = lodgingForDate(trip, selectedDay);
+  const home = base?.coordinates ? base : null;
+  const homeRow = (label) => `<li class="stop stop-home"><span class="stop-time">${icon("house")}</span><div class="stop-card home-card"><span class="stop-icon">${icon("bed-double")}</span><div class="stop-info"><strong>${escapeHtml(home.name || home.address || "Hospedagem")}</strong><small>${label}</small></div></div></li>`;
+  const legRow = (from, to) => {
+    const key = routeKey(from, to);
+    const km = distanceKm(from, to);
+    return `<li class="travel-leg"><i></i><span>${icon("car")}<b data-route="${escapeHtml(key)}" data-straight-km="${km}" style="font-weight:600">${escapeHtml(routeText(key, km))}</b></span></li>`;
+  };
+  const destinationIndex = destinationIndexForDate(trip, selectedDay);
+  const notice = home ? "" : `<li class="day-notice-card">${icon("info")}<div><strong>De onde você sai neste dia?</strong><p>${base ? "Localize o endereço da hospedagem no mapa" : "Cadastre a hospedagem desta noite"} para o roteiro calcular os deslocamentos a partir dela. Por enquanto, os tempos são só entre as paradas.</p>${destinationIndex >= 0 ? `<button class="link-btn" type="button" ${base ? `data-lodging-edit="${base.destinationIndex}|${escapeHtml(base.id)}"` : `data-lodging-add="${destinationIndex}"`}>${base ? "Localizar hospedagem" : "Adicionar hospedagem"}</button>` : ""}</div></li>`;
+  let previous = home?.coordinates || null;
+  $("#itinerary-content").innerHTML = (home ? homeRow("Saída da hospedagem") : notice) + schedule.map((item) => {
+    const leg = item.coordinates && previous ? legRow(previous, item.coordinates) : "";
     if (item.coordinates) previous = item.coordinates;
     return `${leg}<li class="stop">
       <span class="stop-time">${escapeHtml(item.time || "09:00")}</span>
@@ -1576,7 +1602,7 @@ function renderItinerary() {
         <div class="stop-info"><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.subtitle || item.category || "Compromisso")}</small></div>
         <button class="icon-btn icon-btn-sm" type="button" data-stop="${escapeHtml(item.id)}" data-stop-type="${item.type}" aria-label="Opções de ${escapeHtml(item.title)}">${icon("ellipsis")}</button>
       </div></li>`;
-  }).join("");
+  }).join("") + (home && previous && previous !== home.coordinates ? legRow(previous, home.coordinates) + homeRow("Volta para a hospedagem") : "");
   addImageFallbacks($("#itinerary-content"));
   requestRoutes($("#itinerary-content"));
 }
@@ -1663,17 +1689,25 @@ function generateItinerary() {
     toast("Curta alguns lugares em Descobrir primeiro");
     return;
   }
-  trip.saved.forEach((item, index) => {
-    if (!item.date || !days.includes(item.date)) {
-      const activity = getActivity(item.id);
-      const destination = trip.destinations.find((place) => activityMatchesCity(activity, place.name));
-      item.date = destination?.startDate || days[Math.min(index, days.length - 1)];
-    }
-    item.time ||= ["09:00", "11:30", "14:30", "17:00"][index % 4];
+  const located = trip.destinations.some((destination) => destination.lodgings.some((lodging) => lodging.coordinates));
+  openSheet(`${sheetTitle("Sugerir roteiro")}
+    <p class="sheet-text">Vou distribuir os ${trip.saved.length} lugares curtidos pelos dias de cada cidade, começando pelos mais perto ${located ? "da hospedagem do dia" : "do centro da cidade"}. Os compromissos que você criou não mudam.</p>
+    ${located ? "" : `<p class="muted">Dica: cadastre e localize as hospedagens no Resumo para a sugestão partir de onde você vai estar.</p>`}
+    <p class="muted">É uma sugestão por regras simples e distância em linha reta, sem IA. Revise horários e deslocamentos depois.</p>
+    <div class="row-actions"><button class="btn btn-secondary" type="button" data-close-sheet>Cancelar</button><button class="btn btn-primary" type="button" id="plan-confirm">${icon("sparkles")} Reorganizar</button></div>`, (root) => {
+    root.querySelector("#plan-confirm").addEventListener("click", () => {
+      const before = JSON.stringify(trip.saved);
+      suggestTripPlan(trip);
+      if (!saveState()) {
+        trip.saved = JSON.parse(before);
+        return;
+      }
+      closeSheet();
+      selectedDay = null;
+      renderItinerary();
+      toast("Roteiro reorganizado. Revise horários e deslocamentos.");
+    });
   });
-  if (!saveState()) return;
-  renderItinerary();
-  toast("Sugestão pronta. Revise horários e deslocamentos.");
 }
 
 // Depois de mudar datas ou cidades, traz para dentro da viagem os itens que ficariam invisíveis no roteiro.
@@ -2012,27 +2046,268 @@ function checklistText(trip) {
 }
 
 // ---------------------------------------------------------------------------
-// Hospedagem (pelo Resumo)
+// Hospedagens (pelo Resumo): várias por cidade, cada uma com as suas noites.
+// O endereço vira coordenada pelo Nominatim (OpenStreetMap), só quando a pessoa toca em "Localizar".
 // ---------------------------------------------------------------------------
 
-function openLodgingSheet(index) {
+const GEOCODE_CACHE_KEY = "viagem-na-mao-enderecos-v1";
+const geocodeCache = (() => {
+  try { return JSON.parse(window.localStorage.getItem(GEOCODE_CACHE_KEY) || "{}"); } catch { return {}; }
+})();
+let lastGeocodeAt = 0;
+
+// Noites de uma cidade: do dia de chegada até a véspera da saída.
+function stayNights(destination) {
+  const nights = [];
+  if (!destination.startDate || !destination.endDate) return nights;
+  for (let date = destination.startDate; date < destination.endDate && nights.length < 90; date = addDays(date, 1)) nights.push(date);
+  return nights;
+}
+
+function lodgingNights(lodging) {
+  const nights = [];
+  if (!lodging.checkIn || !lodging.checkOut) return nights;
+  for (let date = lodging.checkIn; date < lodging.checkOut && nights.length < 90; date = addDays(date, 1)) nights.push(date);
+  return nights;
+}
+
+function sortedLodgings(destination) {
+  return [...destination.lodgings].sort((a, b) => (a.checkIn || "").localeCompare(b.checkIn || ""));
+}
+
+function uncoveredNights(destination) {
+  const covered = new Set(destination.lodgings.flatMap(lodgingNights));
+  return stayNights(destination).filter((date) => !covered.has(date));
+}
+
+function lodgingRange(lodging) {
+  const nights = lodgingNights(lodging).length;
+  if (!nights) return "Datas a definir";
+  return `${formatDate(lodging.checkIn, { day: "numeric", month: "short" })} → ${formatDate(lodging.checkOut, { day: "numeric", month: "short" })} · ${nightsLabel(nights)}`;
+}
+
+// Onde a pessoa está naquele dia: a hospedagem em que dorme naquela noite;
+// no último dia da viagem, a de onde sai pela manhã.
+function lodgingForDate(trip, date) {
+  const all = trip.destinations.flatMap((destination, index) => destination.lodgings.map((lodging) => ({ ...lodging, city: destination.name, destinationIndex: index })));
+  return all.find((lodging) => lodging.checkIn <= date && date < lodging.checkOut) || all.find((lodging) => lodging.checkOut === date) || null;
+}
+
+function destinationIndexForDate(trip, date) {
+  const index = trip.destinations.findIndex((destination) => destination.startDate <= date && date < destination.endDate);
+  return index >= 0 ? index : trip.destinations.findIndex((destination) => destination.endDate === date);
+}
+
+async function geocodeAddress(address, destination) {
+  const city = getCityInfo(destination.name);
+  const query = normalizeText(address).includes(normalizeText(destination.name)) ? address : `${address}, ${destination.name}${city?.country ? `, ${city.country}` : ""}`;
+  const key = normalizeText(query);
+  if (geocodeCache[key]) return geocodeCache[key];
+  const pause = 1100 - (Date.now() - lastGeocodeAt);
+  if (pause > 0) await wait(pause);
+  lastGeocodeAt = Date.now();
+  const params = new URLSearchParams({ format: "jsonv2", limit: "5", "accept-language": "pt-BR", q: query });
+  if (city?.coordinates) {
+    const [lat, lon] = city.coordinates;
+    params.set("viewbox", `${lon - 0.6},${lat + 0.6},${lon + 0.6},${lat - 0.6}`);
+  }
+  const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
+  if (!response.ok) throw new Error(`Nominatim respondeu ${response.status}`);
+  const results = (await response.json()).map((item) => ({ coordinates: [Number(item.lat), Number(item.lon)], label: item.display_name }));
+  geocodeCache[key] = results;
+  try {
+    const keys = Object.keys(geocodeCache);
+    if (keys.length > 300) delete geocodeCache[keys[0]];
+    window.localStorage.setItem(GEOCODE_CACHE_KEY, JSON.stringify(geocodeCache));
+  } catch {
+    // Sem espaço para o cache: segue sem guardar.
+  }
+  return results;
+}
+
+function openLodgingSheet(index, lodgingId = null) {
   const trip = getCurrentTrip();
   const destination = trip.destinations[index];
   if (!destination) return;
-  openSheet(`${sheetTitle(`Hospedagem em ${destination.name}`)}
-    <label class="field">Nome<input id="lodging-name" maxlength="100" value="${escapeHtml(destination.lodgingName || "")}" placeholder="Ex.: Pousada do Centro"></label>
-    <label class="field">Endereço<input id="lodging-address" maxlength="180" value="${escapeHtml(destination.lodgingAddress || "")}" placeholder="Rua, número, bairro"></label>
-    <button class="btn btn-primary btn-block" type="button" id="lodging-save">${icon("check")} Salvar</button>`, (root) => {
+  const nights = stayNights(destination);
+  if (!nights.length) {
+    toast(`Defina pelo menos uma noite em ${destination.name} para cadastrar hospedagem`);
+    return;
+  }
+  const existing = lodgingId ? destination.lodgings.find((item) => item.id === lodgingId) : null;
+  const free = uncoveredNights(destination);
+  let defaultOut = free.length ? addDays(free[0], 1) : addDays(nights[0], 1);
+  while (free.includes(defaultOut)) defaultOut = addDays(defaultOut, 1);
+  const draft = existing ? { ...existing } : { id: `hosp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, name: "", address: "", checkIn: free[0] || nights[0], checkOut: defaultOut, coordinates: null, label: "" };
+  let locatedFor = existing?.coordinates ? existing.address : null;
+  const city = getCityInfo(destination.name);
+  const option = (date, selected) => `<option value="${date}"${date === selected ? " selected" : ""}>${escapeHtml(formatDate(date, { weekday: "short", day: "numeric", month: "short" }))}</option>`;
+  openSheet(`${sheetTitle(existing ? "Editar hospedagem" : "Nova hospedagem")}
+    <p class="muted">${escapeHtml(destination.name)} · ${escapeHtml(formatRange(destination.startDate, destination.endDate, false))} · ${nightsLabel(nights.length)}</p>
+    <label class="field">Nome (opcional)<input id="lodging-name" maxlength="100" value="${escapeHtml(draft.name)}" placeholder="Ex.: Pousada do Centro"></label>
+    <label class="field">Endereço<input id="lodging-address" maxlength="180" value="${escapeHtml(draft.address)}" placeholder="Rua, número, bairro"></label>
+    <button class="btn btn-secondary btn-block" type="button" id="lodging-locate">${icon("map-pin")} Localizar no mapa</button>
+    <div class="geo-results" id="geo-results"></div>
+    <p class="geo-status" id="geo-status"></p>
+    <div class="field-row">
+      <label class="field">Entrada<select id="lodging-in">${nights.map((date) => option(date, draft.checkIn)).join("")}</select></label>
+      <label class="field">Saída<select id="lodging-out">${nights.map((date) => option(addDays(date, 1), draft.checkOut)).join("")}</select></label>
+    </div>
+    <p class="form-status" id="lodging-status" role="status" aria-live="polite"></p>
+    <div class="${existing ? "row-actions" : ""}">${existing ? `<button class="btn btn-danger" type="button" id="lodging-remove">${icon("trash-2")} Remover</button>` : ""}<button class="btn btn-primary${existing ? "" : " btn-block"}" type="button" id="lodging-save">${icon("check")} Salvar</button></div>
+    <p class="footnote">Endereços localizados com o <a href="https://nominatim.org/" target="_blank" rel="noopener noreferrer">Nominatim</a>, dados © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">colaboradores do OpenStreetMap</a>.</p>`, (root) => {
+    const address = root.querySelector("#lodging-address");
+    const results = root.querySelector("#geo-results");
+    const geoStatus = root.querySelector("#geo-status");
+    const status = root.querySelector("#lodging-status");
+    const paintGeo = () => {
+      geoStatus.className = `geo-status${draft.coordinates ? " is-ok" : ""}`;
+      geoStatus.innerHTML = draft.coordinates
+        ? `${icon("circle-check")} Localizado: ${escapeHtml(draft.label.split(",").slice(0, 4).join(","))}`
+        : `${icon("info")} Ainda não localizado. Sem isso, o roteiro não calcula os deslocamentos a partir daqui.`;
+    };
+    paintGeo();
+    address.addEventListener("input", () => {
+      if (locatedFor !== null && address.value.trim() !== locatedFor) {
+        draft.coordinates = null;
+        draft.label = "";
+        locatedFor = null;
+        results.innerHTML = "";
+        paintGeo();
+      }
+    });
+    const choose = (item) => {
+      draft.coordinates = item.coordinates;
+      draft.label = item.label;
+      locatedFor = address.value.trim();
+      results.innerHTML = "";
+      paintGeo();
+    };
+    root.querySelector("#lodging-locate").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      const text = address.value.trim();
+      if (text.length < 4) {
+        geoStatus.textContent = "Digite o endereço (rua e número) para localizar.";
+        return;
+      }
+      button.disabled = true;
+      geoStatus.textContent = "Procurando o endereço…";
+      try {
+        const found = await geocodeAddress(text, destination);
+        if (!found.length) {
+          results.innerHTML = "";
+          geoStatus.textContent = "Não encontrei esse endereço. Confira a rua e o número, ou tente só o nome do hotel.";
+        } else if (found.length === 1) choose(found[0]);
+        else {
+          geoStatus.textContent = "Qual destes é o endereço certo?";
+          results.innerHTML = found.map((item, position) => {
+            const km = city?.coordinates ? distanceKm(city.coordinates, item.coordinates) : null;
+            return `<button type="button" class="geo-option" data-geo="${position}">${icon("map-pin")}<span>${escapeHtml(item.label)}${km !== null ? `<small>${km < 1 ? "no centro" : `a ${Math.round(km)} km do centro`} de ${escapeHtml(destination.name)}</small>` : ""}</span></button>`;
+          }).join("");
+          results.onclick = (clickEvent) => {
+            const option = clickEvent.target.closest("[data-geo]");
+            if (option) choose(found[Number(option.dataset.geo)]);
+          };
+        }
+      } catch (error) {
+        console.error("Falha ao localizar endereço.", error);
+        geoStatus.textContent = "Não consegui consultar o mapa agora. Tente de novo em instantes.";
+      } finally {
+        button.disabled = false;
+      }
+    });
     root.querySelector("#lodging-save").addEventListener("click", () => {
-      destination.lodgingName = root.querySelector("#lodging-name").value.trim();
-      destination.lodgingAddress = root.querySelector("#lodging-address").value.trim();
+      draft.name = root.querySelector("#lodging-name").value.trim();
+      draft.address = address.value.trim();
+      draft.checkIn = root.querySelector("#lodging-in").value;
+      draft.checkOut = root.querySelector("#lodging-out").value;
+      if (!draft.name && !draft.address) {
+        status.textContent = "Informe o nome ou o endereço da hospedagem.";
+        return;
+      }
+      if (draft.checkOut <= draft.checkIn) {
+        status.textContent = "A saída precisa ser depois da entrada.";
+        return;
+      }
+      const mine = new Set(lodgingNights(draft));
+      const clash = destination.lodgings.filter((item) => item.id !== draft.id).flatMap(lodgingNights).filter((date) => mine.has(date));
+      if (clash.length) {
+        status.textContent = `Já há hospedagem na noite de ${clash.map((date) => formatDate(date, { day: "numeric", month: "short" })).join(", ")}.`;
+        return;
+      }
+      const previous = destination.lodgings;
+      destination.lodgings = existing ? destination.lodgings.map((item) => (item.id === draft.id ? draft : item)) : [...destination.lodgings, draft];
+      if (!saveState()) {
+        destination.lodgings = previous;
+        return;
+      }
+      closeSheet();
+      showTab(route.tab);
+      toast(draft.coordinates ? "Hospedagem salva" : "Hospedagem salva sem localização no mapa");
+    });
+    root.querySelector("#lodging-remove")?.addEventListener("click", (event) => {
+      const button = event.currentTarget;
+      if (!button.dataset.confirm) {
+        button.dataset.confirm = "1";
+        button.innerHTML = `${icon("trash-2")} Confirmar`;
+        return;
+      }
+      destination.lodgings = destination.lodgings.filter((item) => item.id !== draft.id);
       saveState();
       closeSheet();
-      renderAbout();
-      toast("Hospedagem salva");
+      showTab(route.tab);
+      toast("Hospedagem removida");
     });
   });
 }
+
+// Sugestão de roteiro: distribui os lugares curtidos pelos dias de cada cidade,
+// começando pelo que fica mais perto da hospedagem do dia (distância em linha reta).
+function suggestTripPlan(trip) {
+  const days = getTripDays(trip);
+  const slots = ["09:00", "11:00", "14:00", "16:00", "18:00", "20:00"];
+  const coordsOf = (item) => getOpenData(item.id)?.coordinates || getActivity(item.id)?.coordinates || null;
+  const groups = trip.destinations.map(() => []);
+  const loose = [];
+  trip.saved.forEach((item) => {
+    const activity = getActivity(item.id);
+    const index = activity ? trip.destinations.findIndex((destination) => activityMatchesCity(activity, destination.name)) : -1;
+    (index >= 0 ? groups[index] : loose).push(item);
+  });
+  groups.forEach((items, index) => {
+    const destination = trip.destinations[index];
+    const last = index === trip.destinations.length - 1;
+    let cityDays = stayNights(destination);
+    if (last || !cityDays.length) cityDays = [...cityDays, destination.endDate].filter((date) => days.includes(date));
+    if (!cityDays.length) cityDays = [days[0]];
+    let remaining = [...items];
+    cityDays.forEach((date, dayIndex) => {
+      const count = Math.ceil(remaining.length / (cityDays.length - dayIndex));
+      const home = lodgingForDate(trip, date)?.coordinates || getCityInfo(destination.name)?.coordinates || null;
+      let point = home;
+      for (let slot = 0; slot < count && remaining.length; slot++) {
+        let pick = 0;
+        if (point) {
+          let best = Infinity;
+          remaining.forEach((item, position) => {
+            const coords = coordsOf(item);
+            const km = coords ? distanceKm(point, coords) : Infinity;
+            if (km < best) { best = km; pick = position; }
+          });
+        }
+        const [item] = remaining.splice(pick, 1);
+        item.date = date;
+        item.time = slots[Math.min(slot, slots.length - 1)];
+        point = coordsOf(item) || point;
+      }
+    });
+  });
+  loose.forEach((item, position) => {
+    item.date = days[Math.min(position, days.length - 1)];
+    item.time = slots[0];
+  });
+}
+
 
 // ---------------------------------------------------------------------------
 // Cadastro da viagem em etapas
@@ -2072,8 +2347,7 @@ function editTrip(only = null) {
         name: destination.name,
         country: getCityInfo(destination.name)?.country || trip.country || "",
         nights: destination.startDate && destination.endDate ? daysBetween(destination.startDate, destination.endDate) : 0,
-        lodgingName: destination.lodgingName || "",
-        lodgingAddress: destination.lodgingAddress || "",
+        lodgings: destination.lodgings || [],
         id: destination.id
       })),
       startDate: trip.startDate,
@@ -2407,8 +2681,7 @@ function saveWizard() {
       name: city.name,
       startDate,
       endDate,
-      lodgingName: previous?.lodgingName || "",
-      lodgingAddress: previous?.lodgingAddress || ""
+      lodgings: previous?.lodgings || []
     };
   });
   const trip = migrateTrip({
@@ -3549,9 +3822,15 @@ document.addEventListener("click", (event) => {
     openPlaceSheet(placeButton.dataset.place);
     return;
   }
-  const lodging = event.target.closest("[data-lodging]");
-  if (lodging) {
-    openLodgingSheet(Number(lodging.dataset.lodging));
+  const lodgingAdd = event.target.closest("[data-lodging-add]");
+  if (lodgingAdd) {
+    openLodgingSheet(Number(lodgingAdd.dataset.lodgingAdd));
+    return;
+  }
+  const lodgingEdit = event.target.closest("[data-lodging-edit]");
+  if (lodgingEdit) {
+    const [destinationIndex, lodgingId] = lodgingEdit.dataset.lodgingEdit.split("|");
+    openLodgingSheet(Number(destinationIndex), lodgingId);
     return;
   }
   const dayButton = event.target.closest("[data-day]");
