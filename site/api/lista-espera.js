@@ -1,7 +1,7 @@
 // Função da Vercel: recebe o e-mail da lista de espera e grava no Supabase.
 // Variáveis de ambiente (configuradas no painel da Vercel, nunca no código):
 //   SUPABASE_URL                ex.: https://xxxx.supabase.co
-//   SUPABASE_SERVICE_ROLE_KEY   chave "service_role" (secreta) do projeto
+//   SUPABASE_SERVICE_ROLE_KEY   chave secreta do projeto (Secret key "sb_secret_..." ou a antiga service_role)
 export default async function handler(request, response) {
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
@@ -23,7 +23,8 @@ export default async function handler(request, response) {
     method: "POST",
     headers: {
       apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      // Chaves novas (sb_secret_...) vão só no apikey; a antiga service_role (JWT) também no Authorization.
+      ...(SUPABASE_SERVICE_ROLE_KEY.startsWith("sb_") ? {} : { Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }),
       "Content-Type": "application/json",
       // E-mail repetido não dá erro: a pessoa já está na lista.
       Prefer: "resolution=ignore-duplicates,return=minimal"
