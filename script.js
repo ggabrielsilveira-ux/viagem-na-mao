@@ -1195,15 +1195,27 @@ function renderDiscoverTab() {
     : "Você já passou por todas as ideias. Reveja o que ficou em “Talvez depois”.";
   const saved = getTripActivities(trip);
   const maybe = getTripActivities(trip, "maybe");
+  const dismissed = trip.dismissed.map(getActivity).filter(Boolean);
   $("#discovery-saved-count").textContent = String(saved.length);
   $("#maybe-count").textContent = String(maybe.length);
-  $("#saved-preview-list").innerHTML = saved.length
-    ? saved.map(({ activity }) => placeTile(activity)).join("")
-    : '<p class="empty-note">Os lugares que você curtir aparecem aqui.</p>';
-  $("#maybe-preview-list").innerHTML = maybe.length
-    ? maybe.map(({ activity }) => placeTile(activity, `<span class="tile-badge" aria-hidden="true">${icon("bookmark")}</span>`)).join("")
-    : '<p class="empty-note">Nada guardado para decidir depois.</p>';
-  addImageFallbacks($("#tab-discover"));
+  $("#dismissed-count").textContent = String(dismissed.length);
+  // A grade só é montada quando a seção está aberta, para não carregar fotos à toa.
+  const lists = {
+    "saved-preview-list": () => saved.length ? saved.map(({ activity }) => placeTile(activity)).join("") : '<p class="empty-note">Os lugares que você curtir aparecem aqui.</p>',
+    "maybe-preview-list": () => maybe.length ? maybe.map(({ activity }) => placeTile(activity, `<span class="tile-badge" aria-hidden="true">${icon("bookmark")}</span>`)).join("") : '<p class="empty-note">Nada guardado para decidir depois.</p>',
+    "dismissed-preview-list": () => dismissed.length ? dismissed.map((activity) => placeTile(activity, `<span class="tile-badge" aria-hidden="true">${icon("x")}</span>`)).join("") : '<p class="empty-note">Os lugares que você passar ficam aqui, caso mude de ideia.</p>'
+  };
+  Object.entries(lists).forEach(([id, build]) => {
+    const grid = $(`#${id}`);
+    const paint = () => {
+      grid.innerHTML = build();
+      addImageFallbacks(grid);
+    };
+    const details = grid.closest("details");
+    if (details.open) paint();
+    else grid.innerHTML = "";
+    details.ontoggle = () => { if (details.open) paint(); };
+  });
 }
 
 function renderCityFilter(trip) {
@@ -1270,6 +1282,7 @@ function addActivityToPlan(id) {
   const destination = trip.destinations.find((item) => activityMatchesCity(activity, item.name));
   trip.saved.push({ id, date: destination?.startDate || trip.startDate, time: "09:00" });
   trip.maybe = trip.maybe.filter((item) => item.id !== id);
+  trip.dismissed = trip.dismissed.filter((item) => item !== id);
   if (!saveState()) return;
   toast(`${activity.name} foi para o roteiro`);
   announce(`${activity.name} adicionada ao roteiro.`);
@@ -1281,6 +1294,7 @@ function markMaybe(id) {
   const activity = getActivity(id);
   if (!trip || !activity || trip.maybe.some((item) => item.id === id)) return;
   trip.maybe.push({ id });
+  trip.dismissed = trip.dismissed.filter((item) => item !== id);
   if (!saveState()) return;
   toast("Guardado para decidir depois");
   announce(`${activity.name} guardada em talvez depois.`);
@@ -1489,6 +1503,7 @@ function openPlaceSheet(id) {
   const near = nearestTripCity(activity, trip);
   const isSaved = trip.saved.some((item) => item.id === id);
   const isMaybe = trip.maybe.some((item) => item.id === id);
+  const isDismissed = trip.dismissed.includes(id);
   const wikipediaUrl = safeUrl(open.wikipedia?.url);
   const links = [
     safeUrl(open.website) && `<a class="chip" href="${escapeHtml(open.website)}" target="_blank" rel="noopener noreferrer">${icon("globe")} Site oficial</a>`,
@@ -1508,8 +1523,10 @@ function openPlaceSheet(id) {
     actions = `<div class="row-actions"><button class="btn btn-secondary" type="button" data-sheet-action="maybe">${icon("bookmark")} Talvez</button><button class="btn btn-primary" type="button" data-sheet-action="like">${icon("heart")} Curti</button></div>`;
   } else if (isSaved) {
     actions = `<button class="btn btn-danger btn-block" type="button" data-sheet-action="remove">${icon("trash-2")} Tirar do roteiro</button>`;
+  } else if (isDismissed) {
+    actions = `<p class="muted">Você passou este lugar. Mudou de ideia?</p><div class="row-actions"><button class="btn btn-secondary" type="button" data-sheet-action="maybe">${icon("bookmark")} Talvez</button><button class="btn btn-primary" type="button" data-sheet-action="like">${icon("heart")} Curti</button></div>`;
   } else if (isMaybe) {
-    actions = `<div class="row-actions"><button class="btn btn-secondary" type="button" data-sheet-action="remove">${icon("x")} Descartar</button><button class="btn btn-primary" type="button" data-sheet-action="like">${icon("heart")} Curti</button></div>`;
+    actions = `<div class="row-actions"><button class="btn btn-secondary" type="button" data-sheet-action="dismiss">${icon("x")} Não curti</button><button class="btn btn-primary" type="button" data-sheet-action="like">${icon("heart")} Curti</button></div>`;
   } else {
     actions = `<button class="btn btn-primary btn-block" type="button" data-sheet-action="like">${icon("heart")} Quero conhecer</button>`;
   }
@@ -1531,6 +1548,10 @@ function openPlaceSheet(id) {
       else if (action === "like") addActivityToPlan(id);
       else if (action === "maybe") markMaybe(id);
       else if (action === "remove") removeFromLists(id);
+      else if (action === "dismiss") {
+        trip.maybe = trip.maybe.filter((item) => item.id !== id);
+        dismissActivity(id);
+      }
     }));
   });
 }
@@ -1548,8 +1569,12 @@ function getTripDays(trip) {
   return days;
 }
 
+function eventCategory(event) {
+  return EXPENSE_CATEGORIES[event.category] || [event.category || "Compromisso", "calendar-days"];
+}
+
 function daySchedule(trip, date) {
-  const events = trip.itinerary.filter((event) => event.date === date).map((event) => ({ ...event, type: "manual" }));
+  const events = trip.itinerary.filter((event) => event.date === date).map((event) => ({ ...event, type: "manual", subtitle: [eventCategory(event)[0], event.address].filter(Boolean).join(" · ") }));
   const saved = getTripActivities(trip).filter((item) => item.date === date)
     .map(({ id, time, activity }) => ({ id, date, time: time || "09:00", title: activity.name, subtitle: activity.category, image: imageOf(activity), type: "activity", coordinates: getOpenData(id)?.coordinates }));
   return [...events, ...saved].sort((a, b) => (a.time || "").localeCompare(b.time || ""));
@@ -1598,7 +1623,7 @@ function renderItinerary() {
     return `${leg}<li class="stop">
       <span class="stop-time">${escapeHtml(item.time || "09:00")}</span>
       <div class="stop-card">
-        ${item.image ? `<img src="${escapeHtml(item.image)}" alt="">` : `<span class="stop-icon">${icon("calendar-days")}</span>`}
+        ${item.image ? `<img src="${escapeHtml(item.image)}" alt="">` : `<span class="stop-icon">${icon(item.type === "manual" ? eventCategory(item)[1] : "calendar-days")}</span>`}
         <div class="stop-info"><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.subtitle || item.category || "Compromisso")}</small></div>
         <button class="icon-btn icon-btn-sm" type="button" data-stop="${escapeHtml(item.id)}" data-stop-type="${item.type}" aria-label="Opções de ${escapeHtml(item.title)}">${icon("ellipsis")}</button>
       </div></li>`;
@@ -1612,6 +1637,10 @@ function dayOptions(trip, selected) {
 }
 
 function openStopSheet(id, type) {
+  if (type === "manual") {
+    openEventForm(id);
+    return;
+  }
   const trip = getCurrentTrip();
   const collection = type === "activity" ? trip.saved : trip.itinerary;
   const item = collection.find((entry) => entry.id === id);
@@ -1623,6 +1652,7 @@ function openStopSheet(id, type) {
       <label class="field">Horário<input id="stop-time" type="time" value="${escapeHtml(item.time || "09:00")}"></label>
     </div>
     ${type === "activity" ? `<button class="btn btn-secondary btn-block" type="button" id="stop-details">${icon("info")} Ver detalhes do lugar</button>` : ""}
+    <div class="row-actions stop-move"><button class="btn btn-secondary" type="button" data-move="-1">${icon("arrow-up")} Mais cedo</button><button class="btn btn-secondary" type="button" data-move="1">${icon("arrow-down")} Mais tarde</button></div>
     <button class="btn btn-secondary btn-block" type="button" id="stop-memory">${icon("book-heart")} Guardar momento no Baú</button>
     <div class="row-actions"><button class="btn btn-danger" type="button" id="stop-remove">${icon("trash-2")} Remover</button><button class="btn btn-primary" type="button" id="stop-save">${icon("check")} Salvar</button></div>`, (root) => {
     root.querySelector("#stop-save").addEventListener("click", () => {
@@ -1651,34 +1681,172 @@ function openStopSheet(id, type) {
       toast("Parada removida");
     });
     root.querySelector("#stop-details")?.addEventListener("click", () => openPlaceSheet(id));
+    root.querySelectorAll("[data-move]").forEach((button) => button.addEventListener("click", () => {
+      const moved = moveStop(trip, item.date, id, Number(button.dataset.move));
+      if (moved) root.querySelector("#stop-time").value = moved;
+    }));
     root.querySelector("#stop-memory").addEventListener("click", () => openMemoryEditor({ date: item.date, place: title || "", origin: "depoisPasseio" }));
   });
 }
 
 function openManualEventSheet() {
+  openEventForm();
+}
+
+// Horário sugerido: duas horas depois da última parada do dia (ou 09:00).
+function nextFreeTime(trip, date) {
+  const last = daySchedule(trip, date).map((item) => item.time || "09:00").sort().pop();
+  if (!last) return "09:00";
+  const [hours, minutes] = last.split(":").map(Number);
+  return `${String(Math.min(hours + 2, 22)).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+function openEventForm(eventId = null) {
   const trip = getCurrentTrip();
   if (!getTripDays(trip).length) return;
-  openSheet(`${sheetTitle("Novo compromisso")}
-    <label class="field">O que vai acontecer?<input id="event-title" maxlength="100" placeholder="Ex.: Check-in no hotel"></label>
-    <label class="field">Categoria<input id="event-category" maxlength="60" placeholder="Ex.: Transporte"></label>
-    <div class="field-row"><label class="field">Dia<select id="event-day">${dayOptions(trip, selectedDay)}</select></label><label class="field">Horário<input id="event-time" type="time" value="09:00"></label></div>
-    <button class="btn btn-primary btn-block" type="button" id="event-save">${icon("plus")} Adicionar ao roteiro</button>`, (root) => {
-    root.querySelector("#event-title").focus();
-    root.querySelector("#event-save").addEventListener("click", () => {
-      const title = root.querySelector("#event-title").value.trim();
-      if (!title) {
-        toast("Dê um nome para o compromisso");
+  const existing = eventId ? trip.itinerary.find((item) => item.id === eventId) : null;
+  const day = existing?.date || selectedDay || getTripDays(trip)[0];
+  const draft = existing ? { ...existing } : { id: `evento-${Date.now()}`, title: "", category: "atracoes", address: "", coordinates: null, label: "", date: day, time: nextFreeTime(trip, day) };
+  if (!EXPENSE_CATEGORIES[draft.category]) draft.category = "outros";
+  let locatedFor = draft.coordinates ? draft.address : null;
+  openSheet(`${sheetTitle(existing ? "Editar compromisso" : "Novo compromisso")}
+    <label class="field">Lugar ou compromisso<input id="event-title" maxlength="100" value="${escapeHtml(draft.title)}" placeholder="Ex.: Jantar no Cervejaria Ramiro"></label>
+    <div class="cat-chips" id="event-categories">${Object.entries(EXPENSE_CATEGORIES).map(([key, [label, iconName]]) => `<button type="button" class="cat-chip${key === draft.category ? " is-selected" : ""}" data-category="${key}">${icon(iconName)}${escapeHtml(label)}</button>`).join("")}</div>
+    <label class="field">Endereço<input id="event-address" maxlength="180" value="${escapeHtml(draft.address || "")}" placeholder="Rua, número ou nome do lugar"></label>
+    <button class="btn btn-secondary btn-block" type="button" id="event-locate">${icon("map-pin")} Localizar no mapa</button>
+    <div class="geo-results" id="event-geo-results"></div>
+    <p class="geo-status" id="event-geo-status"></p>
+    <div class="field-row"><label class="field">Dia<select id="event-day">${dayOptions(trip, draft.date)}</select></label><label class="field">Horário<input id="event-time" type="time" value="${escapeHtml(draft.time || "09:00")}"></label></div>
+    <p class="form-status" id="event-status" role="status" aria-live="polite"></p>
+    ${existing ? `<div class="row-actions stop-move"><button class="btn btn-secondary" type="button" data-move="-1">${icon("arrow-up")} Mais cedo</button><button class="btn btn-secondary" type="button" data-move="1">${icon("arrow-down")} Mais tarde</button></div>
+    <button class="btn btn-secondary btn-block" type="button" id="stop-memory">${icon("book-heart")} Guardar momento no Baú</button>` : ""}
+    <div class="${existing ? "row-actions" : ""}">${existing ? `<button class="btn btn-danger" type="button" id="event-remove">${icon("trash-2")} Remover</button>` : ""}<button class="btn btn-primary${existing ? "" : " btn-block"}" type="button" id="event-save">${icon(existing ? "check" : "plus")} ${existing ? "Salvar" : "Adicionar ao roteiro"}</button></div>`, (root) => {
+    const address = root.querySelector("#event-address");
+    const geoStatus = root.querySelector("#event-geo-status");
+    const results = root.querySelector("#event-geo-results");
+    const status = root.querySelector("#event-status");
+    const paintGeo = () => {
+      geoStatus.className = `geo-status${draft.coordinates ? " is-ok" : ""}`;
+      geoStatus.innerHTML = draft.coordinates
+        ? `${icon("circle-check")} Localizado: ${escapeHtml(draft.label.split(",").slice(0, 4).join(","))}`
+        : `${icon("info")} Localize o endereço para o roteiro calcular o tempo até aqui.`;
+    };
+    paintGeo();
+    if (!existing) root.querySelector("#event-title").focus();
+    root.querySelector("#event-categories").addEventListener("click", (event) => {
+      const chip = event.target.closest("[data-category]");
+      if (!chip) return;
+      draft.category = chip.dataset.category;
+      root.querySelectorAll("[data-category]").forEach((item) => item.classList.toggle("is-selected", item === chip));
+    });
+    address.addEventListener("input", () => {
+      if (locatedFor !== null && address.value.trim() !== locatedFor) {
+        draft.coordinates = null;
+        draft.label = "";
+        locatedFor = null;
+        paintGeo();
+      }
+    });
+    root.querySelector("#event-locate").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      const text = address.value.trim() || root.querySelector("#event-title").value.trim();
+      if (text.length < 3) {
+        geoStatus.textContent = "Digite o endereço ou o nome do lugar para localizar.";
         return;
       }
       const date = root.querySelector("#event-day").value;
-      trip.itinerary.push({ id: `evento-${Date.now()}`, title, category: root.querySelector("#event-category").value.trim(), date, time: root.querySelector("#event-time").value || "09:00", type: "manual" });
-      saveState();
-      selectedDay = date;
+      const destination = trip.destinations[Math.max(0, destinationIndexForDate(trip, date))] || { name: "" };
+      button.disabled = true;
+      geoStatus.textContent = "Procurando…";
+      try {
+        const found = await geocodeAddress(text, destination);
+        const choose = (item) => {
+          draft.coordinates = item.coordinates;
+          draft.label = item.label;
+          if (!address.value.trim()) address.value = item.label.split(",").slice(0, 3).join(",");
+          locatedFor = address.value.trim();
+          results.innerHTML = "";
+          paintGeo();
+        };
+        if (!found.length) geoStatus.textContent = "Não encontrei. Confira o endereço ou tente o nome do lugar.";
+        else if (found.length === 1) choose(found[0]);
+        else {
+          geoStatus.textContent = "Qual destes é o lugar certo?";
+          results.innerHTML = found.map((item, position) => `<button type="button" class="geo-option" data-geo="${position}">${icon("map-pin")}<span>${escapeHtml(item.label)}</span></button>`).join("");
+          results.onclick = (clickEvent) => {
+            const option = clickEvent.target.closest("[data-geo]");
+            if (option) choose(found[Number(option.dataset.geo)]);
+          };
+        }
+      } catch (error) {
+        console.error("Falha ao localizar.", error);
+        geoStatus.textContent = "Não consegui consultar o mapa agora. Tente de novo em instantes.";
+      } finally {
+        button.disabled = false;
+      }
+    });
+    root.querySelector("#stop-memory")?.addEventListener("click", () => openMemoryEditor({ date: draft.date, place: draft.title, origin: "depoisPasseio" }));
+    root.querySelectorAll("[data-move]").forEach((button) => button.addEventListener("click", () => {
+      const moved = moveStop(trip, draft.date, draft.id, Number(button.dataset.move));
+      if (moved) root.querySelector("#event-time").value = moved;
+    }));
+    root.querySelector("#event-save").addEventListener("click", () => {
+      draft.title = root.querySelector("#event-title").value.trim();
+      draft.address = address.value.trim();
+      draft.date = root.querySelector("#event-day").value;
+      draft.time = root.querySelector("#event-time").value || "09:00";
+      if (!draft.title) {
+        status.textContent = "Dê um nome para o compromisso.";
+        return;
+      }
+      const record = { id: draft.id, title: draft.title, category: draft.category, address: draft.address, coordinates: draft.coordinates, label: draft.label, date: draft.date, time: draft.time, type: "manual" };
+      const previous = trip.itinerary;
+      trip.itinerary = existing ? trip.itinerary.map((item) => (item.id === record.id ? record : item)) : [...trip.itinerary, record];
+      if (!saveState()) {
+        trip.itinerary = previous;
+        return;
+      }
+      selectedDay = record.date;
       closeSheet();
       renderItinerary();
-      toast("Compromisso adicionado");
+      toast(existing ? "Compromisso atualizado" : "Compromisso adicionado");
+    });
+    root.querySelector("#event-remove")?.addEventListener("click", () => {
+      trip.itinerary = trip.itinerary.filter((item) => item.id !== draft.id);
+      saveState();
+      closeSheet();
+      renderItinerary();
+      toast("Compromisso removido");
     });
   });
+}
+
+// Move uma parada para antes ou depois da vizinha trocando os horários das duas.
+// Com horários iguais, a parada movida fica 30 minutos antes ou depois.
+function moveStop(trip, date, id, direction) {
+  const schedule = daySchedule(trip, date);
+  const index = schedule.findIndex((item) => item.id === id);
+  const neighbor = schedule[index + direction];
+  if (index < 0 || !neighbor) {
+    toast(direction < 0 ? "Esta já é a primeira parada do dia" : "Esta já é a última parada do dia");
+    return null;
+  }
+  const record = (item) => (item.type === "activity" ? trip.saved : trip.itinerary).find((entry) => entry.id === item.id);
+  const mine = record(schedule[index]);
+  const other = record(neighbor);
+  const myTime = mine.time || "09:00";
+  const otherTime = other.time || "09:00";
+  if (myTime !== otherTime) {
+    mine.time = otherTime;
+    other.time = myTime;
+  } else {
+    const [hours, minutes] = myTime.split(":").map(Number);
+    const total = Math.min(23 * 60 + 59, Math.max(0, hours * 60 + minutes + direction * 30));
+    mine.time = `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+  }
+  saveState();
+  renderItinerary();
+  return mine.time;
 }
 
 function generateItinerary() {
@@ -3562,7 +3730,7 @@ function renderRetro() {
       </div>
     </div>
     <p class="retro-lead">${escapeHtml(messageFor("reverMemorias", `${trip.id}|retro`))}</p>
-    ${visible.length ? `<button class="btn btn-secondary btn-block" type="button" id="album-open">${icon("download")} Álbum em PDF</button>` : ""}
+    ${visible.length ? `<button class="btn btn-secondary btn-block" type="button" id="album-open">${icon("images")} Álbum e carrossel</button>` : ""}
     ${visible.length ? Object.keys(byDate).sort().map((date) => {
       const index = days.indexOf(date);
       const stay = trip.destinations.find((item) => item.startDate <= date && item.endDate >= date);
@@ -3584,177 +3752,351 @@ function renderRetro() {
 }
 
 // ---------------------------------------------------------------------------
-// Álbum em PDF da retrospectiva: cada página é desenhada como imagem (capa,
-// uma página por memória e encerramento) e juntada num PDF A5, tudo no aparelho.
+// Álbum da retrospectiva: páginas com layouts variados (capa em tela cheia,
+// foto sangrada, polaroide, dupla, colagem e citação), geradas no aparelho.
+// Saem como PDF A5 ou como carrossel de imagens 4:5 para redes sociais.
 // ---------------------------------------------------------------------------
 
-const ALBUM = { width: 1240, height: 1754, pdfWidth: 420, pdfHeight: 595, pad: 96 };
-
-function roundedClip(context, x, y, width, height, radius) {
-  context.beginPath();
-  context.moveTo(x + radius, y);
-  context.arcTo(x + width, y, x + width, y + height, radius);
-  context.arcTo(x + width, y + height, x, y + height, radius);
-  context.arcTo(x, y + height, x, y, radius);
-  context.arcTo(x, y, x + width, y, radius);
-  context.closePath();
-  context.clip();
-}
+const ALBUM_FORMATS = {
+  pdf: { width: 1240, height: 1754, label: "Álbum (PDF)" },
+  carousel: { width: 1080, height: 1350, label: "Carrossel (Instagram)" }
+};
+const PDF_PAGE = { width: 420, height: 595 };
+const BRAND = { green: "#15563F", deep: "#104431", mint: "#56D7AE", coral: "#FF8068", cream: "#FFFDF5", ink: "#3c4842", muted: "#727b75" };
 
 async function albumPhoto(id) {
   const url = id ? await photoUrl(id).catch(() => "") : "";
   return url ? loadImage(url).catch(() => null) : null;
 }
 
-function albumCanvas(background = "#FFFDF5") {
+function albumCanvas(format, background = BRAND.cream) {
+  const { width, height } = ALBUM_FORMATS[format];
   const canvas = document.createElement("canvas");
-  canvas.width = ALBUM.width;
-  canvas.height = ALBUM.height;
+  canvas.width = width;
+  canvas.height = height;
   const context = canvas.getContext("2d");
   context.fillStyle = background;
-  context.fillRect(0, 0, ALBUM.width, ALBUM.height);
-  return [canvas, context];
+  context.fillRect(0, 0, width, height);
+  return { canvas, context, width, height, u: width / 1240 };
 }
 
-function albumFooter(context, page, dark = false) {
-  context.fillStyle = dark ? "rgba(255, 253, 245, 0.7)" : "#9aa29c";
-  context.font = '600 24px "DM Sans", sans-serif';
+function drawLines(context, lines, x, y, lineHeight, align = "left") {
+  context.textAlign = align;
+  lines.forEach((line, index) => context.fillText(line, x, y + index * lineHeight));
+  context.textAlign = "left";
+  return y + lines.length * lineHeight;
+}
+
+function darkFade(context, width, height, from) {
+  const gradient = context.createLinearGradient(0, from, 0, height);
+  gradient.addColorStop(0, "rgba(10, 18, 14, 0)");
+  gradient.addColorStop(0.45, "rgba(10, 18, 14, 0.55)");
+  gradient.addColorStop(1, "rgba(10, 18, 14, 0.88)");
+  context.fillStyle = gradient;
+  context.fillRect(0, from, width, height - from);
+}
+
+// Selo coral com o número do dia.
+function dayBadge(context, x, y, u, day) {
+  if (!day) return;
+  context.fillStyle = BRAND.coral;
+  context.beginPath();
+  context.arc(x, y, 74 * u, 0, Math.PI * 2);
+  context.fill();
+  context.fillStyle = BRAND.deep;
   context.textAlign = "center";
-  context.fillText(`${page}  ·  Viagem na Mão`, ALBUM.width / 2, ALBUM.height - 56);
+  context.font = `800 ${22 * u}px "DM Sans", sans-serif`;
+  context.fillText("DIA", x, y - 16 * u);
+  context.font = `800 ${62 * u}px Manrope, "DM Sans", sans-serif`;
+  context.fillText(String(day), x, y + 44 * u);
   context.textAlign = "left";
 }
 
-async function albumCover(trip, visible) {
-  const [canvas, context] = albumCanvas();
-  const { width, height, pad } = ALBUM;
+function drawPolaroid(context, photo, cx, cy, width, height, angle, caption, u) {
+  context.save();
+  context.translate(cx, cy);
+  context.rotate(angle);
+  const frame = 24 * u;
+  const bottom = caption ? 120 * u : frame;
+  context.shadowColor = "rgba(21, 32, 27, 0.28)";
+  context.shadowBlur = 44 * u;
+  context.shadowOffsetY = 18 * u;
+  context.fillStyle = "#ffffff";
+  context.fillRect(-width / 2, -height / 2, width, height);
+  context.shadowColor = "transparent";
+  drawCover(context, photo, -width / 2 + frame, -height / 2 + frame, width - frame * 2, height - frame - bottom);
+  if (caption) {
+    context.fillStyle = BRAND.ink;
+    context.font = `italic ${42 * u}px Georgia, serif`;
+    const [line] = wrapLines(context, caption, width - frame * 2 - 20 * u, 1);
+    context.textAlign = "center";
+    context.fillText(line, 0, height / 2 - bottom / 2 + 16 * u);
+    context.textAlign = "left";
+  }
+  context.restore();
+}
+
+function pageNumber(context, width, height, u, page, light = false) {
+  context.fillStyle = light ? "rgba(255, 253, 245, 0.75)" : "#9aa29c";
+  context.font = `600 ${22 * u}px "DM Sans", sans-serif`;
+  context.textAlign = "center";
+  context.fillText(`${page}  ·  Viagem na Mão`, width / 2, height - 46 * u);
+  context.textAlign = "left";
+}
+
+function memoryMeta(trip, memory, options) {
+  const dayIndex = getTripDays(trip).indexOf(memory.date);
+  return {
+    day: options.showDates && dayIndex >= 0 ? dayIndex + 1 : null,
+    date: options.showDates && memory.date ? capitalize(formatDate(memory.date, { weekday: "long", day: "numeric", month: "long" })) : "",
+    place: options.showPlaces ? memory.place || "" : "",
+    title: memory.title || "",
+    text: options.showTexts ? memory.text || "" : ""
+  };
+}
+
+async function albumCover(trip, visible, format) {
+  const { canvas, context, width, height, u } = albumCanvas(format, BRAND.green);
   const photo = await albumPhoto(retroCover(trip, visible));
-  const photoHeight = Math.round(height * 0.64);
-  if (photo) drawCover(context, photo, 0, 0, width, photoHeight);
-  else {
-    const gradient = context.createLinearGradient(0, 0, width, photoHeight);
-    gradient.addColorStop(0, "#15563F");
-    gradient.addColorStop(1, "#104431");
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, width, photoHeight);
-  }
-  let y = photoHeight + 110;
-  context.fillStyle = "#1f6b50";
-  context.font = '800 30px "DM Sans", sans-serif';
-  context.fillText(formatRange(trip.startDate, trip.endDate).toUpperCase(), pad, y);
-  y += 100;
-  context.fillStyle = "#15563F";
-  context.font = '800 88px Manrope, "DM Sans", sans-serif';
-  wrapLines(context, trip.retro.title || trip.name || "Minha viagem", width - pad * 2, 2).forEach((line) => { context.fillText(line, pad, y); y += 100; });
-  context.fillStyle = "#3c4842";
-  context.font = '36px Georgia, serif';
-  context.fillText(`${tripCities(trip).join(" · ")} · ${visible.length} ${visible.length === 1 ? "memória" : "memórias"}`, pad, y + 10);
-  const iconImage = await brandIcon();
-  if (iconImage) context.drawImage(iconImage, pad, height - 150, 64, 64);
-  context.fillStyle = "#727b75";
-  context.font = '700 28px Manrope, "DM Sans", sans-serif';
-  context.fillText("Memórias organizadas com Viagem na Mão", pad + (iconImage ? 84 : 0), height - 108);
-  return canvas;
-}
-
-async function albumMemoryPage(trip, memory, page, options) {
-  const [canvas, context] = albumCanvas();
-  const { width, height, pad } = ALBUM;
-  const days = getTripDays(trip);
-  const dayIndex = days.indexOf(memory.date);
-  const header = [
-    options.showDates && memory.date ? `${dayIndex >= 0 ? `DIA ${dayIndex + 1}  ·  ` : ""}${capitalize(formatDate(memory.date, { weekday: "long", day: "numeric", month: "long" })).toUpperCase()}` : "",
-    options.showPlaces && memory.place ? memory.place.toUpperCase() : ""
-  ].filter(Boolean);
-  let y = 150;
-  context.fillStyle = "#1f6b50";
-  context.font = '800 28px "DM Sans", sans-serif';
-  header.forEach((line) => { context.fillText(line, pad, y); y += 44; });
-  y += header.length ? 30 : 0;
-
-  const photos = (await Promise.all((memory.photos || []).slice(0, 4).map(albumPhoto))).filter(Boolean);
-  const title = memory.title || "";
-  const text = options.showTexts ? memory.text || "" : "";
-  const areaWidth = width - pad * 2;
-  if (photos.length) {
-    // A foto ocupa o que sobra depois de reservar espaço para o título e o texto.
-    context.font = '800 58px Manrope, "DM Sans", sans-serif';
-    const titleHeight = title ? wrapLines(context, title, areaWidth, 2).length * 70 + 12 : 0;
-    context.font = '36px Georgia, serif';
-    const textHeight = text ? Math.min(wrapLines(context, text, areaWidth, 12).length, 12) * 54 : 0;
-    const available = height - y - 160;
-    const words = titleHeight + textHeight;
-    const areaHeight = Math.round(Math.min(available * 0.94, Math.max(available * 0.5, available - words - (words ? 90 : 0))));
-    const gap = 16;
-    const cells = photos.length === 1 ? [[0, 0, areaWidth, areaHeight]]
-      : photos.length === 2 ? [[0, 0, areaWidth, (areaHeight - gap) / 2], [0, (areaHeight + gap) / 2, areaWidth, (areaHeight - gap) / 2]]
-      : photos.length === 3 ? [[0, 0, areaWidth, (areaHeight - gap) * 0.6], [0, (areaHeight - gap) * 0.6 + gap, (areaWidth - gap) / 2, (areaHeight - gap) * 0.4], [(areaWidth + gap) / 2, (areaHeight - gap) * 0.6 + gap, (areaWidth - gap) / 2, (areaHeight - gap) * 0.4]]
-      : [0, 1, 2, 3].map((index) => [(index % 2) * ((areaWidth + gap) / 2), Math.floor(index / 2) * ((areaHeight + gap) / 2), (areaWidth - gap) / 2, (areaHeight - gap) / 2]);
-    photos.forEach((photo, index) => {
-      const [cx, cy, cw, ch] = cells[index];
-      context.save();
-      roundedClip(context, pad + cx, y + cy, cw, ch, 28);
-      drawCover(context, photo, pad + cx, y + cy, cw, ch);
-      context.restore();
-    });
-    if ((memory.photos || []).length > 4) {
-      context.fillStyle = "rgba(10, 18, 14, 0.6)";
-      context.font = '700 30px "DM Sans", sans-serif';
-      const extra = memory.photos.length - 4;
-      const label = `+${extra} ${extra === 1 ? "foto" : "fotos"} no Baú`;
-      const labelWidth = context.measureText(label).width + 40;
-      context.fillRect(width - pad - labelWidth - 16, y + areaHeight - 72, labelWidth, 56);
-      context.fillStyle = "#fff";
-      context.fillText(label, width - pad - labelWidth + 4, y + areaHeight - 34);
-    }
-    y += areaHeight + 90;
+  const pad = 96 * u;
+  if (photo) {
+    drawCover(context, photo, 0, 0, width, height);
+    darkFade(context, width, height, height * 0.35);
+    const top = context.createLinearGradient(0, 0, 0, 260 * u);
+    top.addColorStop(0, "rgba(10, 18, 14, 0.45)");
+    top.addColorStop(1, "rgba(10, 18, 14, 0)");
+    context.fillStyle = top;
+    context.fillRect(0, 0, width, 260 * u);
   } else {
-    // Só texto: o bloco fica centralizado na página.
-    context.font = '800 58px Manrope, "DM Sans", sans-serif';
-    const titleHeight = title ? wrapLines(context, title, areaWidth, 2).length * 70 + 12 : 0;
-    context.font = '46px Georgia, serif';
-    const textHeight = text ? wrapLines(context, text, areaWidth, 20).length * 69 : 0;
-    y = Math.max(y, Math.round((height - 260 - titleHeight - textHeight) / 2));
-    context.fillStyle = "#56D7AE";
-    context.font = '700 220px Georgia, serif';
-    context.fillText("“", pad - 12, y + 170);
-    y += 260;
+    const gradient = context.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, BRAND.green);
+    gradient.addColorStop(1, BRAND.deep);
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
   }
-  if (title) {
-    context.fillStyle = "#15563F";
-    context.font = '800 58px Manrope, "DM Sans", sans-serif';
-    wrapLines(context, title, areaWidth, 2).forEach((line) => { context.fillText(line, pad, y); y += 70; });
-    y += 12;
-  }
-  if (text) {
-    const size = photos.length ? 36 : 46;
-    const lineHeight = Math.round(size * 1.5);
-    context.fillStyle = "#3c4842";
-    context.font = `${size}px Georgia, serif`;
-    const room = Math.max(1, Math.floor((height - 150 - y) / lineHeight));
-    wrapLines(context, text, areaWidth, room).forEach((line) => { context.fillText(line, pad, y); y += lineHeight; });
-  }
-  albumFooter(context, page);
+  context.fillStyle = BRAND.mint;
+  context.font = `800 ${28 * u}px "DM Sans", sans-serif`;
+  context.fillText("R E T R O S P E C T I V A", pad, 130 * u);
+  // Monta de baixo para cima: crédito, cidades, título e período.
+  context.font = `800 ${118 * u}px Manrope, "DM Sans", sans-serif`;
+  const titleLines = wrapLines(context, trip.retro.title || trip.name || "Minha viagem", width - pad * 2, 3);
+  const citiesY = height - 200 * u;
+  const titleTop = citiesY - 90 * u - (titleLines.length - 1) * 128 * u;
+  context.fillStyle = BRAND.mint;
+  context.font = `800 ${32 * u}px "DM Sans", sans-serif`;
+  context.fillText(formatRange(trip.startDate, trip.endDate).toUpperCase(), pad, titleTop - 120 * u);
+  context.fillStyle = BRAND.cream;
+  context.font = `800 ${118 * u}px Manrope, "DM Sans", sans-serif`;
+  drawLines(context, titleLines, pad, titleTop, 128 * u);
+  context.fillStyle = "rgba(255, 253, 245, 0.85)";
+  context.font = `${38 * u}px Georgia, serif`;
+  context.fillText(`${tripCities(trip).join(" · ")} · ${visible.length} ${visible.length === 1 ? "memória" : "memórias"}`, pad, citiesY);
+  const iconImage = await brandIcon();
+  if (iconImage) context.drawImage(iconImage, pad, height - 132 * u, 56 * u, 56 * u);
+  context.fillStyle = "rgba(255, 253, 245, 0.8)";
+  context.font = `700 ${26 * u}px Manrope, "DM Sans", sans-serif`;
+  context.fillText("Memórias organizadas com Viagem na Mão", pad + (iconImage ? 74 * u : 0), height - 94 * u);
   return canvas;
 }
 
-async function albumClosing(trip) {
-  const [canvas, context] = albumCanvas("#15563F");
-  const { width, height } = ALBUM;
+// Foto sangrada: a imagem ocupa a página e o texto fica por cima, num degradê.
+async function pageFullBleed(meta, photo, page, format) {
+  const { canvas, context, width, height, u } = albumCanvas(format, "#111");
+  const pad = 90 * u;
+  drawCover(context, photo, 0, 0, width, height);
+  darkFade(context, width, height, height * 0.42);
+  dayBadge(context, width - 130 * u, 140 * u, u, meta.day);
+  context.font = `${40 * u}px Georgia, serif`;
+  const textLines = meta.text ? wrapLines(context, meta.text, width - pad * 2, 4) : [];
+  context.font = `800 ${72 * u}px Manrope, "DM Sans", sans-serif`;
+  const titleLines = meta.title ? wrapLines(context, meta.title, width - pad * 2, 2) : [];
+  const info = [meta.date, meta.place].filter(Boolean).join("  ·  ");
+  let y = height - 130 * u - textLines.length * 58 * u - titleLines.length * 82 * u - (info ? 60 * u : 0);
+  if (info) {
+    context.fillStyle = BRAND.mint;
+    context.font = `800 ${26 * u}px "DM Sans", sans-serif`;
+    context.fillText(info.toUpperCase(), pad, y);
+    y += 70 * u;
+  }
+  context.fillStyle = BRAND.cream;
+  context.font = `800 ${72 * u}px Manrope, "DM Sans", sans-serif`;
+  y = drawLines(context, titleLines, pad, y, 82 * u);
+  context.fillStyle = "rgba(255, 253, 245, 0.9)";
+  context.font = `${40 * u}px Georgia, serif`;
+  drawLines(context, textLines, pad, y + (titleLines.length ? 6 * u : 0), 58 * u);
+  pageNumber(context, width, height, u, page, true);
+  return canvas;
+}
+
+// Polaroide inclinada sobre fundo creme com um círculo menta decorativo.
+async function pagePolaroid(meta, photo, page, format, index) {
+  const { canvas, context, width, height, u } = albumCanvas(format);
+  const pad = 96 * u;
+  context.fillStyle = "rgba(86, 215, 174, 0.22)";
+  context.beginPath();
+  context.arc(index % 2 ? width * 0.15 : width * 0.85, height * 0.2, width * 0.42, 0, Math.PI * 2);
+  context.fill();
+  const frameWidth = width * 0.76;
+  const frameHeight = Math.min(height * 0.56, frameWidth * 1.08);
+  drawPolaroid(context, photo, width / 2, 110 * u + frameHeight / 2 + 40 * u, frameWidth, frameHeight, index % 2 ? 0.045 : -0.04, meta.title, u);
+  dayBadge(context, width - 140 * u, 130 * u, u, meta.day);
+  let y = 110 * u + frameHeight + 170 * u;
+  const info = [meta.date, meta.place].filter(Boolean).join("  ·  ");
+  if (info) {
+    context.fillStyle = "#1f6b50";
+    context.font = `800 ${26 * u}px "DM Sans", sans-serif`;
+    context.fillText(info.toUpperCase(), pad, y);
+    y += 66 * u;
+  }
+  if (meta.text) {
+    context.fillStyle = BRAND.ink;
+    context.font = `${40 * u}px Georgia, serif`;
+    const room = Math.max(1, Math.floor((height - 140 * u - y) / (60 * u)));
+    drawLines(context, wrapLines(context, meta.text, width - pad * 2, room), pad, y, 60 * u);
+  }
+  pageNumber(context, width, height, u, page);
+  return canvas;
+}
+
+// Duas polaroides sobrepostas.
+async function pageDuo(meta, photos, page, format) {
+  const { canvas, context, width, height, u } = albumCanvas(format, "#f4efe6");
+  const pad = 96 * u;
+  const size = width * 0.56;
+  drawPolaroid(context, photos[0], width * 0.36, height * 0.26, size, size * 1.05, -0.08, "", u);
+  drawPolaroid(context, photos[1], width * 0.64, height * 0.42, size, size * 1.05, 0.06, "", u);
+  dayBadge(context, width - 130 * u, 130 * u, u, meta.day);
+  let y = height * 0.42 + size * 0.525 + 150 * u;
+  const info = [meta.date, meta.place].filter(Boolean).join("  ·  ");
+  if (info) {
+    context.fillStyle = "#1f6b50";
+    context.font = `800 ${26 * u}px "DM Sans", sans-serif`;
+    context.fillText(info.toUpperCase(), pad, y);
+    y += 70 * u;
+  }
+  if (meta.title) {
+    context.fillStyle = BRAND.green;
+    context.font = `800 ${62 * u}px Manrope, "DM Sans", sans-serif`;
+    y = drawLines(context, wrapLines(context, meta.title, width - pad * 2, 2), pad, y, 72 * u) + 10 * u;
+  }
+  if (meta.text) {
+    context.fillStyle = BRAND.ink;
+    context.font = `${38 * u}px Georgia, serif`;
+    const room = Math.max(1, Math.floor((height - 130 * u - y) / (56 * u)));
+    drawLines(context, wrapLines(context, meta.text, width - pad * 2, room), pad, y, 56 * u);
+  }
+  pageNumber(context, width, height, u, page);
+  return canvas;
+}
+
+// Colagem: foto grande e menores com borda branca, texto numa faixa menta.
+async function pageCollage(meta, photos, extra, page, format) {
+  const { canvas, context, width, height, u } = albumCanvas(format, BRAND.cream);
+  const gap = 14 * u;
+  const bandHeight = (meta.title || meta.text) ? height * 0.3 : height * 0.12;
+  const areaHeight = height - bandHeight;
+  const cells = photos.length === 3
+    ? [[0, 0, width * 0.62, areaHeight], [width * 0.62 + gap, 0, width * 0.38 - gap, areaHeight / 2 - gap / 2], [width * 0.62 + gap, areaHeight / 2 + gap / 2, width * 0.38 - gap, areaHeight / 2 - gap / 2]]
+    : [[0, 0, width * 0.6, areaHeight * 0.58], [width * 0.6 + gap, 0, width * 0.4 - gap, areaHeight * 0.58], [0, areaHeight * 0.58 + gap, width * 0.4, areaHeight * 0.42 - gap], [width * 0.4 + gap, areaHeight * 0.58 + gap, width * 0.6 - gap, areaHeight * 0.42 - gap]];
+  photos.forEach((photo, index) => {
+    const [x, y, w, h] = cells[index];
+    drawCover(context, photo, x, y, w, h);
+  });
+  if (extra > 0) {
+    const [x, y, w, h] = cells[photos.length - 1];
+    context.fillStyle = "rgba(10, 18, 14, 0.45)";
+    context.fillRect(x, y, w, h);
+    context.fillStyle = "#fff";
+    context.textAlign = "center";
+    context.font = `800 ${70 * u}px Manrope, "DM Sans", sans-serif`;
+    context.fillText(`+${extra}`, x + w / 2, y + h / 2 + 24 * u);
+    context.textAlign = "left";
+  }
+  context.fillStyle = BRAND.mint;
+  context.fillRect(0, areaHeight, width, bandHeight);
+  dayBadge(context, width - 120 * u, areaHeight, u, meta.day);
+  const pad = 80 * u;
+  let y = areaHeight + 100 * u;
+  const info = [meta.date, meta.place].filter(Boolean).join("  ·  ");
+  if (info) {
+    context.fillStyle = BRAND.deep;
+    context.font = `800 ${24 * u}px "DM Sans", sans-serif`;
+    context.fillText(info.toUpperCase(), pad, y);
+    y += 64 * u;
+  }
+  if (meta.title) {
+    context.fillStyle = BRAND.deep;
+    context.font = `800 ${58 * u}px Manrope, "DM Sans", sans-serif`;
+    y = drawLines(context, wrapLines(context, meta.title, width - pad * 2 - 120 * u, 1), pad, y, 66 * u) + 4 * u;
+  }
+  if (meta.text) {
+    context.fillStyle = BRAND.deep;
+    context.font = `${36 * u}px Georgia, serif`;
+    const room = Math.max(1, Math.floor((height - 90 * u - y) / (52 * u)));
+    drawLines(context, wrapLines(context, meta.text, width - pad * 2, room), pad, y, 52 * u);
+  }
+  return canvas;
+}
+
+// Citação: memórias sem foto, em verde ou coral alternados.
+async function pageQuote(meta, page, format, index) {
+  const coral = index % 2 === 1;
+  const { canvas, context, width, height, u } = albumCanvas(format, coral ? "#ffe7e1" : BRAND.green);
+  const pad = 110 * u;
+  const ink = coral ? BRAND.deep : BRAND.cream;
+  context.font = `${54 * u}px Georgia, serif`;
+  const textLines = meta.text ? wrapLines(context, meta.text, width - pad * 2, 14) : [];
+  context.font = `800 ${60 * u}px Manrope, "DM Sans", sans-serif`;
+  const titleLines = meta.title ? wrapLines(context, meta.title, width - pad * 2, 2) : [];
+  const info = [meta.date, meta.place].filter(Boolean).join("  ·  ");
+  const block = 220 * u + titleLines.length * 72 * u + textLines.length * 80 * u + (info ? 90 * u : 0);
+  let y = Math.max(260 * u, (height - block) / 2 + 200 * u);
+  context.fillStyle = coral ? BRAND.coral : BRAND.mint;
+  context.font = `700 ${260 * u}px Georgia, serif`;
+  context.fillText("“", pad - 16 * u, y - 20 * u);
+  y += 60 * u;
+  context.fillStyle = ink;
+  context.font = `800 ${60 * u}px Manrope, "DM Sans", sans-serif`;
+  y = drawLines(context, titleLines, pad, y, 72 * u) + (titleLines.length ? 20 * u : 0);
+  context.font = `${54 * u}px Georgia, serif`;
+  y = drawLines(context, textLines, pad, y, 80 * u);
+  if (info) {
+    context.fillStyle = coral ? "#1f6b50" : BRAND.mint;
+    context.font = `800 ${26 * u}px "DM Sans", sans-serif`;
+    context.fillText(info.toUpperCase(), pad, y + 50 * u);
+  }
+  dayBadge(context, width - 130 * u, 130 * u, u, meta.day);
+  pageNumber(context, width, height, u, page, !coral);
+  return canvas;
+}
+
+async function albumMemoryPage(trip, memory, page, options, format, index) {
+  const meta = memoryMeta(trip, memory, options);
+  const photos = (await Promise.all((memory.photos || []).slice(0, 4).map(albumPhoto))).filter(Boolean);
+  if (!photos.length) return pageQuote(meta, page, format, index);
+  if (photos.length === 1) return index % 2 === 0 ? pageFullBleed(meta, photos[0], page, format) : pagePolaroid(meta, photos[0], page, format, index);
+  if (photos.length === 2) return pageDuo(meta, photos, page, format);
+  return pageCollage(meta, photos, (memory.photos || []).length - photos.length, page, format);
+}
+
+async function albumClosing(trip, format) {
+  const { canvas, context, width, height, u } = albumCanvas(format, BRAND.green);
+  context.fillStyle = "rgba(86, 215, 174, 0.14)";
+  context.beginPath();
+  context.arc(width / 2, height / 2 - 120 * u, width * 0.42, 0, Math.PI * 2);
+  context.fill();
   const iconImage = await brandIcon();
-  if (iconImage) context.drawImage(iconImage, width / 2 - 90, height / 2 - 330, 180, 180);
-  context.textAlign = "center";
-  context.fillStyle = "#FFFDF5";
-  context.font = '48px Georgia, serif';
+  if (iconImage) context.drawImage(iconImage, width / 2 - 90 * u, height / 2 - 380 * u, 180 * u, 180 * u);
+  context.fillStyle = BRAND.cream;
+  context.font = `${52 * u}px Georgia, serif`;
   const ending = tripPhase(trip) === "depois" ? messageFor("viagemEncerrada", trip.id) : "A viagem passa. As histórias ficam.";
-  let y = height / 2 - 40;
-  wrapLines(context, ending, width - 260, 4).forEach((line) => { context.fillText(line, width / 2, y); y += 70; });
-  context.fillStyle = "#56D7AE";
-  context.font = '800 34px Manrope, "DM Sans", sans-serif';
-  context.fillText("Memórias organizadas com Viagem na Mão", width / 2, y + 70);
+  const y = drawLines(context, wrapLines(context, ending, width - 240 * u, 4), width / 2, height / 2 - 60 * u, 76 * u, "center");
+  context.fillStyle = BRAND.mint;
+  context.font = `800 ${34 * u}px Manrope, "DM Sans", sans-serif`;
+  drawLines(context, ["Memórias organizadas com Viagem na Mão"], width / 2, y + 70 * u, 40 * u, "center");
   context.fillStyle = "rgba(255, 253, 245, 0.6)";
-  context.font = '600 26px "DM Sans", sans-serif';
-  context.fillText(`Álbum criado em ${formatDate(getBrasiliaDateKey(), { day: "numeric", month: "long", year: "numeric" })}`, width / 2, height - 120);
-  context.textAlign = "left";
+  context.font = `600 ${24 * u}px "DM Sans", sans-serif`;
+  drawLines(context, [`Criado em ${formatDate(getBrasiliaDateKey(), { day: "numeric", month: "long", year: "numeric" })}`], width / 2, height - 100 * u, 30 * u, "center");
   return canvas;
 }
 
@@ -3765,12 +4107,12 @@ function canvasToJpeg(canvas, quality = 0.86) {
   }, "image/jpeg", quality));
 }
 
-async function buildAlbumPages(trip, options) {
+async function buildAlbumPages(trip, options, format = "pdf") {
   await document.fonts?.ready;
   const visible = retroOrdered(trip).filter((memory) => !trip.retro.hidden.includes(memory.id));
-  const pages = [await canvasToJpeg(await albumCover(trip, visible))];
-  for (const [index, memory] of visible.entries()) pages.push(await canvasToJpeg(await albumMemoryPage(trip, memory, index + 2, options)));
-  pages.push(await canvasToJpeg(await albumClosing(trip)));
+  const pages = [await canvasToJpeg(await albumCover(trip, visible, format))];
+  for (const [index, memory] of visible.entries()) pages.push(await canvasToJpeg(await albumMemoryPage(trip, memory, index + 2, options, format, index)));
+  pages.push(await canvasToJpeg(await albumClosing(trip, format)));
   return pages;
 }
 
@@ -3791,7 +4133,7 @@ function buildPdf(pages) {
     write();
     push("\nendobj\n");
   };
-  const { pdfWidth: width, pdfHeight: height } = ALBUM;
+  const { width, height } = PDF_PAGE;
   push("%PDF-1.4\n%âãÏÓ\n");
   object(1, () => push("<< /Type /Catalog /Pages 2 0 R >>"));
   object(2, () => push(`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_, index) => `${3 + index * 3} 0 R`).join(" ")}] >>`));
@@ -3815,18 +4157,21 @@ function buildPdf(pages) {
 function openAlbumSheet() {
   const trip = getCurrentTrip();
   const options = { showDates: true, showPlaces: true, showTexts: true };
+  let format = "pdf";
   let pages = [];
   let thumbs = [];
   let version = 0;
-  openSheet(`${sheetTitle("Álbum em PDF")}
+  const baseName = () => `album-${slugify(trip.retro.title || trip.name || "viagem")}`;
+  openSheet(`${sheetTitle("Álbum da viagem")}
     <p class="muted">Feito com as memórias e a capa da sua retrospectiva. Para mudar o que entra, use o lápis da retrospectiva.</p>
+    <div class="segmented" id="album-format">${Object.entries(ALBUM_FORMATS).map(([key, value]) => `<button type="button" data-album-format="${key}" class="${key === format ? "is-selected" : ""}">${value.label}</button>`).join("")}</div>
     <div class="album-preview" id="album-preview"><p class="muted">Montando as páginas…</p></div>
     <div class="share-toggles" id="album-options">
       <label class="toggle-row">Mostrar as datas<span class="switch"><input type="checkbox" data-album-option="showDates" checked><span></span></span></label>
       <label class="toggle-row">Mostrar os lugares<span class="switch"><input type="checkbox" data-album-option="showPlaces" checked><span></span></span></label>
       <label class="toggle-row">Mostrar os textos<span class="switch"><input type="checkbox" data-album-option="showTexts" checked><span></span></span></label>
     </div>
-    <p class="privacy-note">${icon("lock")} O álbum é gerado no aparelho e leva só as memórias escolhidas. Gastos e outros dados da viagem não entram.</p>
+    <p class="privacy-note">${icon("lock")} Gerado no aparelho, só com as memórias escolhidas. Gastos e outros dados da viagem não entram. Depois de enviada, a cópia não pode ser recolhida.</p>
     <p class="form-status" id="album-status" role="status" aria-live="polite"></p>
     <div class="row-actions"><button class="btn btn-secondary" type="button" id="album-download" disabled>${icon("download")} Baixar</button><button class="btn btn-primary" type="button" id="album-share" disabled>${icon("share-2")} Compartilhar</button></div>`, (root) => {
     const preview = root.querySelector("#album-preview");
@@ -3835,46 +4180,58 @@ function openAlbumSheet() {
     const refresh = async () => {
       const mine = ++version;
       buttons.forEach((button) => { button.disabled = true; });
+      status.classList.remove("is-info");
       status.textContent = "Montando as páginas…";
       try {
-        const built = await buildAlbumPages(trip, options);
+        const built = await buildAlbumPages(trip, options, format);
         if (mine !== version) return;
         thumbs.forEach((url) => URL.revokeObjectURL(url));
         pages = built;
         thumbs = pages.map((page) => URL.createObjectURL(page.blob));
+        preview.dataset.format = format;
         preview.innerHTML = thumbs.map((url, index) => `<figure><img src="${url}" alt="Página ${index + 1}"><figcaption>${index + 1}</figcaption></figure>`).join("");
-        status.textContent = `${pages.length} páginas · formato A5`;
         status.classList.add("is-info");
+        status.textContent = format === "pdf"
+          ? `${pages.length} páginas · PDF A5`
+          : `${pages.length} imagens 4:5${pages.length > 20 ? " · o Instagram aceita até 20 por post" : ""}`;
         buttons.forEach((button) => { button.disabled = false; });
       } catch (error) {
         console.error("Falha ao montar o álbum.", error);
-        status.classList.remove("is-info");
         status.textContent = "Não consegui montar o álbum. Tente de novo.";
       }
     };
     refresh();
+    root.querySelector("#album-format").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-album-format]");
+      if (!button || button.dataset.albumFormat === format) return;
+      format = button.dataset.albumFormat;
+      root.querySelectorAll("[data-album-format]").forEach((item) => item.classList.toggle("is-selected", item === button));
+      refresh();
+    });
     root.querySelector("#album-options").addEventListener("change", (event) => {
       const input = event.target.closest("[data-album-option]");
       if (!input) return;
       options[input.dataset.albumOption] = input.checked;
       refresh();
     });
-    const file = () => new File([buildPdf(pages)], `album-${slugify(trip.retro.title || trip.name || "viagem")}.pdf`, { type: "application/pdf" });
-    buttons[0].addEventListener("click", () => {
-      const pdf = file();
+    const files = () => (format === "pdf"
+      ? [new File([buildPdf(pages)], `${baseName()}.pdf`, { type: "application/pdf" })]
+      : pages.map((page, index) => new File([page.blob], `${baseName()}-${String(index + 1).padStart(2, "0")}.jpg`, { type: "image/jpeg" })));
+    const download = (list) => list.forEach((file, index) => window.setTimeout(() => {
       const link = document.createElement("a");
-      link.href = URL.createObjectURL(pdf);
-      link.download = pdf.name;
+      link.href = URL.createObjectURL(file);
+      link.download = file.name;
       link.click();
       window.setTimeout(() => URL.revokeObjectURL(link.href), 4000);
-    });
+    }, index * 350));
+    buttons[0].addEventListener("click", () => download(files()));
     buttons[1].addEventListener("click", async () => {
-      const pdf = file();
+      const list = files();
       try {
-        if (navigator.canShare?.({ files: [pdf] })) await navigator.share({ files: [pdf], title: trip.retro.title || trip.name || "Álbum da viagem" });
+        if (navigator.canShare?.({ files: list })) await navigator.share({ files: list, title: trip.retro.title || trip.name || "Álbum da viagem" });
         else {
-          buttons[0].click();
-          status.textContent = "Este navegador não compartilha direto: o PDF foi baixado.";
+          download(list);
+          status.textContent = "Este navegador não compartilha direto: os arquivos foram baixados.";
         }
       } catch (error) {
         if (error?.name !== "AbortError") status.textContent = "Não consegui compartilhar. Use Baixar.";

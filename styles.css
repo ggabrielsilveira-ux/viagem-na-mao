@@ -977,3 +977,11 @@ img.is-missing { visibility: hidden; }
 .album-preview img { width: 150px; height: 212px; border-radius: 8px; background: var(--surface); box-shadow: var(--shadow); object-fit: cover; }
 .album-preview figcaption { color: var(--muted); font-size: 11px; font-weight: 700; text-align: center; }
 .form-status.is-info { color: var(--muted); font-weight: 600; }
+
+/* Descobrir: listas recolhidas */
+.discover-group .place-grid { margin-top: 14px; }
+.discover-group summary .count-pill { margin-left: 4px; }
+/* Roteiro: mover parada */
+.stop-move .btn { min-height: 44px; }
+.album-preview[data-format="carousel"] img { height: 188px; }
+.discover-group summary .count-pill { color: var(--brand); font-weight: 800; }
