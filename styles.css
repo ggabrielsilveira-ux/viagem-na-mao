@@ -855,3 +855,61 @@ img.is-missing { visibility: hidden; }
 .settings-section label.btn { cursor: pointer; }
 .memories-hero .btn-primary { color: var(--brand); background: #FFFDF5; box-shadow: none; }
 .hero-credit { display: block; overflow: hidden; color: rgba(255, 255, 255, 0.72); font-size: 10px; text-decoration: none; text-overflow: ellipsis; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); white-space: nowrap; }
+
+/* Convite leve para guardar memória */
+.invite-card { display: grid; grid-template-columns: auto 1fr; gap: 10px 12px; align-items: center; padding: 14px; border: 1px solid rgba(86, 215, 174, 0.45); border-radius: var(--radius); background: linear-gradient(135deg, #effbf6 0%, #fff4f1 100%); }
+.invite-card p { color: var(--ink); font-weight: 600; line-height: 1.45; }
+.invite-icon { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 13px; color: var(--brand-deep); background: linear-gradient(135deg, var(--mint) 50%, var(--accent) 50%); }
+.invite-actions { display: flex; grid-column: 1 / -1; align-items: center; gap: 14px; }
+.invite-actions .btn { min-height: 42px; padding: 0 16px; font-size: 14px; }
+#home-invite { margin-bottom: 14px; }
+
+/* Encerramento da viagem */
+.closure-card { display: grid; justify-items: center; gap: 8px; padding: 22px 18px 14px; border-radius: var(--radius-lg); color: #fff; background: linear-gradient(160deg, var(--brand) 0%, var(--brand-deep) 100%); text-align: center; }
+.closure-card h3 { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
+.closure-card p { max-width: 320px; color: rgba(255, 255, 255, 0.88); line-height: 1.5; }
+.closure-card .btn-primary { margin-top: 6px; color: var(--brand); background: #FFFDF5; box-shadow: none; }
+.closure-card .link-btn { color: rgba(255, 255, 255, 0.85); }
+.closure-icon { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 16px; color: var(--brand-deep); background: linear-gradient(135deg, var(--mint) 50%, var(--accent) 50%); }
+
+/* Botão claro sobre fundo verde (Baú) */
+.btn-ghost-light { color: #fff; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.3); }
+
+/* Retrospectiva */
+.retro-body { display: grid; gap: 18px; padding-bottom: calc(40px + var(--safe-bottom)); }
+.retro-cover { position: relative; height: 380px; overflow: hidden; border-radius: var(--radius-lg); color: #fff; background: var(--brand); }
+.retro-cover img { width: 100%; height: 100%; object-fit: cover; }
+.retro-cover-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 18, 14, 0) 40%, rgba(10, 18, 14, 0.8) 100%); }
+.retro-cover-copy { position: absolute; right: 18px; bottom: 18px; left: 18px; display: grid; gap: 4px; }
+.retro-cover-copy h2 { font-family: var(--font-display); font-size: 28px; font-weight: 800; letter-spacing: -0.8px; line-height: 1.1; }
+.retro-cover-copy p { color: rgba(255, 255, 255, 0.86); font-size: 13px; }
+.retro-lead { color: var(--brand); font-family: Georgia, serif; font-size: 17px; line-height: 1.5; text-align: center; }
+.retro-day { display: grid; gap: 12px; }
+.retro-day-head { display: grid; gap: 2px; padding-top: 6px; border-top: 1px solid var(--line); }
+.retro-day-num { color: var(--brand-2); font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
+.retro-day-head h3 { font-family: var(--font-display); font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
+.retro-day-head small { display: flex; align-items: center; gap: 4px; color: var(--muted); font-size: 13px; }
+.retro-day-head small .icon { width: 14px; height: 14px; }
+.retro-memory { display: grid; gap: 8px; }
+.retro-memory img { width: 100%; max-height: 520px; border-radius: var(--radius); background: var(--surface-2); object-fit: cover; }
+.retro-memory-text { display: grid; gap: 4px; padding: 0 2px; }
+.retro-memory-text h4 { font-family: var(--font-display); font-size: 17px; font-weight: 800; }
+.retro-memory-text p { color: var(--ink-2); font-family: Georgia, serif; font-size: 16px; line-height: 1.6; white-space: pre-wrap; }
+.retro-memory-text small { display: flex; align-items: center; gap: 4px; color: var(--muted); font-size: 13px; }
+.retro-memory-text small .icon { width: 14px; height: 14px; }
+.retro-end { padding: 18px; border-radius: var(--radius); color: var(--brand); background: var(--brand-soft); font-family: Georgia, serif; font-size: 17px; line-height: 1.5; text-align: center; }
+.retro-privacy { justify-content: center; }
+.retro-help { font-size: 13px; line-height: 1.5; }
+.retro-edit-row { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.retro-edit-row.is-hidden { opacity: 0.55; }
+.retro-edit-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.retro-edit-info { display: grid; min-width: 0; gap: 2px; }
+.retro-edit-info small { color: var(--muted); font-size: 12px; }
+.retro-edit-info strong { overflow: hidden; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
+.retro-edit-photos { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.retro-cover-pick { position: relative; width: 72px; height: 72px; flex: none; padding: 0; border: 2px solid transparent; border-radius: 14px; background: none; }
+.retro-cover-pick img { width: 100%; height: 100%; border-radius: 12px; object-fit: cover; }
+.retro-cover-pick.is-cover { border-color: var(--accent); }
+.retro-cover-pick span { position: absolute; right: 4px; bottom: 4px; left: 4px; padding: 1px 0; border-radius: 999px; color: var(--brand-deep); background: var(--accent); font-size: 10px; font-weight: 800; text-align: center; }
+.retro-edit-order { display: flex; gap: 8px; }
+.retro-edit-order .icon-btn:disabled { opacity: 0.35; }

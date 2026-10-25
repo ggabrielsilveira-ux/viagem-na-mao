@@ -327,7 +327,9 @@ const blankTrip = () => ({
   itinerary: [],
   expenses: [],
   checklist: {},
-  memories: []
+  memories: [],
+  retro: { title: "", coverPhotoId: "", hidden: [], order: [] },
+  closureDismissed: false
 });
 
 function migrateTrip(value) {
@@ -342,13 +344,16 @@ function migrateTrip(value) {
   trip.interests = Array.isArray(trip.interests) ? trip.interests : [];
   trip.checklist = trip.checklist && typeof trip.checklist === "object" ? trip.checklist : {};
   trip.memories = Array.isArray(trip.memories) ? trip.memories.filter((memory) => memory && memory.id) : [];
+  const retro = trip.retro && typeof trip.retro === "object" ? trip.retro : {};
+  trip.retro = { title: String(retro.title || ""), coverPhotoId: String(retro.coverPhotoId || ""), hidden: Array.isArray(retro.hidden) ? retro.hidden : [], order: Array.isArray(retro.order) ? retro.order : [] };
+  trip.closureDismissed = Boolean(trip.closureDismissed);
   return trip;
 }
 
 let storageNotice = "";
 
 function readStoredState() {
-  const initial = { trips: [], currentTripId: null, hideAmounts: false, displayCurrency: "BRL", displayCurrencyRate: 1, messageHistory: {}, flags: {}, lastBackupAt: null };
+  const initial = { trips: [], currentTripId: null, hideAmounts: false, displayCurrency: "BRL", displayCurrencyRate: 1, messageHistory: {}, flags: {}, lastBackupAt: null, reminders: "app", invites: {} };
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (!stored) return initial;
@@ -362,6 +367,8 @@ function readStoredState() {
       initial.messageHistory = value.messageHistory && typeof value.messageHistory === "object" ? value.messageHistory : {};
       initial.flags = value.flags && typeof value.flags === "object" ? value.flags : {};
       initial.lastBackupAt = value.lastBackupAt || null;
+      initial.reminders = value.reminders === "off" ? "off" : "app";
+      initial.invites = value.invites && typeof value.invites === "object" ? value.invites : {};
       return initial;
     }
     if (value.trip) {
@@ -771,7 +778,8 @@ window.addEventListener("popstate", (event) => {
 
 function render({ scroll = true } = {}) {
   const trip = getCurrentTrip();
-  if (["trip", "deck"].includes(route.screen) && !trip) route = { screen: "home", tab: "about", depth: 0 };
+  if (["trip", "deck", "retro"].includes(route.screen) && !trip) route = { screen: "home", tab: "about", depth: 0 };
+  if (route.screen !== "retro") retroEditing = false;
   if (route.screen === "form" && !wizard) route = { screen: "home", tab: "about", depth: 0 };
   showScreen(route.screen);
   if (scroll) window.scrollTo(0, 0);
@@ -781,6 +789,7 @@ function render({ scroll = true } = {}) {
     showTab(route.tab || "about");
   }
   if (route.screen === "deck") renderDeck();
+  if (route.screen === "retro") renderRetro();
   if (route.screen === "form") renderWizard();
 }
 
@@ -861,6 +870,7 @@ function toggleAmounts() {
 
 function renderHome() {
   setAmountToggle($("#toggle-home-amounts"));
+  renderHomeInvite();
   const container = $("#trip-cards");
   const trips = [...state.trips].sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
   if (!trips.length) {
@@ -946,6 +956,7 @@ function renderAbout() {
   renderBudgetCard(trip);
   renderMemoriesCard(trip);
   renderTripMessage(trip);
+  renderTripInvite(trip);
   const details = [
     trip.transport && `${icon(TRANSPORT_ICONS[trip.transport] || "route")} ${escapeHtml(trip.transport)}`,
     trip.companions && `${icon("users")} ${escapeHtml(trip.companions)}`,
@@ -2484,6 +2495,7 @@ function renderMemories() {
       <p>${escapeHtml(lead)}</p>
       <span class="private-pill">${icon("lock")} Privado · guardado só neste aparelho</span>
       <button class="btn btn-primary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar momento</button>
+      ${memories.length ? `<button class="btn btn-ghost-light btn-block" type="button" data-open-retro>${icon("images")} Ver retrospectiva</button>` : ""}
     </div>
     ${memories.length ? Object.keys(byDate).sort().map((date) => `
       <section class="memory-day">
@@ -2539,7 +2551,7 @@ function openMemoryDetail(id) {
       deletePhotos(memory.photos || []).catch(() => {});
       (memory.photos || []).forEach(forgetPhotoUrl);
       closeSheet({ force: true });
-      showTab(route.tab);
+      refreshAfterMemoryChange();
       toast("Memória excluída");
     });
   });
@@ -2714,10 +2726,193 @@ function openMemoryEditor({ id = null, date = "", place = "", origin = "" } = {}
       requestPersistentStorage();
       saving = false;
       closeSheet({ force: true });
-      showTab(route.tab);
+      refreshAfterMemoryChange();
       toast(messageFor("memoriaGuardada", `${memory.id}|${now}`));
     });
   });
+}
+
+// ---------------------------------------------------------------------------
+// Convites leves para guardar memórias: só dentro do app, no máximo um por dia,
+// e nenhum se a pessoa já guardou algo hoje. Sem sequência nem cobrança.
+// ---------------------------------------------------------------------------
+
+function nowInBrasilia() {
+  const time = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
+  return { date: getBrasiliaDateKey(), time };
+}
+
+function memoryInvite(trip) {
+  if (!trip || state.reminders === "off") return null;
+  const { date, time } = nowInBrasilia();
+  if (!trip.startDate || date < trip.startDate || date > trip.endDate) return null;
+  if (state.invites[trip.id]?.dismissed === date) return null;
+  const savedToday = trip.memories.some((memory) => memory.date === date || (memory.createdAt && getBrasiliaDateKey(new Date(memory.createdAt)) === date));
+  if (savedToday) return null;
+  let context = null;
+  if (time >= "18:00") context = "finalDoDia";
+  else if (daySchedule(trip, date).some((stop) => (stop.time || "09:00") < time)) context = "depoisPasseio";
+  if (!context) return null;
+  return { context, date, text: messageFor(context, `${trip.id}|${date}|convite`) };
+}
+
+function inviteHtml(trip, invite) {
+  return `<div class="invite-card">
+      <span class="invite-icon">${icon("book-heart")}</span>
+      <p>${escapeHtml(invite.text)}</p>
+      <div class="invite-actions">
+        <button class="btn btn-primary" type="button" data-invite-save="${escapeHtml(trip.id)}" data-invite-context="${invite.context}">${icon("image-plus")} Guardar momento</button>
+        <button class="link-btn" type="button" data-invite-dismiss="${escapeHtml(trip.id)}">Agora não</button>
+      </div>
+    </div>`;
+}
+
+// Encerramento: celebração discreta depois da data de volta, que nunca bloqueia nada.
+function closureHtml(trip) {
+  if (tripPhase(trip) !== "depois" || trip.closureDismissed) return "";
+  const hasMemories = trip.memories.length > 0;
+  return `<div class="closure-card">
+      <span class="closure-icon">${icon("sparkles")}</span>
+      <h3>Viagem concluída</h3>
+      <p>Foram dias de descobertas, encontros e histórias. Que tal guardar tudo isso num lugar especial?</p>
+      ${hasMemories
+        ? `<button class="btn btn-primary btn-block" type="button" data-open-retro>${icon("images")} Rever minha viagem</button>`
+        : `<button class="btn btn-primary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar minha primeira lembrança</button>`}
+      <button class="link-btn" type="button" data-closure-dismiss>Agora não</button>
+    </div>`;
+}
+
+function renderTripInvite(trip) {
+  const invite = memoryInvite(trip);
+  const container = $("#trip-invite");
+  container.innerHTML = invite ? inviteHtml(trip, invite) : closureHtml(trip);
+  container.hidden = !container.innerHTML;
+  // Com convite ou encerramento na tela, a frase do dia fica de fora para não poluir.
+  if (!container.hidden) $("#trip-message").hidden = true;
+}
+
+function renderHomeInvite() {
+  const container = $("#home-invite");
+  const entry = state.trips.map((trip) => [trip, memoryInvite(trip)]).find(([, invite]) => invite);
+  container.innerHTML = entry ? inviteHtml(entry[0], entry[1]) : "";
+  container.hidden = !entry;
+}
+
+// ---------------------------------------------------------------------------
+// Retrospectiva: a viagem em memórias, por dia, com capa, título e escolha do que aparece
+// ---------------------------------------------------------------------------
+
+let retroEditing = false;
+
+function refreshAfterMemoryChange() {
+  if (route.screen === "retro") renderRetro();
+  else if (route.screen === "trip") showTab(route.tab);
+}
+
+// Ordem: por dia; dentro do dia, a ordem escolhida pela pessoa (ou a de criação).
+function retroOrdered(trip) {
+  const position = new Map(trip.retro.order.map((id, index) => [id, index]));
+  return [...trip.memories].sort((a, b) => (a.date || "").localeCompare(b.date || "")
+    || (position.get(a.id) ?? Infinity) - (position.get(b.id) ?? Infinity)
+    || (a.createdAt || "").localeCompare(b.createdAt || ""));
+}
+
+function retroCover(trip, visible) {
+  const photos = visible.flatMap((memory) => memory.photos || []);
+  return photos.includes(trip.retro.coverPhotoId) ? trip.retro.coverPhotoId : photos[0] || "";
+}
+
+function moveRetroMemory(id, direction) {
+  const trip = getCurrentTrip();
+  const ordered = retroOrdered(trip);
+  const index = ordered.findIndex((memory) => memory.id === id);
+  const target = index + direction;
+  if (index < 0 || !ordered[target] || ordered[target].date !== ordered[index].date) return;
+  [ordered[index], ordered[target]] = [ordered[target], ordered[index]];
+  trip.retro.order = ordered.map((memory) => memory.id);
+  saveState();
+  renderRetro();
+}
+
+function renderRetro() {
+  const trip = getCurrentTrip();
+  const ordered = retroOrdered(trip);
+  const hidden = new Set(trip.retro.hidden);
+  const visible = ordered.filter((memory) => !hidden.has(memory.id));
+  const title = trip.retro.title || trip.name || "Minha viagem";
+  $("#retro-title").textContent = title;
+  const editButton = $("#retro-edit-button");
+  editButton.innerHTML = icon(retroEditing ? "check" : "pencil");
+  editButton.setAttribute("aria-label", retroEditing ? "Concluir edição" : "Editar retrospectiva");
+  editButton.hidden = !ordered.length;
+  const container = $("#retro-content");
+
+  if (!ordered.length) {
+    container.innerHTML = `<div class="memories-empty">${icon("images")}<p>A retrospectiva nasce das memórias do seu Baú. Guarde a primeira quando quiser.</p><button class="btn btn-primary" type="button" data-new-memory>${icon("image-plus")} Guardar momento</button></div>`;
+    return;
+  }
+
+  if (retroEditing) {
+    const cover = retroCover(trip, visible);
+    container.innerHTML = `
+      <label class="field">Título da retrospectiva<input id="retro-title-input" maxlength="80" value="${escapeHtml(trip.retro.title)}" placeholder="${escapeHtml(trip.name || "Minha viagem")}"></label>
+      <p class="muted retro-help">Escolha o que aparece, mude a ordem dentro de cada dia e toque numa foto para usá-la como capa.</p>
+      ${ordered.map((memory) => {
+        const sameDay = ordered.filter((item) => item.date === memory.date);
+        const position = sameDay.indexOf(memory);
+        return `<div class="retro-edit-row${hidden.has(memory.id) ? " is-hidden" : ""}">
+          <div class="retro-edit-top">
+            <div class="retro-edit-info"><small>${escapeHtml(memoryDayLabel(trip, memory.date))}</small><strong>${escapeHtml(memory.title || memory.text.slice(0, 60) || "Memória com foto")}</strong></div>
+            <label class="switch" aria-label="Mostrar na retrospectiva"><input type="checkbox" data-retro-toggle="${escapeHtml(memory.id)}"${hidden.has(memory.id) ? "" : " checked"}><span></span></label>
+          </div>
+          ${memory.photos?.length ? `<div class="retro-edit-photos">${memory.photos.map((photoId) => `<button type="button" class="retro-cover-pick${photoId === cover ? " is-cover" : ""}" data-retro-cover="${escapeHtml(photoId)}" aria-label="Usar como capa"><img data-photo-id="${escapeHtml(photoId)}" alt="">${photoId === cover ? `<span>Capa</span>` : ""}</button>`).join("")}</div>` : ""}
+          ${sameDay.length > 1 ? `<div class="retro-edit-order"><button class="icon-btn icon-btn-sm" type="button" data-retro-move="${escapeHtml(memory.id)}" data-direction="-1" aria-label="Subir"${position === 0 ? " disabled" : ""}>${icon("arrow-up")}</button><button class="icon-btn icon-btn-sm" type="button" data-retro-move="${escapeHtml(memory.id)}" data-direction="1" aria-label="Descer"${position === sameDay.length - 1 ? " disabled" : ""}>${icon("arrow-down")}</button></div>` : ""}
+        </div>`;
+      }).join("")}
+      <button class="btn btn-primary btn-block" type="button" id="retro-done">${icon("check")} Pronto</button>`;
+    hydratePhotos(container);
+    container.querySelector("#retro-title-input").addEventListener("input", (event) => {
+      trip.retro.title = event.target.value.trim();
+      saveState();
+      $("#retro-title").textContent = trip.retro.title || trip.name || "Minha viagem";
+    });
+    return;
+  }
+
+  const cover = retroCover(trip, visible);
+  const byDate = {};
+  visible.forEach((memory) => { (byDate[memory.date || ""] ||= []).push(memory); });
+  const days = getTripDays(trip);
+  const ending = tripPhase(trip) === "depois" ? messageFor("viagemEncerrada", trip.id) : "A viagem ainda está acontecendo. Novas memórias entram aqui sozinhas.";
+  container.innerHTML = `
+    <div class="retro-cover">
+      ${cover ? `<img data-photo-id="${escapeHtml(cover)}" alt="Capa da retrospectiva">` : ""}
+      <div class="retro-cover-shade"></div>
+      <div class="retro-cover-copy">
+        <p>${escapeHtml(formatRange(trip.startDate, trip.endDate))}</p>
+        <h2>${escapeHtml(title)}</h2>
+        <p>${escapeHtml(tripCities(trip).join(" · "))} · ${visible.length} ${visible.length === 1 ? "memória" : "memórias"}</p>
+      </div>
+    </div>
+    <p class="retro-lead">${escapeHtml(messageFor("reverMemorias", `${trip.id}|retro`))}</p>
+    ${visible.length ? Object.keys(byDate).sort().map((date) => {
+      const index = days.indexOf(date);
+      const stay = trip.destinations.find((item) => item.startDate <= date && item.endDate >= date);
+      return `<section class="retro-day">
+        <div class="retro-day-head">${index >= 0 ? `<span class="retro-day-num">Dia ${index + 1}</span>` : ""}<h3>${escapeHtml(capitalize(formatDate(date, { weekday: "long", day: "numeric", month: "long" })))}</h3>${stay ? `<small>${icon("map-pin")} ${escapeHtml(stay.name)}</small>` : ""}</div>
+        ${byDate[date].map((memory) => `<article class="retro-memory">
+          ${(memory.photos || []).map((photoId) => `<img data-photo-id="${escapeHtml(photoId)}" alt="">`).join("")}
+          <div class="retro-memory-text">
+            ${memory.title ? `<h4>${escapeHtml(memory.title)}</h4>` : ""}
+            ${memory.text ? `<p>${escapeHtml(memory.text)}</p>` : ""}
+            ${memory.place ? `<small>${icon("map-pin")} ${escapeHtml(memory.place)}</small>` : ""}
+          </div>
+        </article>`).join("")}
+      </section>`;
+    }).join("") : `<div class="memories-empty">${icon("eye-off")}<p>Todas as memórias estão escondidas. Toque no lápis para escolher o que aparece.</p></div>`}
+    <p class="retro-end">${escapeHtml(ending)}</p>
+    <p class="privacy-note retro-privacy">${icon("lock")} Só você vê esta retrospectiva. Ela fica neste aparelho.</p>`;
+  hydratePhotos(container);
 }
 
 // ---------------------------------------------------------------------------
@@ -2820,6 +3015,14 @@ async function openSettingsSheet() {
       ${install}
     </section>
     <section class="settings-section">
+      <h3>${icon("book-heart")} Convites para guardar memórias</h3>
+      <p class="muted">Durante a viagem, no máximo um convite por dia, só dentro do app, e nenhum se você já guardou algo no dia. Sem cobrança por dias sem registro.</p>
+      <div class="segmented" id="reminder-options">
+        <button type="button" data-reminders="app" class="${state.reminders !== "off" ? "is-selected" : ""}" aria-pressed="${state.reminders !== "off"}">Dentro do app</button>
+        <button type="button" data-reminders="off" class="${state.reminders === "off" ? "is-selected" : ""}" aria-pressed="${state.reminders === "off"}">Desligado</button>
+      </div>
+    </section>
+    <section class="settings-section">
       <h3>${icon("download")} Backup dos seus dados</h3>
       <p class="muted">Viagens, roteiros, custos e memórias ficam só neste aparelho. Guarde uma cópia no Arquivos, no Drive ou no e-mail.</p>
       <p class="settings-meta">${state.trips.length} ${state.trips.length === 1 ? "viagem" : "viagens"} · ${memoryCount} ${memoryCount === 1 ? "memória" : "memórias"} · ${lastBackup ? `último backup em ${escapeHtml(lastBackup)}` : "nenhum backup ainda"}</p>
@@ -2832,6 +3035,18 @@ async function openSettingsSheet() {
       <p class="form-status" id="backup-status" role="status" aria-live="polite"></p>
     </section>`, (root) => {
     const status = root.querySelector("#backup-status");
+    root.querySelector("#reminder-options").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-reminders]");
+      if (!button) return;
+      state.reminders = button.dataset.reminders;
+      saveState();
+      root.querySelectorAll("[data-reminders]").forEach((item) => {
+        const selected = item === button;
+        item.classList.toggle("is-selected", selected);
+        item.setAttribute("aria-pressed", String(selected));
+      });
+      render({ scroll: false });
+    });
     root.querySelector("#install-app")?.addEventListener("click", async () => {
       const prompt = installPrompt;
       installPrompt = null;
@@ -2965,6 +3180,49 @@ document.addEventListener("click", (event) => {
     openMemoryDetail(memoryButton.dataset.memory);
     return;
   }
+  const inviteSave = event.target.closest("[data-invite-save]");
+  if (inviteSave) {
+    const origin = inviteSave.dataset.inviteContext;
+    if (route.screen !== "trip" || state.currentTripId !== inviteSave.dataset.inviteSave) openTrip(inviteSave.dataset.inviteSave);
+    openMemoryEditor({ origin });
+    return;
+  }
+  const inviteDismiss = event.target.closest("[data-invite-dismiss]");
+  if (inviteDismiss) {
+    state.invites[inviteDismiss.dataset.inviteDismiss] = { dismissed: nowInBrasilia().date };
+    saveState();
+    render({ scroll: false });
+    return;
+  }
+  if (event.target.closest("[data-closure-dismiss]")) {
+    getCurrentTrip().closureDismissed = true;
+    saveState();
+    render({ scroll: false });
+    return;
+  }
+  if (event.target.closest("[data-open-retro]")) {
+    retroEditing = false;
+    navigate({ screen: "retro" });
+    return;
+  }
+  const retroMove = event.target.closest("[data-retro-move]");
+  if (retroMove) {
+    moveRetroMemory(retroMove.dataset.retroMove, Number(retroMove.dataset.direction));
+    return;
+  }
+  const retroCoverButton = event.target.closest("[data-retro-cover]");
+  if (retroCoverButton) {
+    getCurrentTrip().retro.coverPhotoId = retroCoverButton.dataset.retroCover;
+    saveState();
+    renderRetro();
+    return;
+  }
+  if (event.target.closest("#retro-done, #retro-edit-button")) {
+    retroEditing = !retroEditing;
+    renderRetro();
+    window.scrollTo(0, 0);
+    return;
+  }
   if (event.target.closest("[data-open-settings]")) {
     openSettingsSheet();
     return;
@@ -3007,6 +3265,15 @@ $("#display-exchange-rate").addEventListener("change", (event) => {
   state.displayCurrencyRate = Number(event.target.value) || 0;
   saveState();
   renderExpenses();
+});
+$("#retro-content").addEventListener("change", (event) => {
+  const toggle = event.target.closest("[data-retro-toggle]");
+  if (!toggle) return;
+  const trip = getCurrentTrip();
+  const id = toggle.dataset.retroToggle;
+  trip.retro.hidden = toggle.checked ? trip.retro.hidden.filter((item) => item !== id) : [...new Set([...trip.retro.hidden, id])];
+  saveState();
+  renderRetro();
 });
 $("#guide-content").addEventListener("change", (event) => {
   const input = event.target.closest("[data-checklist]");
