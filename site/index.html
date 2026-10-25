@@ -3,140 +3,271 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Viagem na Mão — sua viagem inteira na palma da mão</title>
-    <meta name="description" content="Planeje a viagem, descubra lugares, monte o roteiro, controle os gastos em qualquer moeda e guarde suas memórias. Gratuito durante a fase de testes.">
+    <title>Viagem na Mão — o mundo é grande, sua próxima história começa aqui</title>
+    <meta name="description" content="Planeje cada detalhe, descubra lugares incríveis, controle seus gastos e guarde as memórias que fazem cada viagem valer a pena. Buscamos até 50 viajantes para testar grátis.">
     <meta name="theme-color" content="#15563F">
-    <meta property="og:title" content="Viagem na Mão">
-    <meta property="og:description" content="Sua viagem inteira na palma da mão: roteiro, gastos, guia do destino e memórias.">
+    <meta property="og:title" content="Viagem na Mão — sua próxima história começa aqui">
+    <meta property="og:description" content="Roteiro, gastos em qualquer moeda, guia do destino e um Baú de Memórias. Ajude a testar grátis.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://viagemnamao.com/">
-    <meta property="og:image" content="https://viagemnamao.com/imagens/app-inicio.jpg">
+    <meta property="og:image" content="https://viagemnamao.com/imagens/compartilhar.jpg">
     <link rel="icon" href="imagens/icone.svg" type="image/svg+xml">
     <link rel="icon" href="imagens/icone-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="imagens/icone-180.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&family=Caveat:wght@500&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="imagens/foto-hero-celular.jpg" media="(max-width: 700px)">
+    <link rel="preload" as="image" href="imagens/foto-hero.jpg" media="(min-width: 701px)">
     <link rel="stylesheet" href="estilo.css">
   </head>
   <body>
-    <header class="topo">
-      <a class="marca" href="/" aria-label="Viagem na Mão, início"><img src="imagens/icone.svg" alt="" width="40" height="40"><span>viagem <b class="na">na</b> <b class="mao">mão</b></span></a>
-      <nav class="topo-links" aria-label="Seções">
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    <header class="topo" id="topo">
+      <a class="marca" href="/" aria-label="Viagem na Mão, início"><img src="imagens/icone.svg" alt="" width="38" height="38"><span>viagem <b class="na">na</b> <b class="mao">mão</b></span></a>
+      <nav class="menu" id="menu" aria-label="Seções do site">
+        <a href="#inicio">Início</a>
         <a href="#recursos">Recursos</a>
         <a href="#como">Como funciona</a>
-        <a class="botao botao-pequeno" href="#lista">Quero testar</a>
+        <a href="#bau">Baú de Memórias</a>
+        <a href="#lista">Seja um testador</a>
       </nav>
+      <div class="topo-acoes">
+        <a class="botao botao-pequeno" href="https://app.viagemnamao.com/" rel="noopener">Experimentar grátis</a>
+        <button class="menu-botao" id="menu-botao" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+      </div>
     </header>
 
-    <main>
-      <section class="hero">
-        <div class="hero-texto">
-          <p class="selo">Gratuito durante a fase de testes</p>
-          <h1>Sua viagem inteira <span>na palma da mão.</span></h1>
-          <p class="hero-sub">Descubra lugares, monte o roteiro com tempos reais de deslocamento, controle os gastos em qualquer moeda e guarde as memórias que fizeram a viagem valer a pena.</p>
-          <div class="hero-acoes">
-            <a class="botao" href="#lista">Entrar na lista de espera</a>
-            <a class="botao botao-claro" id="link-app" href="https://app.viagemnamao.com/" rel="noopener">Experimentar agora</a>
+    <main id="conteudo">
+      <!-- Abertura -->
+      <section class="hero" id="inicio">
+        <picture class="hero-foto">
+          <source media="(max-width: 700px)" srcset="imagens/foto-hero-celular.jpg">
+          <img src="imagens/foto-hero.jpg" alt="Mulher de costas contemplando o mar de um mirante" fetchpriority="high">
+        </picture>
+        <div class="hero-sombra"></div>
+        <div class="hero-grade">
+          <div class="hero-texto">
+            <p class="sobretitulo">Viagem &amp; emoção</p>
+            <h1>O mundo é grande. Sua próxima história começa aqui.</h1>
+            <p class="hero-sub">Planeje cada detalhe, descubra lugares incríveis, controle seus gastos e guarde as memórias que fazem cada viagem valer a pena.</p>
+            <div class="hero-acoes">
+              <a class="botao botao-coral" href="https://app.viagemnamao.com/" rel="noopener">Experimentar grátis <span aria-hidden="true">→</span></a>
+              <a class="botao botao-vidro" href="#lista">Quero ajudar a testar</a>
+            </div>
+            <p class="selo"><span class="selo-ponto" aria-hidden="true"></span>Estamos em evolução • Buscamos até 50 viajantes para testar grátis</p>
+            <p class="manuscrito hero-nota" aria-hidden="true">Mais destinos. Mais histórias.<br>Você por inteiro.</p>
           </div>
-          <p class="hero-nota">Funciona no navegador do celular, sem baixar nada. Dá para instalar na tela inicial.</p>
+          <div class="hero-celular">
+            <figure class="celular"><img src="imagens/app-inicio.jpg" alt="Tela inicial do app Viagem na Mão com a viagem em andamento" width="390" height="844"></figure>
+            <div class="bilhete manuscrito" aria-hidden="true">Sonhe<br>planeje<br>viva<br>lembre<br>sempre <span class="coracao">♥</span></div>
+          </div>
         </div>
-        <div class="hero-telas" aria-hidden="true">
-          <figure class="celular celular-atras"><img src="imagens/app-descobrir.jpg" alt=""></figure>
-          <figure class="celular"><img src="imagens/app-inicio.jpg" alt=""></figure>
-        </div>
+        <a class="foto-credito" id="credito-hero" target="_blank" rel="noopener"></a>
       </section>
 
+      <!-- Frase -->
       <section class="frase">
-        <p>“A viagem passa. As histórias ficam.”</p>
+        <div class="frase-caixa">
+          <blockquote>“A viagem passa. As histórias ficam.”</blockquote>
+          <p>Lugares mudam a gente. Pessoas que encontramos, sabores que provamos, vistas que nunca esquecemos.</p>
+        </div>
       </section>
 
+      <!-- Recursos -->
       <section class="recursos" id="recursos" aria-labelledby="recursos-titulo">
-        <h2 id="recursos-titulo">Tudo o que a sua viagem precisa</h2>
-        <p class="secao-sub">Feito no Brasil, em português, pensado para quem viaja com o celular na mão.</p>
+        <div class="cabeca-secao">
+          <p class="sobretitulo">Viajar bem é viver mais</p>
+          <h2 id="recursos-titulo">Tudo o que você precisa para viver melhor cada viagem.</h2>
+          <p>Do planejamento à última lembrança, o Viagem na Mão reúne as ferramentas que acompanham você em cada etapa da jornada.</p>
+        </div>
 
         <article class="recurso">
-          <figure class="celular"><img src="imagens/app-descobrir.jpg" alt="Tela de descobrir lugares com o cartão do Estádio José Alvalade, em Lisboa" loading="lazy"></figure>
-          <div>
-            <span class="recurso-tag tag-menta">Descobrir</span>
-            <h3>Curta, passe ou deixe para depois</h3>
-            <p>Atrações de mais de 100 cidades, no Brasil e no mundo, em cartões para deslizar. O que você curte vai direto para o roteiro.</p>
+          <figure class="celular"><img src="imagens/app-descobrir.jpg" alt="Tela Descobrir com o cartão de uma atração em Lisboa e os botões Passar, Talvez e Curtir" loading="lazy" width="390" height="844"></figure>
+          <div class="recurso-texto">
+            <span class="icone-redondo icone-menta" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z"/></svg></span>
+            <h3>Descubra lugares que combinam com você.</h3>
+            <p>Explore atrações, restaurantes e experiências do destino. Curta, deixe para depois ou passe para a próxima sugestão, deslizando o cartão.</p>
+            <ul class="lista-check"><li>Mais de 100 cidades no Brasil e no mundo</li><li>Fotos reais com crédito dos autores</li><li>O que você curte vai direto para o roteiro</li></ul>
           </div>
         </article>
 
         <article class="recurso recurso-invertido">
-          <figure class="celular"><img src="imagens/app-roteiro.jpg" alt="Roteiro do dia saindo da hospedagem com tempos de carro e a pé" loading="lazy"></figure>
-          <div>
-            <span class="recurso-tag tag-coral">Roteiro</span>
-            <h3>O dia começa na sua hospedagem</h3>
-            <p>Cadastre onde vai dormir em cada noite e veja o tempo de carro e a pé entre as paradas. Arraste para mudar a ordem; a sugestão automática começa pelo que fica mais perto.</p>
+          <figure class="celular"><img src="imagens/app-roteiro.jpg" alt="Roteiro do dia saindo da hospedagem, com horários e tempo de carro e a pé entre as paradas" loading="lazy" width="390" height="844"></figure>
+          <div class="recurso-texto">
+            <span class="icone-redondo icone-coral" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+            <h3>Sua viagem organizada, sem complicação.</h3>
+            <p>Organize passeios e compromissos, acompanhe seu roteiro e consulte os deslocamentos entre as atividades.</p>
+            <ul class="lista-check"><li>O dia começa e termina na sua hospedagem</li><li>Tempo de carro e a pé entre as paradas</li><li>Arraste para mudar a ordem; a sugestão começa pelo mais perto</li></ul>
           </div>
         </article>
 
         <article class="recurso">
-          <figure class="celular"><img src="imagens/app-custos.jpg" alt="Controle de gastos em euro com orçamento, previsão e saldo" loading="lazy"></figure>
-          <div>
-            <span class="recurso-tag tag-menta">Custos</span>
-            <h3>Gastos na moeda da viagem</h3>
-            <p>Orçamento em euro, dólar ou real, despesas por categoria e o valor em reais sempre à mão. Tire foto do recibo e o app sugere valor, data e categoria.</p>
+          <figure class="celular"><img src="imagens/app-custos.jpg" alt="Controle de gastos em euro com orçamento, previsão, saldo e gastos por categoria" loading="lazy" width="390" height="844"></figure>
+          <div class="recurso-texto">
+            <span class="icone-redondo icone-menta" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15v3M12 10v8M17 6v12"/></svg></span>
+            <h3>Aproveite a viagem sem perder as contas.</h3>
+            <p>Planeje o orçamento, registre despesas e acompanhe os gastos em diferentes moedas.</p>
+            <ul class="lista-check"><li>Tudo na moeda da viagem, com o valor em reais à mão</li><li>Gastos por categoria e por dia</li><li>Tire foto do recibo e o app sugere valor, data e categoria</li></ul>
           </div>
         </article>
 
         <article class="recurso recurso-invertido">
-          <figure class="celular"><img src="imagens/app-guia.jpg" alt="Guia da viagem com o clima de Lisboa e do Porto" loading="lazy"></figure>
-          <div>
-            <span class="recurso-tag tag-coral">Guia</span>
-            <h3>O que saber antes de ir</h3>
-            <p>Documentos, visto, seguro e vacinas para brasileiros em 27 países, com fontes oficiais. Clima nas datas da viagem e um checklist para não esquecer nada.</p>
+          <figure class="celular"><img src="imagens/app-guia.jpg" alt="Guia da viagem com o clima de Lisboa e do Porto nas datas da viagem" loading="lazy" width="390" height="844"></figure>
+          <div class="recurso-texto">
+            <span class="icone-redondo icone-coral" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+            <h3>Informações importantes sempre à mão.</h3>
+            <p>Consulte orientações para o seu destino e acompanhe informações úteis para viajar com mais tranquilidade.</p>
+            <ul class="lista-check"><li>Documentos, visto, seguro e vacinas para brasileiros em 27 países</li><li>Clima nas datas da viagem</li><li>Checklist para não esquecer nada</li></ul>
           </div>
         </article>
 
-        <article class="recurso">
-          <figure class="celular"><img src="imagens/app-resumo.jpg" alt="Resumo da viagem com o dia da viagem e o Baú de Memórias" loading="lazy"></figure>
-          <div>
-            <span class="recurso-tag tag-menta">Meu Baú de Memórias</span>
-            <h3>Guarde o que fez a viagem especial</h3>
-            <p>Fotos e textos de cada dia, só seus. No fim, uma retrospectiva bonita, um álbum em PDF, um carrossel para o Instagram e um vídeo curto com música.</p>
-          </div>
-        </article>
+        <div class="mais-recursos">
+          <h3>E tem mais</h3>
+          <ul>
+            <li><strong>Várias hospedagens por cidade,</strong> com o endereço localizado no mapa.</li>
+            <li><strong>Contagem regressiva</strong> até a viagem e “Dia 3 de 7” durante ela.</li>
+            <li><strong>Funciona no navegador do celular</strong> e dá para instalar na tela inicial.</li>
+            <li><strong>Backup</strong> das suas viagens num arquivo, sempre que quiser.</li>
+          </ul>
+        </div>
       </section>
 
+      <!-- Descobrir -->
+      <section class="descobrir">
+        <img class="descobrir-foto" src="imagens/foto-descobrir.jpg" alt="" loading="lazy">
+        <div class="descobrir-sombra"></div>
+        <div class="descobrir-grade">
+          <div class="descobrir-texto">
+            <p class="sobretitulo">Descubra na prática</p>
+            <h2>Lugares reais. Histórias possíveis.</h2>
+            <p>Nem sempre a melhor viagem é aquela com mais passeios. Às vezes, é aquela em que você encontra os lugares certos para você.</p>
+            <p>Explore opções no destino, descubra experiências e salve aquilo que desperta sua curiosidade.</p>
+            <ul class="lista-check lista-clara"><li>Curtir, talvez ou passar, no seu ritmo</li><li>Filtre por cidade da viagem</li><li>Mude de ideia quando quiser</li><li>Detalhes do lugar com links e mapa</li></ul>
+          </div>
+          <div class="dupla-celulares">
+            <figure class="celular"><img src="imagens/app-descobrir-aba.jpg" alt="Aba Descobrir com o progresso e as escolhas" loading="lazy" width="390" height="844"></figure>
+            <figure class="celular celular-frente"><img src="imagens/app-descobrir.jpg" alt="" loading="lazy" width="390" height="844"></figure>
+          </div>
+          <p class="manuscrito descobrir-nota" aria-hidden="true">Lisboa é sempre<br>uma boa ideia.</p>
+        </div>
+        <a class="foto-credito" id="credito-descobrir" target="_blank" rel="noopener"></a>
+      </section>
+
+      <!-- Baú de Memórias -->
+      <section class="bau" id="bau" aria-labelledby="bau-titulo">
+        <div class="bau-grade">
+          <div class="bau-texto">
+            <p class="sobretitulo">Meu Baú de Memórias</p>
+            <h2 id="bau-titulo">Alguns momentos merecem ficar para sempre.</h2>
+            <p>Seu Baú de Memórias transforma pequenos registros em histórias que você vai querer revisitar.</p>
+            <ul class="lista-check">
+              <li>Fotos e textos de cada dia, só seus</li>
+              <li>Registre também os dias que já passaram</li>
+              <li>Retrospectiva bonita, organizada por dia</li>
+              <li>Álbum em PDF, carrossel para o Instagram e vídeo curto com música</li>
+              <li>Compartilhe só a memória que você escolher</li>
+            </ul>
+            <p class="bau-frase">“Mais do que lugares visitados, são os momentos vividos que ficam com a gente.”</p>
+            <a class="botao botao-coral" href="https://app.viagemnamao.com/" rel="noopener">Comece a guardar suas memórias</a>
+          </div>
+          <div class="album" aria-hidden="true">
+            <figure class="polaroide p1"><img src="imagens/foto-bau-1.jpg" alt="" loading="lazy"><figcaption class="manuscrito"></figcaption></figure>
+            <figure class="polaroide p2"><img src="imagens/foto-bau-2.jpg" alt="" loading="lazy"><figcaption class="manuscrito"></figcaption></figure>
+            <figure class="polaroide p3"><img src="imagens/foto-bau-3.jpg" alt="" loading="lazy"><figcaption class="manuscrito"></figcaption></figure>
+            <div class="anotacao manuscrito">Dias que pareciam filme. Gente boa, comida inesquecível e o coração leve. Quero voltar sempre!</div>
+            <figure class="celular album-celular"><img src="imagens/app-retro.jpg" alt="" loading="lazy" width="390" height="844"></figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- Como funciona -->
       <section class="como" id="como" aria-labelledby="como-titulo">
-        <h2 id="como-titulo">Como funciona</h2>
+        <div class="cabeca-secao">
+          <p class="sobretitulo">Como funciona</p>
+          <h2 id="como-titulo">Sua próxima viagem ganha vida em três passos.</h2>
+        </div>
         <ol class="passos">
-          <li><span>1</span><h3>Crie a viagem</h3><p>Escolha as cidades e as datas num calendário só.</p></li>
-          <li><span>2</span><h3>Descubra e planeje</h3><p>Curta lugares, cadastre a hospedagem e monte o roteiro de cada dia.</p></li>
-          <li><span>3</span><h3>Viva e guarde</h3><p>Controle os gastos durante a viagem e guarde as memórias no Baú.</p></li>
+          <li><span class="passo-num">1</span><span class="passo-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span><h3>Crie sua viagem</h3><p>Escolha o destino, informe as datas e comece a organizar seus planos.</p></li>
+          <li><span class="passo-num">2</span><span class="passo-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15M9 3.236v15"/></svg></span><h3>Descubra e planeje</h3><p>Explore lugares, monte seu roteiro e acompanhe as informações da viagem.</p></li>
+          <li><span class="passo-num">3</span><span class="passo-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></span><h3>Viva e guarde</h3><p>Aproveite seus momentos, registre seus gastos e preserve suas lembranças.</p></li>
         </ol>
       </section>
 
-      <section class="lista" id="lista" aria-labelledby="lista-titulo">
-        <div class="lista-caixa">
-          <h2 id="lista-titulo">Entre na lista de espera</h2>
-          <p>Avisamos quando chegarem as novidades: viagem compartilhada com amigos, divisão de gastos, Match da Galera e o app nas lojas.</p>
-          <form id="form-lista" novalidate>
+      <!-- Convite para testadores -->
+      <section class="convite" id="lista" aria-labelledby="lista-titulo">
+        <img class="convite-foto" src="imagens/foto-convite.jpg" alt="" loading="lazy">
+        <div class="convite-grade">
+          <div class="convite-texto">
+            <p class="sobretitulo sobretitulo-menta">Faça parte dessa história</p>
+            <h2 id="lista-titulo">Ajude a construir o Viagem na Mão.</h2>
+            <p>Estamos buscando cerca de 50 viajantes para experimentar gratuitamente o aplicativo, conhecer suas funcionalidades e ajudar a melhorar a experiência de quem ama viajar.</p>
+            <ul class="beneficios">
+              <li>Acesso gratuito durante a fase de testes</li>
+              <li>Conhecer o aplicativo antes de todo mundo</li>
+              <li>Sugerir melhorias e ser ouvido</li>
+              <li>Participar da evolução do produto</li>
+            </ul>
+            <p class="convite-nota">A inscrição é uma manifestação de interesse: vamos chamando os testadores aos poucos, por e-mail.</p>
+          </div>
+          <form id="form-lista" class="cartao-form" novalidate>
+            <h3>Quero participar dos testes</h3>
             <label class="campo">Seu nome (opcional)<input name="nome" maxlength="80" autocomplete="given-name" placeholder="Como quer ser chamado"></label>
             <label class="campo">Seu e-mail<input name="email" type="email" required maxlength="254" autocomplete="email" placeholder="voce@exemplo.com"></label>
             <label class="armadilha" aria-hidden="true">Não preencha<input name="site" tabindex="-1" autocomplete="off"></label>
             <label class="consentimento"><input name="consentimento" type="checkbox" required><span>Aceito receber e-mails do Viagem na Mão e li a <a href="privacidade.html">política de privacidade</a>. Posso sair da lista quando quiser.</span></label>
-            <button class="botao" type="submit">Quero entrar na lista</button>
+            <button class="botao botao-coral" type="submit">Quero participar dos testes</button>
             <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
           </form>
+        </div>
+      </section>
+
+      <!-- Novidades -->
+      <section class="novidades" aria-labelledby="novidades-titulo">
+        <div class="cabeca-secao">
+          <p class="sobretitulo">Em desenvolvimento</p>
+          <h2 id="novidades-titulo">E a jornada está só começando...</h2>
+          <p>O Viagem na Mão recebe novidades toda semana. Estas estão a caminho:</p>
+        </div>
+        <ul class="em-breve">
+          <li><span class="etiqueta">Em breve</span><h3>Sua conta na nuvem</h3><p>Entre com o e-mail e encontre suas viagens e memórias em qualquer celular.</p></li>
+          <li><span class="etiqueta">Em breve</span><h3>Viagens em grupo</h3><p>Planeje junto com amigos e família, cada um no seu celular.</p></li>
+          <li><span class="etiqueta">Em breve</span><h3>Match da Galera</h3><p>Descubra os lugares que todo mundo do grupo curtiu.</p></li>
+          <li><span class="etiqueta">Em breve</span><h3>Gastos compartilhados</h3><p>Divida as despesas e saiba quem deve para quem, sem planilha.</p></li>
+          <li><span class="etiqueta">Em breve</span><h3>Mais cidades</h3><p>Muito mais destinos, no Brasil e no mundo.</p></li>
+          <li><span class="etiqueta">Em breve</span><h3>Nas lojas de apps</h3><p>O Viagem na Mão na App Store e no Google Play.</p></li>
+        </ul>
+      </section>
+
+      <!-- Chamada final -->
+      <section class="final">
+        <h2>A próxima história pode ser a sua.</h2>
+        <p>O destino você escolhe. O Viagem na Mão ajuda a cuidar do caminho.</p>
+        <div class="final-acoes">
+          <a class="botao botao-coral" href="https://app.viagemnamao.com/" rel="noopener">Experimentar grátis</a>
+          <a class="botao botao-claro" href="#lista">Quero participar dos testes</a>
         </div>
       </section>
     </main>
 
     <footer class="rodape">
-      <a class="marca marca-rodape" href="/"><img src="imagens/icone.svg" alt="" width="32" height="32"><span>viagem <b class="na">na</b> <b class="mao">mão</b></span></a>
-      <nav aria-label="Links do rodapé">
-        <a href="https://www.instagram.com/viagemnamao.app/" rel="noopener" target="_blank">Instagram @viagemnamao.app</a>
-        <a href="mailto:contato@viagemnamao.com">contato@viagemnamao.com</a>
-        <a href="privacidade.html">Privacidade</a>
-        <a href="termos.html">Termos de uso</a>
-      </nav>
-      <p class="rodape-nota">Fotos das telas: capturas reais do app, com uma viagem de exemplo. Fotos de lugares dentro do app: Wikimedia Commons, com crédito em cada uma.</p>
+      <div class="rodape-grade">
+        <div>
+          <a class="marca" href="/"><img src="imagens/icone.svg" alt="" width="34" height="34"><span>viagem <b class="na">na</b> <b class="mao">mão</b></span></a>
+          <p class="rodape-sobre">O app que acompanha você antes, durante e depois da viagem. Feito no Brasil, em português.</p>
+        </div>
+        <nav aria-label="Links do rodapé">
+          <a href="https://app.viagemnamao.com/" rel="noopener">Abrir o app</a>
+          <a href="https://www.instagram.com/viagemnamao.app/" rel="noopener" target="_blank">Instagram @viagemnamao.app</a>
+          <a href="mailto:contato@viagemnamao.com">contato@viagemnamao.com</a>
+          <a href="privacidade.html">Privacidade</a>
+          <a href="termos.html">Termos de uso</a>
+        </nav>
+      </div>
+      <p class="rodape-nota">Telas: capturas reais do app com uma viagem de exemplo. <span id="creditos-fotos"></span> Fotos de lugares dentro do app: Wikimedia Commons, com crédito em cada uma.</p>
     </footer>
 
+    <script src="fotos.js" defer></script>
     <script src="site.js" defer></script>
   </body>
 </html>
