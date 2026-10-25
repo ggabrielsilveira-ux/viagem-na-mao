@@ -6,7 +6,7 @@ Protótipo estático para planejar várias viagens, organizar um roteiro, descob
 
 O app é pensado primeiro para o celular: cada tela tem barra superior com botão voltar (o voltar do celular também funciona) e, dentro da viagem, uma barra de abas embaixo (Resumo, Roteiro, Descobrir, Custos e Guia).
 
-- **Início:** fotos inspiradoras em tela grande com frases de gratidão (troca a cada 30 segundos), versículo do dia e a lista de viagens com contagem regressiva.
+- **Início:** cabeçalho com o logo e o perfil, saudação com o seu nome (opcional, em Ajustes), cartão de reflexão em destaque que pode ser dispensado pelo resto do dia, viagem em foco (a em andamento ou a próxima) com "Continuar viagem", acesso rápido a Agenda, Gastos, Descobrir e Memórias, inspiração do dia com 18 destinos fotografados (créditos do Wikimedia Commons), lista de todas as viagens, versículo e navegação de baixo (Início, Viagens, nova viagem, Inspiração, Perfil).
 - **Cadastro em etapas:** escolher cidades numa lista com busca (103 cidades no Brasil e no exterior, ou uma cidade digitada), datas num calendário de faixa (ida e volta no mesmo calendário), noites por cidade, quem vai e como, interesses e orçamento (com moeda e cotação manual).
 - **Resumo:** capa com foto real do destino, roteiro das cidades com as hospedagens de cada uma, ideias guardadas, orçamento e perfil da viagem.
 - **Descobrir:** tela exclusiva de cartões no estilo "swipe" (direita = curti, esquerda = não curti, baixo = talvez), por toque, mouse, botões ou setas do teclado, com detalhes do lugar numa janela que sobe de baixo. A aba mostra Curtidas, Talvez depois e Não curtidos em listas recolhidas; dá para mudar de ideia sobre um lugar passado.

@@ -374,7 +374,7 @@ function migrateTrip(value) {
 let storageNotice = "";
 
 function readStoredState() {
-  const initial = { trips: [], currentTripId: null, hideAmounts: false, displayCurrency: "BRL", displayCurrencyRate: 1, messageHistory: {}, flags: {}, lastBackupAt: null, reminders: "app", invites: {} };
+  const initial = { trips: [], currentTripId: null, hideAmounts: false, displayCurrency: "BRL", displayCurrencyRate: 1, messageHistory: {}, flags: {}, lastBackupAt: null, reminders: "app", invites: {}, profile: { name: "" } };
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (!stored) return initial;
@@ -389,6 +389,7 @@ function readStoredState() {
       initial.flags = value.flags && typeof value.flags === "object" ? value.flags : {};
       initial.lastBackupAt = value.lastBackupAt || null;
       initial.reminders = value.reminders === "off" ? "off" : "app";
+      initial.profile = { name: String(value.profile?.name || "") };
       initial.invites = value.invites && typeof value.invites === "object" ? value.invites : {};
       return initial;
     }
@@ -1054,7 +1055,6 @@ function renderInspiration() {
   };
   if (next.complete) swap();
   else next.addEventListener("load", swap, { once: true });
-  $("#reflection-message").textContent = `“${item.message}”`;
   $("#hero-location").textContent = `${destination.name} — ${destination.place}`;
   const credit = $("#hero-credit");
   credit.href = destination.page;
@@ -1083,35 +1083,111 @@ function toggleAmounts() {
   render({ scroll: false });
 }
 
+// Viagem em foco na tela inicial: a em andamento ou a próxima; sem nenhuma, a mais recente.
+function focusTrip() {
+  const today = getBrasiliaDateKey();
+  const sorted = [...state.trips].sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
+  return sorted.find((trip) => trip.endDate >= today) || [...sorted].sort((a, b) => (b.endDate || "").localeCompare(a.endDate || ""))[0] || null;
+}
+
+function greetingText() {
+  const hour = new Date().getHours();
+  const period = hour < 5 ? "Boa noite" : hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
+  const name = (state.profile?.name || "").trim().split(/\s+/)[0];
+  return name ? `${period}, ${name}!` : `${period}!`;
+}
+
+// Cartão de reflexão: destacado, opcional e dispensável (some pelo resto do dia).
+function reflectionDismissed(key) {
+  return state.flags.reflections?.[key] === getBrasiliaDateKey();
+}
+
+function reflectionSpotlight(key, kicker, text) {
+  if (!text || reflectionDismissed(key)) return "";
+  return `<section class="spotlight" aria-label="Reflexão">
+      <span class="spotlight-sun" aria-hidden="true">${icon("sun")}</span>
+      <div class="spotlight-copy">
+        <p class="spotlight-kicker">${escapeHtml(kicker)}</p>
+        <p class="spotlight-text">${escapeHtml(text)}</p>
+      </div>
+      <svg class="spotlight-art" viewBox="0 0 320 90" aria-hidden="true" preserveAspectRatio="none"><path d="M0 70 C60 40 110 62 170 50 C230 38 270 58 320 44 L320 90 L0 90 Z" fill="#56D7AE" opacity=".35"/><path d="M0 82 C80 62 150 80 220 70 C260 64 290 72 320 66 L320 90 L0 90 Z" fill="#56D7AE" opacity=".5"/></svg>
+      <button class="spotlight-close" type="button" data-dismiss-reflection="${escapeHtml(key)}" aria-label="Dispensar reflexão">${icon("x")}</button>
+    </section>`;
+}
+
+function renderHomeReflection() {
+  const today = getBrasiliaDateKey();
+  const kickers = ["Um momento pra agradecer", "Pausa pra refletir"];
+  const kicker = kickers[Number(today.slice(-2)) % kickers.length];
+  $("#home-reflection").innerHTML = reflectionSpotlight("home", kicker, messageFor("reflexoes", `home|${today}`));
+  hydrateIcons($("#home-reflection"));
+}
+
+// Período curto: "25 a 31 de out." no mesmo mês; "28 de out. a 2 de nov." entre meses.
+function shortRange(start, end) {
+  if (!parseLocalDate(start) || !parseLocalDate(end)) return "Datas a definir";
+  const day = (date) => parseLocalDate(date).getUTCDate();
+  const month = (date) => formatDate(date, { month: "short" });
+  return start.slice(0, 7) === end.slice(0, 7) ? `${day(start)} a ${day(end)} de ${month(end)}` : `${day(start)} de ${month(start)} a ${day(end)} de ${month(end)}`;
+}
+
+function focusCardHtml(trip) {
+  const cover = coverFor(trip);
+  const clock = tripClock(trip);
+  const action = clock.phase === "durante" ? "Continuar viagem" : clock.phase === "depois" ? "Rever viagem" : "Abrir viagem";
+  return `<article class="focus-card">
+      <div class="focus-photo">
+        <img src="${escapeHtml(cover.image)}" alt="">
+        <span class="chip chip-glass focus-chip" data-countdown="${escapeHtml(trip.id)}">${icon("calendar")} ${escapeHtml(tripCountdownText(trip))}</span>
+        ${cover.photo ? `<a class="photo-credit" href="${escapeHtml(safeUrl(cover.photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(cover.photo.author)} · ${escapeHtml(cover.photo.license)}</a>` : ""}
+      </div>
+      <div class="focus-body">
+        <h2>${escapeHtml(trip.name || "Minha viagem")}</h2>
+        <p class="focus-cities">${escapeHtml(tripCities(trip).join(" · ") || trip.country || "Destino a definir")}</p>
+        <div class="focus-row">
+          <span class="focus-dates">${icon("calendar")} ${escapeHtml(shortRange(trip.startDate, trip.endDate))}</span>
+          <button class="btn btn-primary focus-cta" type="button" data-open-trip="${escapeHtml(trip.id)}">${action} ${icon("arrow-right")}</button>
+        </div>
+      </div>
+    </article>`;
+}
+
 function renderHome() {
   setAmountToggle($("#toggle-home-amounts"));
+  const name = (state.profile?.name || "").trim();
+  $("#home-greeting").textContent = greetingText();
+  $("#avatar-initial").innerHTML = name ? escapeHtml(name[0].toUpperCase()) : icon("user");
+  renderHomeReflection();
   renderHomeInvite();
+  const focus = focusTrip();
+  const focusContainer = $("#home-focus");
+  $(".quick-access").dataset.trip = focus?.id || "";
+  if (!focus) {
+    $("#home-subtitle").textContent = "Sua próxima história começa aqui.";
+    focusContainer.innerHTML = `<div class="home-empty">${icon("plane")}<h3>Que tal planejar a primeira viagem?</h3><p>Junte destinos, roteiro, custos e memórias em um só lugar.</p><button class="btn btn-primary" type="button" data-new-trip>${icon("plus")} Planejar viagem</button></div>`;
+  } else {
+    const phase = tripClock(focus).phase;
+    $("#home-subtitle").textContent = phase === "durante" ? "Bom passeio! Sua viagem está acontecendo." : phase === "depois" ? "Que tal reviver sua última viagem?" : "Sua próxima história começa aqui.";
+    focusContainer.innerHTML = focusCardHtml(focus);
+  }
+  hydrateIcons(focusContainer);
+  addImageFallbacks(focusContainer);
+
   const container = $("#trip-cards");
   const trips = [...state.trips].sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
-  if (!trips.length) {
-    container.innerHTML = `<div class="home-empty">${icon("plane")}<h3>Sua próxima história começa aqui.</h3><p>Crie uma viagem para juntar destinos, roteiro e custos em um só lugar.</p></div>`;
-    return;
-  }
-  const today = getBrasiliaDateKey();
-  const next = trips.find((trip) => trip.endDate >= today) || null;
+  $("#all-trips").hidden = !trips.length;
   container.innerHTML = trips.map((trip) => {
-    const cities = tripCities(trip);
     const cover = coverFor(trip);
     const budget = Number(trip.budget) || 0;
-    return `<article class="trip-card">
+    return `<button class="trip-card" type="button" data-open-trip="${escapeHtml(trip.id)}">
       <img src="${escapeHtml(cover.image)}" alt="" loading="lazy">
-      <div class="trip-card-shade"></div>
-      <div class="trip-card-top">
-        <span class="chip chip-glass" data-countdown="${escapeHtml(trip.id)}">${icon("calendar")} ${escapeHtml(tripCountdownText(trip))}</span>
-        ${next && trip.id === next.id ? `<span class="chip chip-accent">${icon("sparkles")} Próxima</span>` : ""}
-      </div>
-      ${cover.photo ? `<a class="photo-credit" style="top:56px" href="${escapeHtml(safeUrl(cover.photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(cover.photo.author)} · ${escapeHtml(cover.photo.license)}</a>` : ""}
-      <button class="trip-card-body" type="button" data-open-trip="${escapeHtml(trip.id)}">
-        <span class="trip-card-cities">${escapeHtml(cities.join(" · ") || trip.country || "Destino a definir")}</span>
-        <span class="trip-card-name">${escapeHtml(trip.name || "Minha viagem")}</span>
-        <span class="trip-card-meta"><span>${escapeHtml(formatRange(trip.startDate, trip.endDate, false))}</span><span>${budget ? `Orçamento <strong>${escapeHtml(money(budget, tripCurrency(trip)))}</strong>` : `Gastos <strong>${escapeHtml(money(spentInTrip(trip), tripCurrency(trip)))}</strong>`}</span></span>
-      </button>
-    </article>`;
+      <span class="trip-card-info">
+        <strong class="trip-card-name">${escapeHtml(trip.name || "Minha viagem")}</strong>
+        <span class="trip-card-cities">${escapeHtml(tripCities(trip).join(" · ") || trip.country || "Destino a definir")}</span>
+        <span class="trip-card-meta"><span data-countdown="${escapeHtml(trip.id)}">${icon("calendar")} ${escapeHtml(tripCountdownText(trip))}</span><span>${budget ? escapeHtml(money(budget, tripCurrency(trip))) : escapeHtml(money(spentInTrip(trip), tripCurrency(trip)))}</span></span>
+      </span>
+      ${icon("chevron-right")}
+    </button>`;
   }).join("");
   addImageFallbacks(container);
 }
@@ -3257,8 +3333,8 @@ function tripPhase(trip) {
 function renderTripMessage(trip) {
   const element = $("#trip-message");
   const text = tripPhase(trip) === "durante" ? messageFor("diaDeViagem", `${trip.id}|${getBrasiliaDateKey()}`) : "";
-  element.hidden = !text;
-  element.textContent = text;
+  element.innerHTML = reflectionSpotlight(`viagem-${trip.id}`, "Pausa pra agradecer", text);
+  element.hidden = !element.innerHTML;
 }
 
 // ---------------------------------------------------------------------------
@@ -5030,6 +5106,11 @@ async function openSettingsSheet() {
 
   openSheet(`${sheetTitle("Ajustes")}
     <section class="settings-section">
+      <h3>${icon("user")} Perfil</h3>
+      <label class="field">Como quer ser chamado? (opcional)<input id="profile-name" maxlength="40" autocomplete="given-name" value="${escapeHtml(state.profile?.name || "")}" placeholder="Ex.: Gabriel"></label>
+      <p class="muted">Usado só na saudação da tela inicial. Fica neste aparelho.</p>
+    </section>
+    <section class="settings-section">
       <h3>${icon("smartphone")} Instalar na tela inicial</h3>
       <p class="muted">Abre como app, em tela cheia, e ajuda a proteger seus dados no aparelho.</p>
       ${install}
@@ -5055,6 +5136,11 @@ async function openSettingsSheet() {
       <p class="form-status" id="backup-status" role="status" aria-live="polite"></p>
     </section>`, (root) => {
     const status = root.querySelector("#backup-status");
+    root.querySelector("#profile-name").addEventListener("change", (event) => {
+      state.profile = { ...(state.profile || {}), name: event.target.value.trim() };
+      saveState();
+      if (route.screen === "home") renderHome();
+    });
     root.querySelector("#reminder-options").addEventListener("click", (event) => {
       const button = event.target.closest("[data-reminders]");
       if (!button) return;
@@ -5261,6 +5347,44 @@ document.addEventListener("click", (event) => {
     openDepartureSheet();
     return;
   }
+  const dismiss = event.target.closest("[data-dismiss-reflection]");
+  if (dismiss) {
+    state.flags.reflections = { ...(state.flags.reflections || {}), [dismiss.dataset.dismissReflection]: getBrasiliaDateKey() };
+    saveState();
+    dismiss.closest(".spotlight").remove();
+    if (!$("#trip-message").innerHTML.trim()) $("#trip-message").hidden = true;
+    announce("Reflexão dispensada por hoje.");
+    return;
+  }
+  const quick = event.target.closest("[data-quick]");
+  if (quick) {
+    const tripId = $(".quick-access").dataset.trip;
+    if (!tripId) {
+      toast("Crie uma viagem para usar os atalhos");
+      startNewTrip();
+      return;
+    }
+    openTrip(tripId);
+    if (quick.dataset.quick !== "about") navigate({ tab: quick.dataset.quick }, { replace: true });
+    return;
+  }
+  const homeNav = event.target.closest("[data-home-nav]");
+  if (homeNav) {
+    const target = { top: "#home-top", trips: "#all-trips", inspiration: ".inspiration" }[homeNav.dataset.homeNav];
+    if (homeNav.dataset.homeNav === "top") window.scrollTo({ top: 0, behavior: "smooth" });
+    else $(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    $("[data-home-nav]").forEach((item) => {
+      const active = item === homeNav;
+      item.classList.toggle("is-active", active);
+      if (active) item.setAttribute("aria-current", "page");
+      else item.removeAttribute("aria-current");
+    });
+    return;
+  }
+  if (event.target.closest("[data-new-trip]")) {
+    startNewTrip();
+    return;
+  }
   if (event.target.closest("[data-open-settings]")) {
     openSettingsSheet();
     return;
@@ -5387,10 +5511,16 @@ document.addEventListener("keydown", (event) => {
 // Início do app
 // ---------------------------------------------------------------------------
 
+// As frases de reflexão da tela inicial entram na biblioteca para girar sem repetir.
+MESSAGE_LIBRARY.reflexoes ||= reflections.map((item) => item.message);
 hydrateIcons();
 renderInspiration();
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  window.setInterval(() => { if (route.screen === "home" && !document.hidden) changeInspiration(1); }, INSPIRATION_INTERVAL_MS);
+  let touchedAt = 0;
+  $("#hero").addEventListener("pointerdown", () => { touchedAt = Date.now(); });
+  window.setInterval(() => {
+    if (route.screen === "home" && !document.hidden && Date.now() - touchedAt > 60000) changeInspiration(1);
+  }, INSPIRATION_INTERVAL_MS);
 }
 window.history.replaceState({ ...route }, "");
 render();

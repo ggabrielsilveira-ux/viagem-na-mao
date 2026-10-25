@@ -194,48 +194,16 @@ img { display: block; max-width: 100%; }
   transition: opacity 1600ms ease;
 }
 .hero-img.is-active { opacity: 1; }
-.hero-shade {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(10, 18, 14, 0.32) 0%, rgba(10, 18, 14, 0) 18%, rgba(10, 18, 14, 0) 60%, rgba(10, 18, 14, 0.72) 100%);
-}
-.hero-top {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: calc(16px + var(--safe-top)) 18px 0;
-}
 .brand { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-display); font-size: 17px; font-weight: 800; letter-spacing: -0.4px; }
-.brand-light { font-weight: 500; opacity: 0.85; }
 .brand-mark { width: 34px; height: 34px; border-radius: 9px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25); }
-.hero-copy { position: absolute; right: 16px; bottom: 112px; left: 16px; padding: 14px 16px 15px; border-radius: 18px; background: rgba(10, 18, 14, 0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-.hero-kicker { margin-bottom: 8px; color: rgba(255, 255, 255, 0.82); font-size: 10px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
-.hero-quote {
-  max-width: 340px;
-  color: rgba(255, 255, 255, 0.91);
-  font-family: Georgia, serif;
-  font-size: 16px;
-  line-height: 1.55;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45);
-  transition: opacity 600ms ease;
-}
 .hero-place { display: flex; min-width: 0; align-items: center; gap: 5px; color: #fff; font-size: 12px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6); }
 .hero-place span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hero-place .icon { width: 14px; height: 14px; flex: none; }
-.hero-meta { position: absolute; right: 18px; bottom: 12px; left: 18px; display: grid; gap: 2px; }
-.hero-controls { position: absolute; right: 18px; bottom: 50px; left: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .hero-dots { display: flex; gap: 6px; }
 .hero-dots span { width: 6px; height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.4); transition: width 300ms ease, background 300ms ease; }
 .hero-dots span.is-active { width: 22px; background: #fff; }
 
 .home-body { padding-bottom: calc(110px + var(--safe-bottom)); }
-.section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 10px 2px 16px; }
-.eyebrow { margin-bottom: 4px; color: var(--brand-2); font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
-.section-title { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.7px; line-height: 1.15; }
 
 .trip-list { display: grid; gap: 14px; }
 .trip-card {
@@ -253,14 +221,10 @@ img { display: block; max-width: 100%; }
   text-align: left;
 }
 .trip-card > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.trip-card-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 18, 14, 0.15) 0%, rgba(10, 18, 14, 0.82) 100%); }
-.trip-card-body { position: relative; display: flex; width: 100%; min-height: 210px; flex-direction: column; justify-content: flex-end; gap: 4px; padding: 18px; border: 0; color: inherit; background: none; text-align: left; }
-.trip-card-top { position: absolute; top: 14px; right: 14px; left: 14px; display: flex; justify-content: space-between; gap: 8px; }
 .trip-card-cities { color: rgba(255, 255, 255, 0.85); font-size: 13px; font-weight: 600; }
 .trip-card-name { font-family: var(--font-display); font-size: 22px; font-weight: 800; letter-spacing: -0.6px; }
 .trip-card-meta { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.22); font-size: 13px; }
 .trip-card-meta strong { font-size: 15px; }
-.trip-card .photo-credit { top: auto; right: 14px; bottom: auto; left: auto; }
 
 .chip {
   display: inline-flex;
@@ -294,17 +258,6 @@ img { display: block; max-width: 100%; }
 .footnote { margin-top: 16px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .footnote a { color: inherit; }
 
-.fab-bar {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 15;
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 14px 16px calc(14px + var(--safe-bottom));
-  background: linear-gradient(180deg, rgba(245, 243, 238, 0) 0%, var(--bg) 35%);
-}
 
 /* Viagem */
 .trip-body { padding-bottom: calc(var(--tab-h) + 40px + var(--safe-bottom)); }
@@ -778,7 +731,6 @@ a.photo-credit:hover { text-decoration: underline; }
 .unconfirmed li + li { margin-top: 6px; }
 
 /* Mensagens do dia e do orçamento */
-.trip-message { padding: 12px 14px; border-radius: var(--radius); color: var(--brand); background: var(--brand-soft); font-size: 14px; font-weight: 600; line-height: 1.45; }
 .budget-message { margin-top: 12px; padding: 10px 12px; border-radius: var(--radius-sm); color: #fff; background: rgba(255, 255, 255, 0.12); font-size: 13px; line-height: 1.45; }
 
 /* Meu Baú: cartão no Resumo */
@@ -1020,3 +972,96 @@ img.is-missing { visibility: hidden; }
 .receipt-box small { color: var(--muted); font-size: 12px; }
 .receipt-box.is-ok { background: var(--brand-soft); color: var(--brand); }
 .receipt-box.is-warn { background: var(--gold-soft); }
+
+/* ---------------------------------------------------------------------------
+   Tela inicial: cabeçalho compacto, saudação, reflexão, viagem em foco,
+   atalhos, inspiração e navegação de baixo.
+   --------------------------------------------------------------------------- */
+.home-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: calc(12px + var(--safe-top)) 16px 10px; background: rgba(245, 243, 238, 0.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.brand-dark { color: var(--brand); font-size: 22px; letter-spacing: -0.6px; }
+.brand-dark .brand-mark { width: 40px; height: 40px; border-radius: 11px; box-shadow: none; }
+.brand-word { font-weight: 800; }
+.brand-na { color: #2fb88c; }
+.brand-mao { color: var(--accent); }
+.avatar-btn { display: grid; width: 44px; height: 44px; place-items: center; padding: 0; border: 2px solid var(--surface); border-radius: 50%; color: #fff; background: linear-gradient(135deg, var(--brand) 0%, #2fb88c 100%); box-shadow: 0 4px 14px rgba(21, 32, 27, 0.18); font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+.avatar-btn .icon { width: 20px; height: 20px; }
+
+.home-body { display: grid; gap: 18px; padding-top: 4px; padding-bottom: calc(var(--tab-h) + 40px + var(--safe-bottom)); }
+.home-body > * { min-width: 0; }
+.home-greeting h1 { font-family: var(--font-display); font-size: 30px; font-weight: 800; letter-spacing: -0.9px; line-height: 1.1; }
+.home-greeting p { margin-top: 4px; color: var(--muted); font-size: 16px; }
+.home-section-title { font-family: var(--font-display); font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+.home-section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+/* Cartão de reflexão (Home e Resumo) */
+.spotlight { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 12px; overflow: hidden; padding: 18px 46px 26px 16px; border: 1px solid rgba(86, 215, 174, 0.55); border-radius: var(--radius-lg); background: linear-gradient(135deg, #FFFDF5 0%, #fff4ef 100%); box-shadow: 0 6px 20px rgba(255, 128, 104, 0.1); }
+.spotlight-sun { display: grid; width: 46px; height: 46px; place-items: center; color: var(--accent); }
+.spotlight-sun .icon { width: 40px; height: 40px; stroke-width: 2.2; }
+.spotlight-copy { position: relative; z-index: 1; display: grid; gap: 6px; }
+.spotlight-kicker { color: #d9573f; font-size: 12px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+.spotlight-text { color: var(--brand); font-family: Georgia, serif; font-size: 21px; line-height: 1.35; }
+.spotlight-art { position: absolute; right: 0; bottom: 0; left: 0; width: 100%; height: 34px; pointer-events: none; }
+.spotlight-close { position: absolute; top: 10px; right: 10px; z-index: 2; display: grid; width: 32px; height: 32px; place-items: center; padding: 0; border: 0; border-radius: 50%; color: var(--ink-2); background: rgba(255, 255, 255, 0.7); }
+.spotlight-close .icon { width: 16px; height: 16px; }
+
+/* Viagem em foco */
+.focus-card { overflow: hidden; border: 1px solid rgba(230, 225, 215, 0.8); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow); }
+.focus-photo { position: relative; height: 176px; background: #22332b; }
+.focus-photo img { width: 100%; height: 100%; object-fit: cover; }
+.focus-chip { position: absolute; top: 12px; left: 12px; }
+.focus-photo .photo-credit { right: 10px; bottom: 8px; }
+.focus-body { display: grid; gap: 4px; padding: 14px 16px 16px; }
+.focus-body h2 { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.6px; }
+.focus-cities { color: var(--muted); font-size: 15px; font-weight: 600; }
+.focus-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+.focus-dates { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 14px; font-weight: 600; }
+.focus-dates .icon { width: 18px; height: 18px; color: var(--brand-2); }
+.focus-cta { min-height: 46px; padding: 0 18px; font-size: 15px; white-space: nowrap; }
+.home-empty .btn { margin-top: 14px; }
+
+/* Acesso rápido */
+.quick-access { display: grid; gap: 10px; }
+.quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.quick-grid button { display: grid; justify-items: center; gap: 8px; padding: 12px 4px; border: 1px solid rgba(230, 225, 215, 0.8); border-radius: var(--radius); color: var(--ink); background: var(--surface); font-size: 13px; font-weight: 700; }
+.quick-icon { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 50%; }
+.quick-icon .icon { width: 24px; height: 24px; }
+.quick-icon.is-mint { color: var(--brand); background: #ddf6ec; }
+.quick-icon.is-coral { color: #d9573f; background: var(--accent-soft); }
+
+/* Inspiração: carrossel de destinos com crédito */
+.inspiration { display: grid; gap: 10px; }
+.inspiration-card.hero { height: 214px; min-height: 0; border-radius: var(--radius-lg); }
+.inspiration-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10, 18, 14, 0.62) 0%, rgba(10, 18, 14, 0.15) 70%), linear-gradient(180deg, rgba(10, 18, 14, 0) 55%, rgba(10, 18, 14, 0.6) 100%); }
+.inspiration-kicker { position: absolute; top: 34px; left: 20px; max-width: 62%; color: #fff; font-family: Georgia, serif; font-size: 25px; line-height: 1.25; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); }
+.inspiration-meta { position: absolute; right: 56px; bottom: 30px; left: 16px; display: grid; gap: 2px; }
+.inspiration-card .hero-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); }
+.inspiration-card .hero-dots span { width: 5px; height: 5px; }
+.inspiration-card .hero-dots span.is-active { width: 16px; }
+.inspiration-arrow { position: absolute; top: 50%; display: grid; width: 34px; height: 34px; place-items: center; padding: 0; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 50%; color: #fff; background: rgba(10, 18, 14, 0.3); transform: translateY(-50%); }
+.inspiration-arrow.is-prev { left: 8px; display: none; }
+.inspiration-arrow.is-next { right: 10px; }
+.inspiration-arrow .icon { width: 18px; height: 18px; }
+
+/* Lista de viagens */
+.all-trips { display: grid; gap: 10px; }
+.trip-list { gap: 10px; }
+.trip-card { position: static; display: flex; min-height: 0; align-items: center; gap: 12px; padding: 10px; border: 1px solid rgba(230, 225, 215, 0.8); border-radius: var(--radius); color: var(--ink); background: var(--surface); box-shadow: none; }
+.trip-card > img { position: static; width: 64px; height: 64px; flex: none; border-radius: 14px; }
+.trip-card > .icon { flex: none; color: var(--muted); }
+.trip-card-info { display: grid; min-width: 0; flex: 1; gap: 2px; }
+.trip-card-name { overflow: hidden; font-size: 17px; text-overflow: ellipsis; white-space: nowrap; }
+.trip-card-cities { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+.trip-card-meta { margin-top: 2px; padding-top: 0; border-top: 0; color: var(--ink-2); font-size: 12px; font-weight: 600; }
+.trip-card-meta [data-countdown] { display: inline-flex; align-items: center; gap: 4px; }
+.trip-card-meta .icon { width: 13px; height: 13px; }
+
+/* Navegação de baixo da Home */
+.home-nav { position: fixed; right: 0; bottom: 0; left: 0; z-index: 25; display: grid; max-width: 520px; min-height: calc(var(--tab-h) + var(--safe-bottom)); margin: 0 auto; padding: 6px 6px var(--safe-bottom); grid-template-columns: repeat(5, 1fr); align-items: center; border-top: 1px solid var(--line); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.home-nav button { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 0; color: var(--muted); background: none; font-size: 10.5px; font-weight: 700; }
+.home-nav button .icon { width: 22px; height: 22px; }
+.home-nav button.is-active { color: var(--brand); }
+.home-nav .home-nav-add { width: 58px; height: 58px; justify-self: center; justify-content: center; margin-top: -26px; border-radius: 50%; color: #fff; background: var(--brand); box-shadow: 0 10px 24px rgba(21, 86, 63, 0.35); }
+.home-nav .home-nav-add .icon { width: 28px; height: 28px; }
+
+/* Resumo: cartão de reflexão no lugar da frase simples */
+#trip-message .spotlight-text { font-size: 19px; }

@@ -16,62 +16,83 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=18">
-    <script src="icones.js?v=18" defer></script>
-    <script src="dados/fontes-abertas.js?v=18" defer></script>
-    <script src="dados/atracoes-cidades.js?v=18" defer></script>
-    <script src="dados/osm-lugares.js?v=18" defer></script>
-    <script src="dados/guia-paises.js?v=18" defer></script>
-    <script src="dados/mensagens.js?v=18" defer></script>
-    <script src="script.js?v=18" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20">
+    <script src="icones.js?v=20" defer></script>
+    <script src="dados/fontes-abertas.js?v=20" defer></script>
+    <script src="dados/atracoes-cidades.js?v=20" defer></script>
+    <script src="dados/osm-lugares.js?v=20" defer></script>
+    <script src="dados/guia-paises.js?v=20" defer></script>
+    <script src="dados/mensagens.js?v=20" defer></script>
+    <script src="script.js?v=20" defer></script>
   </head>
   <body>
     <div class="app" id="app">
 
       <!-- Início -->
-      <section class="screen" id="screen-home" data-screen="home" aria-labelledby="home-title">
-        <div class="hero" id="hero">
-          <img class="hero-img is-active" id="hero-img-a" alt="">
-          <img class="hero-img" id="hero-img-b" alt="" aria-hidden="true">
-          <div class="hero-shade"></div>
-          <header class="hero-top">
-            <span class="brand"><img class="brand-mark" src="marca/viagem-na-mao-icon.svg" alt="" width="34" height="34">viagem<span class="brand-light"> na mão</span></span>
-            <button class="icon-btn icon-btn-glass" id="settings-button" type="button" aria-label="Ajustes, instalar e backup"><svg class="icon" data-icon="settings"></svg></button>
-          </header>
-          <div class="hero-copy">
-            <p class="hero-kicker" id="home-title">Viajar também é agradecer</p>
-            <blockquote class="hero-quote" id="reflection-message" aria-live="polite"></blockquote>
-          </div>
-          <div class="hero-controls">
-            <button class="icon-btn icon-btn-glass" id="previous-inspiration" type="button" aria-label="Imagem anterior"><svg class="icon" data-icon="chevron-left"></svg></button>
-            <div class="hero-dots" id="hero-dots" aria-hidden="true"></div>
-            <button class="icon-btn icon-btn-glass" id="next-inspiration" type="button" aria-label="Próxima imagem"><svg class="icon" data-icon="chevron-right"></svg></button>
-          </div>
-          <div class="hero-meta">
-            <p class="hero-place"><svg class="icon" data-icon="map-pin"></svg><span id="hero-location"></span></p>
-            <a class="hero-credit" id="hero-credit" target="_blank" rel="noopener noreferrer"></a>
-          </div>
-        </div>
+      <section class="screen" id="screen-home" data-screen="home" aria-labelledby="home-greeting">
+        <header class="home-header">
+          <span class="brand brand-dark"><img class="brand-mark" src="marca/viagem-na-mao-icon.svg" alt="" width="40" height="40"><span class="brand-word">viagem <span class="brand-na">na</span> <span class="brand-mao">mão</span></span></span>
+          <button class="avatar-btn" id="settings-button" type="button" aria-label="Perfil, ajustes e backup"><span id="avatar-initial"></span></button>
+        </header>
 
-        <div class="screen-body home-body">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Suas viagens</p>
-              <h1 class="section-title">Uma viagem de cada vez.</h1>
-            </div>
-            <button class="icon-btn" id="toggle-home-amounts" type="button" aria-label="Ocultar valores"><svg class="icon" data-icon="eye"></svg></button>
+        <div class="screen-body home-body" id="home-top">
+          <div class="home-greeting">
+            <h1 id="home-greeting">Olá!</h1>
+            <p id="home-subtitle">Sua próxima história começa aqui.</p>
           </div>
+          <div id="home-reflection"></div>
           <div id="home-invite" hidden></div>
-          <div id="trip-cards" class="trip-list"></div>
+          <div id="home-focus"></div>
+
+          <section class="quick-access" aria-labelledby="quick-title">
+            <h2 class="home-section-title" id="quick-title">Acesso rápido</h2>
+            <div class="quick-grid">
+              <button type="button" data-quick="itinerary"><span class="quick-icon is-mint"><svg class="icon" data-icon="calendar-days"></svg></span>Agenda</button>
+              <button type="button" data-quick="expenses"><span class="quick-icon is-coral"><svg class="icon" data-icon="wallet"></svg></span>Gastos</button>
+              <button type="button" data-quick="discover"><span class="quick-icon is-mint"><svg class="icon" data-icon="compass"></svg></span>Descobrir</button>
+              <button type="button" data-quick="memories"><span class="quick-icon is-coral"><svg class="icon" data-icon="book-heart"></svg></span>Memórias</button>
+            </div>
+          </section>
+
+          <section class="inspiration" aria-labelledby="inspiration-title">
+            <h2 class="home-section-title" id="inspiration-title">Inspiração do dia</h2>
+            <div class="inspiration-card hero" id="hero">
+              <img class="hero-img is-active" id="hero-img-a" alt="">
+              <img class="hero-img" id="hero-img-b" alt="" aria-hidden="true">
+              <div class="inspiration-shade"></div>
+              <p class="inspiration-kicker" id="home-title">Viajar também é agradecer.</p>
+              <div class="inspiration-meta">
+                <p class="hero-place"><svg class="icon" data-icon="map-pin"></svg><span id="hero-location"></span></p>
+                <a class="hero-credit" id="hero-credit" target="_blank" rel="noopener noreferrer"></a>
+              </div>
+              <button class="inspiration-arrow is-prev" id="previous-inspiration" type="button" aria-label="Imagem anterior"><svg class="icon" data-icon="chevron-left"></svg></button>
+              <button class="inspiration-arrow is-next" id="next-inspiration" type="button" aria-label="Próxima imagem"><svg class="icon" data-icon="chevron-right"></svg></button>
+              <div class="hero-dots" id="hero-dots" aria-hidden="true"></div>
+            </div>
+          </section>
+
+          <section class="all-trips" id="all-trips" aria-labelledby="all-trips-title">
+            <div class="home-section-head">
+              <h2 class="home-section-title" id="all-trips-title">Suas viagens</h2>
+              <button class="icon-btn icon-btn-sm" id="toggle-home-amounts" type="button" aria-label="Ocultar valores"><svg class="icon" data-icon="eye"></svg></button>
+            </div>
+            <div id="trip-cards" class="trip-list"></div>
+          </section>
+
           <figure class="verse-card">
             <blockquote id="home-verse-text"></blockquote>
             <figcaption id="home-verse-reference"></figcaption>
           </figure>
           <p class="footnote">Fotos da tela inicial e dos lugares: Wikimedia Commons, com crédito em cada uma. Outras imagens ilustrativas: Unsplash.</p>
         </div>
-        <div class="fab-bar">
-          <button class="btn btn-primary btn-block" id="new-trip-button" type="button"><svg class="icon" data-icon="plus"></svg> Planejar nova viagem</button>
-        </div>
+
+        <nav class="home-nav" aria-label="Navegação principal">
+          <button type="button" class="is-active" data-home-nav="top" aria-current="page"><svg class="icon" data-icon="house"></svg><span>Início</span></button>
+          <button type="button" data-home-nav="trips"><svg class="icon" data-icon="luggage"></svg><span>Viagens</span></button>
+          <button type="button" class="home-nav-add" id="new-trip-button" aria-label="Planejar nova viagem"><svg class="icon" data-icon="plus"></svg></button>
+          <button type="button" data-home-nav="inspiration"><svg class="icon" data-icon="sparkles"></svg><span>Inspiração</span></button>
+          <button type="button" data-open-settings><svg class="icon" data-icon="user"></svg><span>Perfil</span></button>
+        </nav>
       </section>
 
       <!-- Viagem (abas) -->
@@ -96,13 +117,13 @@
               <a id="trip-cover-credit" class="photo-credit" target="_blank" rel="noopener noreferrer" hidden></a>
             </div>
             <div id="trip-countdown" hidden></div>
+            <div id="trip-message" hidden></div>
             <button class="discover-cta" type="button" data-open-deck>
               <span class="discover-cta-icon"><svg class="icon" data-icon="compass"></svg></span>
               <span><strong>Descobrir lugares</strong><small id="discover-cta-count"></small></span>
               <svg class="icon" data-icon="chevron-right"></svg>
             </button>
             <div id="trip-invite" hidden></div>
-            <p class="trip-message" id="trip-message" hidden></p>
             <div class="card memories-card" id="memories-card"></div>
             <div class="card">
               <div class="card-head"><h2><svg class="icon" data-icon="route"></svg> Por onde você vai passar</h2></div>
