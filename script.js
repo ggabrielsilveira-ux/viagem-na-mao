@@ -2122,13 +2122,13 @@ function openExpenseSheet() {
         if (found.date) root.querySelector("#expense-date").value = found.date;
         const items = [
           found.amount ? `valor ${formatCurrency(found.amount, found.currency, 2)}` : "",
-          found.date ? `data ${formatDate(found.date, { day: "numeric", month: "short" })}` : "",
+          found.date ? `data ${formatDate(found.date, found.date.slice(0, 4) === getBrasiliaDateKey().slice(0, 4) ? { day: "numeric", month: "short" } : { day: "numeric", month: "short", year: "numeric" })}` : "",
           found.description ? `“${found.description}”` : "",
           found.category ? EXPENSE_CATEGORIES[found.category][0].toLowerCase() : ""
         ].filter(Boolean);
         box.className = `receipt-box ${items.length ? "is-ok" : "is-warn"}`;
         box.innerHTML = items.length
-          ? `<p>${icon("circle-check")} Encontrei: ${escapeHtml(items.join(" · "))}</p><small>Confira os campos abaixo e ajuste o que precisar antes de salvar.</small>`
+          ? `<p>${icon("circle-check")} Encontrei: ${escapeHtml(items.join(" · "))}</p><small>${found.date && trip.startDate && (found.date < trip.startDate || found.date > trip.endDate) ? "A data do recibo fica fora das datas da viagem. " : ""}Confira os campos abaixo e ajuste o que precisar antes de salvar.</small>`
           : `<p>${icon("info")} Não consegui ler os dados deste recibo.</p><small>Tente uma foto mais de perto, reta e com boa luz, ou preencha à mão.</small>`;
       } catch (error) {
         console.error("Falha ao ler o recibo.", error);
@@ -2201,8 +2201,16 @@ async function prepareReceiptImage(file) {
     canvas.width = Math.round(image.naturalWidth * scale);
     canvas.height = Math.round(image.naturalHeight * scale);
     const context = canvas.getContext("2d");
-    context.filter = "grayscale(1) contrast(1.35)";
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    // Cinza com mais contraste, pixel a pixel (o filtro de canvas não existe em todo Safari).
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+    const data = pixels.data;
+    for (let index = 0; index < data.length; index += 4) {
+      const gray = 0.299 * data[index] + 0.587 * data[index + 1] + 0.114 * data[index + 2];
+      const value = Math.max(0, Math.min(255, (gray - 128) * 1.4 + 128));
+      data[index] = data[index + 1] = data[index + 2] = value;
+    }
+    context.putImageData(pixels, 0, 0);
     return canvas;
   } finally {
     URL.revokeObjectURL(source);
@@ -2256,14 +2264,32 @@ function parseDecimal(value) {
 }
 
 function parseReceipt(text, trip) {
-  const lines = text.split(/\n+/).map((line) => line.replace(/\s+/g, " ").trim()).filter(Boolean);
+  // Corrige erros comuns do leitor em números: "98, 85" → "98,85" e a letra O no lugar do zero.
+  const lines = text.split(/\n+/)
+    .map((line) => line.replace(/\s+/g, " ").trim()
+      .replace(/(\d)\s*([.,])\s+(\d{2})(?!\d)/g, "$1$2$3")
+      .replace(/(?<=\d)[oO]|[oO](?=[\d.,]\d)/g, "0"))
+    .filter(Boolean);
   const moneyPattern = /(\d{1,3}(?:[.\s]\d{3})*[.,]\d{2}|\d+[.,]\d{2})(?!\d)/g;
-  const amountsIn = (line) => [...line.matchAll(moneyPattern)].map((match) => parseDecimal(match[1].replace(/\s/g, ""))).filter((value) => value > 0 && value < 100000);
+  // Ignora quantidades ("0,27Un", "1,2 kg") e preços unitários ("X 59,90").
+  const amountsIn = (line) => [...line.matchAll(moneyPattern)]
+    .filter((match) => {
+      const before = line.slice(Math.max(0, match.index - 3), match.index);
+      const after = line.slice(match.index + match[0].length, match.index + match[0].length + 4);
+      return !/[xX*]\s*$/.test(before) && !/^\s*(un|kg|g\b|l\b|x\b|ml)/i.test(after);
+    })
+    .map((match) => parseDecimal(match[1].replace(/\s/g, "")))
+    .filter((value) => value > 0 && value < 100000);
   let amount = null;
-  const totalLines = lines.filter((line) => /\b(total|a pagar|importe|totale|amount|summe|valor pago|pagar)\b/i.test(line) && !/\b(sub\s?-?total|iva|imposto|desconto|troco|change)\b/i.test(line));
-  for (const line of totalLines.reverse()) {
-    const values = amountsIn(line);
-    if (values.length) { amount = values[values.length - 1]; break; }
+  const isTotal = (line) => /\b(total|a pagar|importe|totale|amount|summe|valor pago|pagar)\b/i.test(line)
+    && !/\b(sub\s?-?total|iva|imposto|desconto|troco|change|tributos|taxa)\b/i.test(line);
+  for (let index = lines.length - 1; index >= 0 && amount === null; index--) {
+    if (!isTotal(lines[index])) continue;
+    const values = amountsIn(lines[index]);
+    // O valor do total às vezes cai na linha de baixo.
+    const below = index + 1 < lines.length && !/[a-z]{3,}/i.test(lines[index + 1]) ? amountsIn(lines[index + 1]) : [];
+    if (values.length) amount = values[values.length - 1];
+    else if (below.length) amount = below[0];
   }
   if (amount === null) {
     const all = lines.flatMap(amountsIn);
@@ -2276,16 +2302,22 @@ function parseReceipt(text, trip) {
   let date = "";
   const today = getBrasiliaDateKey();
   for (const match of text.matchAll(/\b(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})\b|\b(20\d{2})-(\d{2})-(\d{2})\b/g)) {
-    const [day, month, rawYear] = match[4] ? [match[6], match[5], match[4]] : [match[1], match[2], match[3]];
+    const [rawDay, month, rawYear] = match[4] ? [match[6], match[5], match[4]] : [match[1], match[2], match[3]];
     const year = rawYear.length === 2 ? `20${rawYear}` : rawYear;
-    const key = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    if (parseLocalDate(key) && Number(month) <= 12 && Number(day) <= 31 && key <= today && key >= addDays(today, -400)) { date = key; break; }
+    // O leitor às vezes troca o 2 por 5, 3 ou 8 no dia ("53/09"): tenta 2x e 1x.
+    const days = Number(rawDay) > 31 && rawDay.length === 2 ? [`2${rawDay[1]}`, `1${rawDay[1]}`] : [rawDay];
+    const key = days.map((day) => `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`)
+      .find((candidate) => parseLocalDate(candidate) && Number(month) <= 12 && Number(candidate.slice(8)) <= 31 && candidate <= addDays(today, 1) && candidate >= addDays(today, -3650));
+    if (key) { date = key; break; }
   }
 
   const description = lines.find((line) => /[a-zà-ú]{3,}/i.test(line)
     && !/\b(nif|nipc|cnpj|cpf|contribuinte|rua|av\.|avenida|tel|telefone|fatura|factura|recibo|cupom|data|hora|www|http|@)\b/i.test(line)
     && (line.match(/\d/g) || []).length < line.length / 3) || "";
-  const tidy = description.replace(/[^\p{L}\p{N}&' .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 60);
+  // Tira a razão social do fim do nome: Ltda, ME, EPP, EIRELI, S/A, Lda, Unipessoal, GmbH, Inc.
+  const tidy = description.replace(/[^\p{L}\p{N}&' ./-]/gu, "").replace(/\s+/g, " ")
+    .replace(/(\s*[-–]?\s*\b(?:ltda|me|epp|eireli|s\/a|s\.a\.?|sa|lda|unipessoal|gmbh|inc|llc|ltd)\b\.?)+\s*$/i, "")
+    .replace(/[\s/-]+$/, "").trim().slice(0, 60);
   const category = RECEIPT_CATEGORIES.find(([, pattern]) => pattern.test(text))?.[0] || "";
   return {
     amount,
