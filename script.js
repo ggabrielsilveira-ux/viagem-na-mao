@@ -3804,7 +3804,7 @@ function renderRetro() {
       </div>
     </div>
     <p class="retro-lead">${escapeHtml(messageFor("reverMemorias", `${trip.id}|retro`))}</p>
-    ${visible.length ? `<button class="btn btn-secondary btn-block" type="button" id="album-open">${icon("images")} Álbum e carrossel</button>` : ""}
+    ${visible.length ? `<div class="row-actions"><button class="btn btn-secondary" type="button" id="album-open">${icon("images")} Álbum e carrossel</button><button class="btn btn-secondary" type="button" id="video-open">${icon("music")} Vídeo</button></div>` : ""}
     ${visible.length ? Object.keys(byDate).sort().map((date) => {
       const index = days.indexOf(date);
       const stay = trip.destinations.find((item) => item.startDate <= date && item.endDate >= date);
@@ -4315,6 +4315,377 @@ function openAlbumSheet() {
 }
 
 // ---------------------------------------------------------------------------
+// Vídeo da retrospectiva (experimental): vertical, 15 a 30 segundos, gravado no
+// aparelho a partir de um canvas animado, com música livre (Kevin MacLeod, CC BY)
+// ou sem música para escolher uma faixa licenciada no Instagram ou TikTok.
+// ---------------------------------------------------------------------------
+
+const VIDEO_SIZE = { width: 720, height: 1280, fps: 30 };
+const VIDEO_FADE = 0.45;
+const VIDEO_TRACKS = [
+  { id: "carefree", title: "Carefree", mood: "Alegre", page: "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Carefree.ogg" },
+  { id: "parisian", title: "Parisian", mood: "Charme europeu", page: "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Parisian.ogg" },
+  { id: "early-riser", title: "Early Riser", mood: "Leve, de manhã", page: "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Early_Riser.ogg" },
+  { id: "clean-soul", title: "Clean Soul", mood: "Calma", page: "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Clean_Soul.ogg" },
+  { id: "call-to-adventure", title: "Call to Adventure", mood: "Aventura", page: "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Call_to_Adventure.ogg" }
+];
+
+const trackCredit = (track) => `Música: “${track.title}”, Kevin MacLeod (incompetech.com) · CC BY 3.0`;
+
+function videoMimeType() {
+  if (!window.MediaRecorder) return "";
+  return ["video/mp4;codecs=avc1.42E01E,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"].find((type) => MediaRecorder.isTypeSupported(type)) || "";
+}
+
+const easeOut = (value) => 1 - Math.pow(1 - Math.min(1, Math.max(0, value)), 3);
+
+// Zoom lento com leve deslocamento (efeito Ken Burns).
+function drawKenBurns(context, image, progress, variant, width, height) {
+  const zoom = 1.04 + 0.1 * progress;
+  const base = Math.max(width / image.naturalWidth, height / image.naturalHeight) * zoom;
+  const drawWidth = image.naturalWidth * base;
+  const drawHeight = image.naturalHeight * base;
+  const shift = (variant % 2 ? -1 : 1) * width * 0.04 * (progress - 0.5);
+  context.drawImage(image, (width - drawWidth) / 2 + shift, (height - drawHeight) / 2, drawWidth, drawHeight);
+}
+
+function videoGradient(context, width, height, from) {
+  const gradient = context.createLinearGradient(0, height * from, 0, height);
+  gradient.addColorStop(0, "rgba(10, 18, 14, 0)");
+  gradient.addColorStop(0.5, "rgba(10, 18, 14, 0.55)");
+  gradient.addColorStop(1, "rgba(10, 18, 14, 0.9)");
+  context.fillStyle = gradient;
+  context.fillRect(0, height * from, width, height * (1 - from));
+}
+
+async function buildVideoSlides(trip, options) {
+  const visible = retroOrdered(trip).filter((memory) => !trip.retro.hidden.includes(memory.id));
+  const items = [];
+  visible.forEach((memory) => {
+    const meta = memoryMeta(trip, memory, options);
+    const label = [meta.day ? `DIA ${meta.day}` : "", meta.place].filter(Boolean).join("  ·  ");
+    const photos = (memory.photos || []).slice(0, 2);
+    if (photos.length) photos.forEach((id, index) => items.push({ kind: "photo", id, label, title: index === 0 ? meta.title : "", text: index === 0 ? meta.text : "" }));
+    else items.push({ kind: "quote", label, title: meta.title, text: meta.text });
+  });
+  const intro = 2.6;
+  const outro = 2.8;
+  const body = options.duration - intro - outro;
+  const max = Math.max(1, Math.floor(body / 1.7));
+  const chosen = items.length > max ? Array.from({ length: max }, (_, index) => items[Math.round(index * (items.length - 1) / Math.max(1, max - 1))]) : items;
+  for (const item of chosen) if (item.kind === "photo") item.image = await albumPhoto(item.id);
+  const usable = chosen.filter((item) => item.kind === "quote" || item.image);
+  const each = usable.length ? body / usable.length : 0;
+  const cover = await albumPhoto(retroCover(trip, visible));
+  const slides = [{ kind: "intro", start: 0, duration: intro, image: cover }];
+  usable.forEach((item, index) => slides.push({ ...item, start: intro + index * each, duration: each, variant: index }));
+  slides.push({ kind: "outro", start: options.duration - outro, duration: outro });
+  if (!usable.length) slides[slides.length - 1].start = intro;
+  return { slides, icon: await brandIcon() };
+}
+
+function drawVideoSlide(context, slide, local, trip, assets, options) {
+  const { width, height } = VIDEO_SIZE;
+  const progress = Math.min(1, Math.max(0, local / slide.duration));
+  const appear = easeOut((local - 0.15) / 0.6);
+  if (slide.kind === "intro") {
+    if (slide.image) drawKenBurns(context, slide.image, progress, 0, width, height);
+    else {
+      context.fillStyle = BRAND.green;
+      context.fillRect(0, 0, width, height);
+    }
+    videoGradient(context, width, height, 0.3);
+    context.globalAlpha *= appear;
+    context.fillStyle = BRAND.mint;
+    context.font = '800 20px "DM Sans", sans-serif';
+    context.fillText("R E T R O S P E C T I V A", 56, height - 400 + (1 - appear) * 30);
+    context.fillStyle = BRAND.cream;
+    context.font = '800 76px Manrope, "DM Sans", sans-serif';
+    const lines = wrapLines(context, trip.retro.title || trip.name || "Minha viagem", width - 112, 3);
+    drawLines(context, lines, 56, height - 310 + (1 - appear) * 30, 84);
+    context.fillStyle = "rgba(255, 253, 245, 0.85)";
+    context.font = '600 26px "DM Sans", sans-serif';
+    context.fillText(formatRange(trip.startDate, trip.endDate), 56, height - 300 + lines.length * 84 + 10);
+    return;
+  }
+  if (slide.kind === "outro") {
+    context.fillStyle = BRAND.green;
+    context.fillRect(0, 0, width, height);
+    const scale = 0.85 + 0.15 * easeOut(local / 0.8);
+    if (assets.icon) {
+      const size = 150 * scale;
+      context.drawImage(assets.icon, (width - size) / 2, height / 2 - 260 - size / 2 + 75, size, size);
+    }
+    context.globalAlpha *= appear;
+    context.fillStyle = BRAND.cream;
+    context.font = '800 44px Manrope, "DM Sans", sans-serif';
+    drawLines(context, ["Feito com", "Viagem na Mão"], width / 2, height / 2 + 10, 54, "center");
+    context.fillStyle = BRAND.mint;
+    context.font = '30px Georgia, serif';
+    drawLines(context, ["A viagem passa. As histórias ficam."], width / 2, height / 2 + 150, 40, "center");
+    if (options.track) {
+      context.fillStyle = "rgba(255, 253, 245, 0.7)";
+      context.font = '600 19px "DM Sans", sans-serif';
+      drawLines(context, wrapLines(context, trackCredit(options.track), width - 120, 2), width / 2, height - 110, 26, "center");
+    }
+    return;
+  }
+  if (slide.kind === "quote") {
+    context.fillStyle = slide.variant % 2 ? "#ffe7e1" : BRAND.green;
+    context.fillRect(0, 0, width, height);
+    const ink = slide.variant % 2 ? BRAND.deep : BRAND.cream;
+    context.globalAlpha *= appear;
+    context.fillStyle = slide.variant % 2 ? BRAND.coral : BRAND.mint;
+    context.font = '700 180px Georgia, serif';
+    context.fillText("“", 50, 470);
+    context.fillStyle = ink;
+    let y = 540;
+    if (slide.title) {
+      context.font = '800 46px Manrope, "DM Sans", sans-serif';
+      y = drawLines(context, wrapLines(context, slide.title, width - 112, 2), 56, y, 56) + 14;
+    }
+    context.font = '40px Georgia, serif';
+    y = drawLines(context, wrapLines(context, slide.text || "", width - 112, 9), 56, y, 58);
+    if (slide.label) {
+      context.fillStyle = slide.variant % 2 ? "#1f6b50" : BRAND.mint;
+      context.font = '800 20px "DM Sans", sans-serif';
+      context.fillText(slide.label.toUpperCase(), 56, y + 40);
+    }
+    return;
+  }
+  drawKenBurns(context, slide.image, progress, slide.variant, width, height);
+  const hasCaption = slide.label || slide.title || slide.text;
+  if (!hasCaption) return;
+  videoGradient(context, width, height, 0.48);
+  context.globalAlpha *= appear;
+  const rise = (1 - appear) * 24;
+  context.font = '30px Georgia, serif';
+  const textLines = slide.text ? wrapLines(context, slide.text, width - 112, 3) : [];
+  context.font = '800 50px Manrope, "DM Sans", sans-serif';
+  const titleLines = slide.title ? wrapLines(context, slide.title, width - 112, 2) : [];
+  let y = height - 120 - textLines.length * 42 - titleLines.length * 58 + rise;
+  if (slide.label) {
+    context.fillStyle = BRAND.mint;
+    context.font = '800 20px "DM Sans", sans-serif';
+    context.fillText(slide.label.toUpperCase(), 56, y - 22);
+    y += 34;
+  }
+  context.fillStyle = BRAND.cream;
+  context.font = '800 50px Manrope, "DM Sans", sans-serif';
+  y = drawLines(context, titleLines, 56, y, 58);
+  context.fillStyle = "rgba(255, 253, 245, 0.9)";
+  context.font = '30px Georgia, serif';
+  drawLines(context, textLines, 56, y + (titleLines.length ? 4 : 0), 42);
+}
+
+function drawVideoFrame(context, time, plan, trip, options) {
+  const { width, height } = VIDEO_SIZE;
+  const { slides } = plan;
+  let index = slides.findIndex((slide) => time < slide.start + slide.duration);
+  if (index < 0) index = slides.length - 1;
+  const slide = slides[index];
+  context.globalAlpha = 1;
+  context.fillStyle = "#000";
+  context.fillRect(0, 0, width, height);
+  context.save();
+  drawVideoSlide(context, slide, time - slide.start, trip, plan, options);
+  context.restore();
+  const next = slides[index + 1];
+  const fadeStart = slide.start + slide.duration - VIDEO_FADE;
+  if (next && time > fadeStart) {
+    context.save();
+    context.globalAlpha = Math.min(1, (time - fadeStart) / VIDEO_FADE);
+    drawVideoSlide(context, next, 0, trip, plan, options);
+    context.restore();
+  }
+  context.textAlign = "left";
+}
+
+// Grava em tempo real: o vídeo de 20 s leva 20 s para ficar pronto.
+async function recordTripVideo(trip, options, onProgress) {
+  const mimeType = videoMimeType();
+  if (!mimeType || !HTMLCanvasElement.prototype.captureStream) throw new Error("Este navegador não grava vídeo. Tente pelo Safari ou Chrome atualizados.");
+  await document.fonts?.ready;
+  const plan = await buildVideoSlides(trip, options);
+  const canvas = document.createElement("canvas");
+  canvas.width = VIDEO_SIZE.width;
+  canvas.height = VIDEO_SIZE.height;
+  const context = canvas.getContext("2d");
+  drawVideoFrame(context, 0, plan, trip, options);
+  const stream = canvas.captureStream(VIDEO_SIZE.fps);
+  let audio = null;
+  if (options.track) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const audioContext = new AudioCtx();
+    if (audioContext.state === "suspended") await audioContext.resume().catch(() => {});
+    const data = await (await fetch(`musicas/${options.track.id}.mp3`)).arrayBuffer();
+    const buffer = await audioContext.decodeAudioData(data);
+    const source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    const gain = audioContext.createGain();
+    const destination = audioContext.createMediaStreamDestination();
+    source.connect(gain).connect(destination);
+    destination.stream.getAudioTracks().forEach((track) => stream.addTrack(track));
+    audio = { audioContext, source, gain };
+  }
+  const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 5_000_000 });
+  const chunks = [];
+  recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
+  const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
+  recorder.start(250);
+  const startedAt = performance.now();
+  if (audio) {
+    const now = audio.audioContext.currentTime;
+    audio.gain.gain.setValueAtTime(0.0001, now);
+    audio.gain.gain.exponentialRampToValueAtTime(1, now + 0.6);
+    audio.gain.gain.setValueAtTime(1, now + options.duration - 1.8);
+    audio.gain.gain.linearRampToValueAtTime(0, now + options.duration);
+    audio.source.start(now);
+  }
+  await new Promise((resolve) => {
+    const tick = () => {
+      const time = (performance.now() - startedAt) / 1000;
+      drawVideoFrame(context, Math.min(time, options.duration), plan, trip, options);
+      onProgress?.(Math.min(1, time / options.duration));
+      if (time >= options.duration) resolve();
+      else requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  recorder.stop();
+  await stopped;
+  stream.getTracks().forEach((track) => track.stop());
+  if (audio) {
+    try { audio.source.stop(); } catch { /* já terminou */ }
+    audio.audioContext.close();
+  }
+  return new Blob(chunks, { type: mimeType.split(";")[0] });
+}
+
+function openVideoSheet() {
+  const trip = getCurrentTrip();
+  const options = { duration: 20, track: VIDEO_TRACKS[0], showDates: true, showPlaces: true, showTexts: true };
+  let videoBlob = null;
+  let videoUrl = "";
+  let preview = null;
+  const supported = Boolean(videoMimeType()) && Boolean(HTMLCanvasElement.prototype.captureStream);
+  openSheet(`${sheetTitle("Vídeo da viagem")}
+    <p class="muted">Vídeo vertical para Stories, Reels e TikTok, feito com as memórias e a capa da retrospectiva. Experimental: fica pronto em tempo real, então mantenha esta tela aberta enquanto grava.</p>
+    ${supported ? "" : `<p class="form-status">Este navegador não grava vídeo. Tente pelo Safari (iPhone) ou Chrome atualizados.</p>`}
+    <div class="video-stage" id="video-stage"><p class="muted">A prévia aparece aqui depois de gerar.</p></div>
+    <h3 class="video-label">Duração</h3>
+    <div class="segmented" id="video-duration">${[15, 20, 30].map((seconds) => `<button type="button" data-duration="${seconds}" class="${seconds === options.duration ? "is-selected" : ""}">${seconds} s</button>`).join("")}</div>
+    <h3 class="video-label">Música</h3>
+    <div class="track-list" id="track-list">
+      ${VIDEO_TRACKS.map((track) => `<div class="track${track === options.track ? " is-selected" : ""}" data-track="${track.id}"><button type="button" class="track-play" data-play="${track.id}" aria-label="Ouvir ${escapeHtml(track.title)}">${icon("music")}</button><button type="button" class="track-pick" data-pick="${track.id}"><strong>${escapeHtml(track.title)}</strong><small>${escapeHtml(track.mood)} · Kevin MacLeod</small></button></div>`).join("")}
+      <div class="track" data-track=""><span class="track-play">${icon("x")}</span><button type="button" class="track-pick" data-pick=""><strong>Sem música</strong><small>Para escolher uma música em alta no Instagram ou TikTok</small></button></div>
+    </div>
+    <p class="footnote" id="track-credit"></p>
+    <div class="share-toggles" id="video-options">
+      <label class="toggle-row">Mostrar as datas<span class="switch"><input type="checkbox" data-video-option="showDates" checked><span></span></span></label>
+      <label class="toggle-row">Mostrar os lugares<span class="switch"><input type="checkbox" data-video-option="showPlaces" checked><span></span></span></label>
+      <label class="toggle-row">Mostrar os textos<span class="switch"><input type="checkbox" data-video-option="showTexts" checked><span></span></span></label>
+    </div>
+    <p class="privacy-note">${icon("lock")} Gerado no aparelho, só com as memórias escolhidas. Depois de enviado, o vídeo não pode ser recolhido.</p>
+    <p class="form-status" id="video-status" role="status" aria-live="polite"></p>
+    <button class="btn btn-primary btn-block" type="button" id="video-make"${supported ? "" : " disabled"}>${icon("sparkles")} Gerar vídeo</button>
+    <div class="row-actions" id="video-actions" hidden><button class="btn btn-secondary" type="button" id="video-download">${icon("download")} Baixar</button><button class="btn btn-primary" type="button" id="video-share">${icon("share-2")} Compartilhar</button></div>`, (root) => {
+    const status = root.querySelector("#video-status");
+    const credit = root.querySelector("#track-credit");
+    const paintCredit = () => {
+      credit.innerHTML = options.track
+        ? `${escapeHtml(trackCredit(options.track))}. O crédito aparece no fim do vídeo; ao postar, inclua também na legenda. <a href="${escapeHtml(options.track.page)}" target="_blank" rel="noopener noreferrer">Fonte</a>`
+        : "Sem música: no Instagram ou TikTok, toque em adicionar música antes de publicar; lá as músicas em alta já são licenciadas.";
+    };
+    paintCredit();
+    const stopPreview = () => {
+      if (preview) preview.pause();
+      preview = null;
+    };
+    sheetGuard = () => {
+      stopPreview();
+      return !root.querySelector("#video-make").dataset.recording;
+    };
+    root.querySelector("#video-duration").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-duration]");
+      if (!button) return;
+      options.duration = Number(button.dataset.duration);
+      root.querySelectorAll("[data-duration]").forEach((item) => item.classList.toggle("is-selected", item === button));
+    });
+    root.querySelector("#track-list").addEventListener("click", (event) => {
+      const play = event.target.closest("[data-play]");
+      if (play) {
+        const playing = preview && preview.dataset.track === play.dataset.play;
+        stopPreview();
+        if (!playing) {
+          preview = new Audio(`musicas/${play.dataset.play}.mp3`);
+          preview.dataset.track = play.dataset.play;
+          preview.play().catch(() => {});
+        }
+        return;
+      }
+      const pick = event.target.closest("[data-pick]");
+      if (!pick) return;
+      options.track = VIDEO_TRACKS.find((track) => track.id === pick.dataset.pick) || null;
+      root.querySelectorAll(".track").forEach((item) => item.classList.toggle("is-selected", item.dataset.track === pick.dataset.pick));
+      paintCredit();
+    });
+    root.querySelector("#video-options").addEventListener("change", (event) => {
+      const input = event.target.closest("[data-video-option]");
+      if (input) options[input.dataset.videoOption] = input.checked;
+    });
+    const fileName = () => `video-${slugify(trip.retro.title || trip.name || "viagem")}.${videoBlob?.type.includes("mp4") ? "mp4" : "webm"}`;
+    root.querySelector("#video-make").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      stopPreview();
+      button.disabled = true;
+      button.dataset.recording = "1";
+      root.querySelector("#video-actions").hidden = true;
+      status.classList.add("is-info");
+      status.textContent = "Preparando…";
+      try {
+        videoBlob = await recordTripVideo(trip, options, (fraction) => {
+          status.textContent = `Gravando o vídeo… ${Math.round(fraction * options.duration)} de ${options.duration} s. Mantenha a tela aberta.`;
+        });
+        if (videoUrl) URL.revokeObjectURL(videoUrl);
+        videoUrl = URL.createObjectURL(videoBlob);
+        root.querySelector("#video-stage").innerHTML = `<video src="${videoUrl}" controls playsinline loop></video>`;
+        root.querySelector("#video-actions").hidden = false;
+        status.textContent = `Pronto: ${options.duration} s · ${(videoBlob.size / 1048576).toFixed(1)} MB · ${videoBlob.type.includes("mp4") ? "MP4" : "WebM"}`;
+      } catch (error) {
+        console.error("Falha ao gravar o vídeo.", error);
+        status.classList.remove("is-info");
+        status.textContent = error.message || "Não consegui gerar o vídeo. Tente de novo.";
+      } finally {
+        delete button.dataset.recording;
+        button.disabled = false;
+        button.innerHTML = `${icon("sparkles")} Gerar de novo`;
+      }
+    });
+    root.querySelector("#video-download").addEventListener("click", () => {
+      if (!videoBlob) return;
+      const link = document.createElement("a");
+      link.href = videoUrl;
+      link.download = fileName();
+      link.click();
+    });
+    root.querySelector("#video-share").addEventListener("click", async () => {
+      if (!videoBlob) return;
+      const file = new File([videoBlob], fileName(), { type: videoBlob.type });
+      try {
+        if (navigator.canShare?.({ files: [file] })) await navigator.share({ files: [file], title: trip.retro.title || trip.name || "Vídeo da viagem", text: options.track ? trackCredit(options.track) : "" });
+        else {
+          root.querySelector("#video-download").click();
+          status.textContent = "Este navegador não compartilha direto: o vídeo foi baixado.";
+        }
+      } catch (error) {
+        if (error?.name !== "AbortError") status.textContent = "Não consegui compartilhar. Use Baixar.";
+      }
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Ajustes: instalar na tela inicial e backup dos dados
 // ---------------------------------------------------------------------------
 
@@ -4620,6 +4991,10 @@ document.addEventListener("click", (event) => {
     getCurrentTrip().retro.coverPhotoId = retroCoverButton.dataset.retroCover;
     saveState();
     renderRetro();
+    return;
+  }
+  if (event.target.closest("#video-open")) {
+    openVideoSheet();
     return;
   }
   if (event.target.closest("#album-open")) {
