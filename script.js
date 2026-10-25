@@ -279,6 +279,29 @@ const reflections = [
   { message: "Que cada amanhecer traga motivos para agradecer e continuar sonhando.", place: "Mar aberto", image: "imagens/1518837695005-2083093ee35b.jpg", verse: "Não estejais inquietos por coisa alguma; antes, as vossas petições sejam em tudo conhecidas diante de Deus.", reference: "Filipenses 4:6" }
 ];
 
+// Fotos da tela inicial: destinos famosos, do Wikimedia Commons, com crédito (imagens/destinos/).
+// As frases de reflexão acima giram junto, em sequência própria.
+const HERO_DESTINATIONS = [
+  { name: "Torre Eiffel", place: "Paris, França", image: "imagens/destinos/eiffel.jpg", author: "Tristan Nitot", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Tour_eiffel_at_sunrise_from_the_trocadero.jpg" },
+  { name: "Museu do Louvre", place: "Paris, França", image: "imagens/destinos/louvre.jpg", author: "Benh LIEU SONG (Flickr)", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Louvre_Museum_Wikimedia_Commons.jpg" },
+  { name: "Grande Muralha da China", place: "Pequim (arredores), China", image: "imagens/destinos/muralha.jpg", author: "CEphoto, Uwe Aranas", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Badaling_China_Great-Wall-of-China-01.jpg" },
+  { name: "Coliseu", place: "Roma, Itália", image: "imagens/destinos/coliseu.jpg", author: "Diliff", license: "CC BY-SA 2.5", page: "https://commons.wikimedia.org/wiki/File:Colosseum_in_Rome-April_2007-1-_copie_2B.jpg" },
+  { name: "Taj Mahal", place: "Agra, Índia", image: "imagens/destinos/taj.jpg", author: "Diego Delso", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:El_Taj_Mahal-Agra_India0023.JPG" },
+  { name: "Estátua da Liberdade", place: "Nova York, Estados Unidos", image: "imagens/destinos/liberdade.jpg", author: "Carlos Delgado", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Statue_of_Liberty_-_03.jpg" },
+  { name: "Pirâmides de Gizé", place: "Gizé, Egito", image: "imagens/destinos/gize.jpg", author: "Ricardo Liberato", license: "CC BY-SA 2.0", page: "https://commons.wikimedia.org/wiki/File:All_Gizah_Pyramids.jpg" },
+  { name: "Cristo Redentor", place: "Rio de Janeiro, Brasil", image: "imagens/destinos/cristo.jpg", author: "Arne Müseler", license: "CC BY-SA 3.0 de", page: "https://commons.wikimedia.org/wiki/File:Christ_the_Redeemer_-_Cristo_Redentor.jpg" },
+  { name: "Basílica da Sagrada Família", place: "Barcelona, Espanha", image: "imagens/destinos/sagrada.jpg", author: "Bernard Gagnon", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Sagrada_Familia_03.jpg" },
+  { name: "Palácio de Versalhes", place: "Versalhes, França", image: "imagens/destinos/versalhes.jpg", author: "Myrabella", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Chateau_Versailles_Galerie_des_Glaces.jpg" },
+  { name: "Ópera de Sydney", place: "Sydney, Austrália", image: "imagens/destinos/sydney.jpg", author: "Thomas Adams", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Sydneyoperahouse_at_night.jpg" },
+  { name: "Muro de Berlim", place: "Berlim, Alemanha", image: "imagens/destinos/berlim.jpg", author: "Gzen92", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:East_Side_Gallery_-_Dmitri_Vrubel_-_Le_baiser_(Berlin).jpg" },
+  { name: "Alhambra", place: "Granada, Espanha", image: "imagens/destinos/alhambra.jpg", author: "Jebulon", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Patio_de_los_Arrayanes_detail_Alhambra_Granada_Spain.jpg" },
+  { name: "Basílica de São Pedro", place: "Cidade do Vaticano", image: "imagens/destinos/saopedro.jpg", author: "Jebulon", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Basilica_Sancti_Petri_blue_hour.jpg" },
+  { name: "Times Square", place: "Nova York, Estados Unidos", image: "imagens/destinos/times.jpg", author: "Ermell", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Times_Square_nachts-20120518-RM-015143.jpg" },
+  { name: "Aurora boreal", place: "Rovaniemi, Finlândia", image: "imagens/destinos/rovaniemi.jpg", author: "Ninara", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:Rovaniemi,_Finland_(49987283203).jpg" },
+  { name: "Aurora boreal (vila de Ersfjordbotn)", place: "Tromsø (arredores), Noruega", image: "imagens/destinos/ersfjordbotn.jpg", author: "Rainer Sparenberg/IAU OAE", license: "CC BY 4.0", page: "https://commons.wikimedia.org/wiki/File:Aurorae_(still_images),_Second_Place_(ann21047b).jpg" },
+  { name: "Dolomitas", place: "Itália", image: "imagens/destinos/dolomitas.jpg", author: "Wolfgang Moroder", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Frea_pass_Sella_group_Dolomites.jpg" }
+];
+
 // ---------------------------------------------------------------------------
 // Estado salvo no navegador (chave viagem-na-mao-v1; nunca apagar, só migrar)
 // ---------------------------------------------------------------------------
@@ -790,11 +813,12 @@ let inspirationIndex = 0;
 const INSPIRATION_INTERVAL_MS = 30000;
 
 function renderInspiration() {
-  const item = reflections[inspirationIndex];
+  const destination = HERO_DESTINATIONS[inspirationIndex];
+  const item = { ...reflections[inspirationIndex % reflections.length], image: destination.image };
   const current = $(".hero-img.is-active");
   const next = current?.id === "hero-img-a" ? $("#hero-img-b") : $("#hero-img-a");
   next.src = item.image;
-  next.alt = `Paisagem inspiradora: ${item.place}`;
+  next.alt = `${destination.name}, ${destination.place}`;
   const swap = () => {
     next.classList.add("is-active");
     next.removeAttribute("aria-hidden");
@@ -806,16 +830,19 @@ function renderInspiration() {
   if (next.complete) swap();
   else next.addEventListener("load", swap, { once: true });
   $("#reflection-message").textContent = `“${item.message}”`;
-  $("#hero-location").textContent = item.place;
+  $("#hero-location").textContent = `${destination.name} — ${destination.place}`;
+  const credit = $("#hero-credit");
+  credit.href = destination.page;
+  credit.textContent = `Foto: ${destination.author} · ${destination.license} · Wikimedia Commons`;
   $("#home-verse-text").textContent = `“${item.verse}”`;
   $("#home-verse-reference").textContent = item.reference;
-  $("#hero-dots").innerHTML = reflections.map((_, index) => `<span class="${index === inspirationIndex ? "is-active" : ""}"></span>`).join("");
+  $("#hero-dots").innerHTML = HERO_DESTINATIONS.map((_, index) => `<span class="${index === inspirationIndex ? "is-active" : ""}"></span>`).join("");
   const preload = new Image();
-  preload.src = reflections[(inspirationIndex + 1) % reflections.length].image;
+  preload.src = HERO_DESTINATIONS[(inspirationIndex + 1) % HERO_DESTINATIONS.length].image;
 }
 
 function changeInspiration(direction) {
-  inspirationIndex = (inspirationIndex + direction + reflections.length) % reflections.length;
+  inspirationIndex = (inspirationIndex + direction + HERO_DESTINATIONS.length) % HERO_DESTINATIONS.length;
   renderInspiration();
 }
 

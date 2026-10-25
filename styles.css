@@ -852,3 +852,4 @@ img.is-missing { visibility: hidden; }
 .settings-steps .icon { width: 15px; height: 15px; vertical-align: -2px; }
 .settings-section label.btn { cursor: pointer; }
 .memories-hero .btn-primary { color: var(--brand); background: #FFFDF5; box-shadow: none; }
+.hero-credit { display: block; overflow: hidden; margin-top: 6px; color: rgba(255, 255, 255, 0.7); font-size: 10px; text-decoration: none; text-overflow: ellipsis; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); white-space: nowrap; }
