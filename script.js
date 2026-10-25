@@ -1232,6 +1232,7 @@ function renderTripHeader() {
 
 function renderAbout() {
   const trip = getCurrentTrip();
+  renderApertoQuick(trip);
   const ideas = getDiscoverableActivities(trip, "all");
   $("#discover-cta-count").textContent = ideas.length
     ? `${ideas.length} ${ideas.length === 1 ? "lugar" : "lugares"} para curtir ou passar`
@@ -2734,6 +2735,50 @@ const APERTO_KINDS = [
   { id: "hospital", label: "Hospital", icon: "hospital", generic: "Hospital" }
 ];
 const apertoView = new Map();
+
+// Cidade do atalho no Resumo: a de hoje durante a viagem; antes dela, a primeira do roteiro.
+function apertoFocusCity(trip) {
+  const known = trip.destinations.filter((destination) => getCityInfo(destination.name));
+  if (tripClock(trip).phase === "durante") {
+    const today = getBrasiliaDateKey(new Date(countdownNow()));
+    const current = known.find((destination) => destination.startDate && destination.endDate && destination.startDate <= today && today <= destination.endDate);
+    if (current) return current.name;
+  }
+  return known[0]?.name || null;
+}
+
+function renderApertoQuick(trip) {
+  const panel = $("#trip-aperto");
+  const city = apertoFocusCity(trip);
+  panel.hidden = !city;
+  if (!city) return;
+  panel.innerHTML = `<div class="card-head"><h2>${icon("map-pin")} Na Hora do Aperto</h2><span class="aperto-quick-city">${escapeHtml(city)}</span></div>
+    <p class="aperto-quick-text">O que tem mais perto, quando a necessidade aperta.</p>
+    <div class="aperto-quick-grid">${APERTO_KINDS.map((kind) => `<button type="button" data-aperto-go="${kind.id}" data-city="${escapeHtml(city)}"><span>${icon(kind.icon)}</span>${kind.label}</button>`).join("")}</div>`;
+}
+
+function openAperto(cityName, kind) {
+  const view = apertoView.get(cityName) || { kind, ref: "centro", here: null, limit: 5, note: "" };
+  view.kind = kind;
+  view.limit = 5;
+  apertoView.set(cityName, view);
+  navigate({ tab: "before" }, { replace: true });
+  const card = $$("[data-aperto]").find((item) => item.dataset.aperto === cityName);
+  if (!card) return;
+  let last = null;
+  const scroll = () => {
+    // Para de reposicionar se a pessoa já rolou a tela por conta própria.
+    if (!card.isConnected || (last !== null && Math.abs(window.scrollY - last) > 2)) return false;
+    window.scrollTo({ top: card.getBoundingClientRect().top + window.scrollY - 76 });
+    last = window.scrollY;
+    return true;
+  };
+  scroll();
+  // Clima e pontos chegam depois e mudam a altura do que vem antes: reposiciona por alguns instantes.
+  const observer = new ResizeObserver(() => { if (!scroll()) observer.disconnect(); });
+  observer.observe($("#guide-content"));
+  setTimeout(() => observer.disconnect(), 4000);
+}
 
 function apertoSlot(destination) {
   if (!getCityInfo(destination.name)) return "";
@@ -5520,6 +5565,11 @@ document.addEventListener("click", (event) => {
   const openTripButton = event.target.closest("[data-open-trip]");
   if (openTripButton) {
     openTrip(openTripButton.dataset.openTrip);
+    return;
+  }
+  const apertoGo = event.target.closest("[data-aperto-go]");
+  if (apertoGo) {
+    openAperto(apertoGo.dataset.city, apertoGo.dataset.apertoGo);
     return;
   }
   const tabButton = event.target.closest("[data-tab]");

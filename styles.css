@@ -1160,3 +1160,13 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .aperto-note .icon { flex: none; width: 16px; height: 16px; margin-top: 2px; }
 .aperto-kinds .chip.is-empty:not(.is-active) { opacity: 0.55; }
 .aperto-item .btn { text-decoration: none; }
+
+/* Atalho do Na Hora do Aperto no Resumo */
+.aperto-quick .card-head { margin-bottom: 4px; }
+.aperto-quick-city { overflow: hidden; color: var(--muted); font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.aperto-quick-text { margin-bottom: 12px; color: var(--ink-2); font-size: 14px; }
+.aperto-quick-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.aperto-quick-grid button { display: grid; justify-items: center; gap: 6px; padding: 4px 0; border: 0; color: var(--ink-2); background: none; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.aperto-quick-grid button > span { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 16px; color: var(--brand-2); background: var(--brand-soft); }
+.aperto-quick-grid button:active > span { transform: scale(0.94); }
+.aperto-quick-grid .icon { width: 22px; height: 22px; }
