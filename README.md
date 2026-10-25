@@ -123,7 +123,9 @@ As viagens, despesas e memórias ficam neste navegador e não são sincronizadas
 - `script.js`: catálogo de demonstração, filtros, roteiro e armazenamento local.
 - `dados/fontes-abertas.js`: dados gerados de Wikipedia, Wikidata e Commons (não editar à mão).
 - `ferramentas/gerar-fontes-abertas.mjs`: script que gera o arquivo acima.
-- `dados/atracoes-cidades.js`: atrações de 100 cidades (gerado, não editar à mão).
+- `dados/cidades.js` e `dados/cidades/<cidade>.js`: índice das cidades (sempre carregado) e um pacote por cidade com os lugares da Wikipedia/Wikidata e do OSM, baixado só quando a cidade entra numa viagem. Gerados por `node ferramentas/dividir-cidades.mjs` a partir de `atracoes-cidades.js` e `osm-lugares.js`; depois de gerar de novo, subir `CITY_PACK_VERSION` no `script.js`.
+- `sw.js`: service worker que guarda o app, o índice, os pacotes e os pontos úteis das cidades da viagem e as fotos já vistas (até 400) para usar sem internet. Clima, rotas, endereços e conta sempre pela rede.
+- `dados/atracoes-cidades.js`: atrações de 100 cidades (gerado, não editar à mão; o app não carrega este arquivo, ele alimenta `dividir-cidades.mjs`).
 - `ferramentas/gerar-atracoes-cidades.mjs`: script que gera o arquivo acima e define a lista de cidades.
 - `dados/osm-lugares.js` e `ferramentas/gerar-osm.mjs`: lugares do OpenStreetMap (gerado, não editar à mão).
 - `ferramentas/extrair-pbf.mjs`: monta o cache do OSM a partir dos extratos do Geofabrik, sem Overpass.

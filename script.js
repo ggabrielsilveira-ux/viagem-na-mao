@@ -740,14 +740,23 @@ function toast(message) {
 
 const openData = window.OPEN_DATA?.activities || {};
 const cityData = window.CITY_DATA || { cities: [], places: [] };
-const osmData = window.OSM_DATA || { places: [] };
 const categoryImages = {};
 activities.forEach((activity) => { categoryImages[activity.category] ||= activity.image; });
 const editorialNames = new Set(activities.map((activity) => `${slugify(activity.city)}|${slugify(activity.name)}`));
 const commonsPage = (file) => `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(file.replace(/ /g, "_"))}`;
 
-cityData.places.forEach((place) => {
-  if (editorialNames.has(`${slugify(place.city)}|${slugify(place.name)}`)) return;
+// Lugares já recebidos (o mesmo lugar vem no pacote da cidade e no das vizinhas).
+const knownPlaceIds = new Set(activities.map((activity) => activity.id));
+
+function addCityPack(pack) {
+  let added = 0;
+  const fresh = (place) => {
+    if (knownPlaceIds.has(place.id) || editorialNames.has(`${slugify(place.city)}|${slugify(place.name)}`)) return false;
+    knownPlaceIds.add(place.id);
+    added += 1;
+    return true;
+  };
+  (pack.places || []).filter(fresh).forEach((place) => {
   activities.push({
     id: place.id,
     name: place.name,
@@ -769,10 +778,9 @@ cityData.places.forEach((place) => {
     website: place.website,
     photo: place.photo && { ...place.photo, page: commonsPage(place.photo.file) }
   };
-});
+  });
 
-osmData.places.forEach((place) => {
-  if (editorialNames.has(`${slugify(place.city)}|${slugify(place.name)}`)) return;
+  (pack.osm || []).filter(fresh).forEach((place) => {
   activities.push({
     id: place.id,
     name: place.name,
@@ -794,6 +802,103 @@ osmData.places.forEach((place) => {
     osm: place.osm,
     photo: place.photo && { ...place.photo, page: commonsPage(place.photo.file) }
   };
+  });
+  return added;
+}
+
+// Pacotes por cidade (dados/cidades/<cidade>.js, gerados por ferramentas/dividir-cidades.mjs):
+// o aparelho só baixa as cidades das viagens; o service worker (sw.js) guarda para usar sem internet.
+const CITY_PACK_VERSION = 1;
+const cityPackLoads = new Map();
+
+function loadCityPack(name) {
+  const info = getCityInfo(name);
+  if (!info) return Promise.resolve(false);
+  const slug = slugify(info.name);
+  if (!cityPackLoads.has(slug)) {
+    cityPackLoads.set(slug, new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = `dados/cidades/${slug}.js?v=${CITY_PACK_VERSION}`;
+      script.onload = () => {
+        const pack = window.CITY_PACKS?.[slug];
+        if (pack) delete window.CITY_PACKS[slug];
+        resolve(pack ? (addCityPack(pack), true) : false);
+      };
+      // Sem internet e sem cópia no aparelho: tenta de novo quando a conexão voltar.
+      script.onerror = () => { script.remove(); cityPackLoads.set(slug, Promise.resolve(false)); cityPackFailed.add(slug); resolve(false); };
+      document.head.append(script);
+    }));
+  }
+  return cityPackLoads.get(slug);
+}
+const cityPackFailed = new Set();
+
+function tripCityNames(trips = state.trips) {
+  return [...new Set(trips.flatMap((trip) => (trip.destinations || []).map((destination) => destination.name)).filter(Boolean))];
+}
+
+function cityPackPending(name) {
+  const info = getCityInfo(name);
+  return Boolean(info) && !cityPackLoads.has(slugify(info.name));
+}
+
+// Carrega o que falta das viagens e redesenha a tela quando chegar.
+function ensureTripCities() {
+  const pending = tripCityNames().filter(cityPackPending);
+  if (!pending.length) return Promise.resolve(false);
+  return Promise.all(pending.map(loadCityPack)).then((results) => {
+    const changed = results.some(Boolean);
+    if (changed) {
+      render({ scroll: false });
+      prefetchTripOffline();
+    }
+    return changed;
+  });
+}
+
+// Com o service worker ativo, deixa no aparelho os pontos úteis das cidades e as fotos dos lugares escolhidos.
+function prefetchTripOffline() {
+  if (!navigator.serviceWorker?.controller) return;
+  tripCityNames().forEach((name) => {
+    const info = getCityInfo(name);
+    if (info) fetch(`dados/aperto/${slugify(info.name)}.js?v=1`).catch(() => {});
+  });
+  state.trips.forEach((trip) => {
+    [...(trip.saved || []), ...(trip.maybe || [])].forEach((item) => {
+      const photo = getOpenData(item.id)?.photo?.url;
+      if (photo) fetch(photo, { mode: "cors" }).catch(() => {});
+    });
+  });
+}
+
+// Service worker (sw.js): guarda o app para abrir sem internet. Só funciona em http(s), não abrindo o arquivo direto.
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+  // Na primeira instalação, o que já tinha sido baixado antes dele assumir ainda não está guardado: baixa de novo pelo cache.
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    cityPackLoads.forEach((_, slug) => { if (!cityPackFailed.has(slug)) fetch(`dados/cidades/${slug}.js?v=${CITY_PACK_VERSION}`).catch(() => {}); });
+    prefetchTripOffline();
+  });
+}
+
+function updateOfflineBanner() {
+  let banner = $("#offline-banner");
+  if (navigator.onLine) { banner?.remove(); return; }
+  if (banner) return;
+  banner = document.createElement("div");
+  banner.id = "offline-banner";
+  banner.setAttribute("role", "status");
+  banner.textContent = "Sem internet · usando o que está no aparelho";
+  document.body.append(banner);
+}
+window.addEventListener("offline", updateOfflineBanner);
+
+window.addEventListener("online", () => {
+  updateOfflineBanner();
+  if (!cityPackFailed.size) return;
+  cityPackFailed.forEach((slug) => cityPackLoads.delete(slug));
+  cityPackFailed.clear();
+  ensureTripCities();
 });
 
 function getOpenData(id) {
@@ -997,6 +1102,7 @@ window.addEventListener("popstate", (event) => {
 });
 
 function render({ scroll = true } = {}) {
+  ensureTripCities();
   const trip = getCurrentTrip();
   if (["trip", "deck", "retro"].includes(route.screen) && !trip) route = { screen: "home", tab: "about", depth: 0 };
   if (route.screen !== "retro") retroEditing = false;
@@ -5862,6 +5968,17 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   }, INSPIRATION_INTERVAL_MS);
 }
 window.history.replaceState({ ...route }, "");
-render();
+updateOfflineBanner();
+let firstRenderDone = false;
+const initialCityLoad = Promise.all(tripCityNames().map(loadCityPack));
+Promise.race([initialCityLoad, new Promise((resolve) => setTimeout(resolve, 2500))]).finally(() => {
+  firstRenderDone = true;
+  render();
+  prefetchTripOffline();
+});
+// Se o limite de tempo venceu, redesenha quando os pacotes chegarem.
+initialCityLoad.then((results) => {
+  if (firstRenderDone && results.some(Boolean)) render({ scroll: false });
+});
 window.setInterval(updateCountdowns, 30000);
 if (state.trips.length) requestPersistentStorage();

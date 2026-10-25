@@ -1170,3 +1170,6 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .aperto-quick-grid button > span { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 16px; color: var(--brand-2); background: var(--brand-soft); }
 .aperto-quick-grid button:active > span { transform: scale(0.94); }
 .aperto-quick-grid .icon { width: 22px; height: 22px; }
+
+/* Aviso de sem internet */
+#offline-banner { position: fixed; z-index: 60; bottom: calc(env(safe-area-inset-bottom, 0px) + 92px); left: 50%; max-width: calc(100% - 32px); padding: 8px 14px; border-radius: 999px; color: #fff; background: rgba(28, 38, 33, 0.92); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2); font-size: 13px; font-weight: 700; text-align: center; transform: translateX(-50%); pointer-events: none; }
