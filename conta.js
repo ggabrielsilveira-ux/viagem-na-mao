@@ -4,7 +4,7 @@
 // lê e grava o que é dela, e só depois de entrar. A chave secreta fica apenas na Vercel.
 const SUPABASE_CONFIG = {
   url: "https://nbabmcctrncfguoedhiz.supabase.co",
-  publishableKey: ""
+  publishableKey: "sb_publishable_Ron7Xu-5_ZB4sbclvACRKg_JeDVf0wx"
 };
 const SYNC_KEY = "viagem-na-mao-sync-v1";
 const SYNC_DELAY_MS = 2500;
@@ -165,7 +165,8 @@ function readUsage() {
 }
 
 async function registrarUso({ force = false } = {}) {
-  if (!supabaseClient || !navigator.onLine) return;
+  // Só o app oficial conta (testes no computador e prévias não entram no painel).
+  if (!supabaseClient || !navigator.onLine || location.hostname !== "app.viagemnamao.com") return;
   const usage = readUsage();
   const today = new Date().toISOString().slice(0, 10);
   if (!force && usage.dia === today && usage.conta === (conta.user?.id || "")) return;
@@ -258,7 +259,7 @@ function paintAccount() {
          <div class="row-actions"><button class="btn btn-secondary" type="button" id="account-back">Trocar e-mail</button><button class="btn btn-primary" type="button" id="account-verify">Entrar</button></div>`
       : `<label class="field">Seu e-mail<input id="account-email" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label>
          <button class="btn btn-primary btn-block" type="button" id="account-send">Receber código por e-mail</button>
-         <p class="settings-meta">Ao continuar, você concorda com os <a href="https://viagemnamao.com/termos" target="_blank" rel="noopener noreferrer">Termos de uso</a> e a <a href="https://viagemnamao.com/privacidade" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</p>`}
+         <p class="account-terms">Ao continuar, você concorda com os <a href="https://viagemnamao.com/termos" target="_blank" rel="noopener noreferrer">Termos de uso</a> e a <a href="https://viagemnamao.com/privacidade" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</p>`}
     <p class="form-status" id="account-status" role="status" aria-live="polite"></p>`;
   const status = accountRoot.querySelector("#account-status");
   accountRoot.querySelector("#account-send")?.addEventListener("click", async (event) => {
@@ -293,7 +294,10 @@ function paintAccount() {
 }
 
 window.contaUI = (root) => {
-  root.insertAdjacentHTML("afterbegin", '<section class="settings-section" id="account-section"></section>');
+  // Logo abaixo do título "Ajustes".
+  const title = root.querySelector(".sheet-title");
+  if (title) title.insertAdjacentHTML("afterend", '<section class="settings-section" id="account-section"></section>');
+  else root.insertAdjacentHTML("afterbegin", '<section class="settings-section" id="account-section"></section>');
   accountRoot = root.querySelector("#account-section");
   paintAccount();
 };

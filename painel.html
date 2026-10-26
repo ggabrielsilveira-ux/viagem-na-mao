@@ -45,7 +45,7 @@
       // Mesma configuração do conta.js. A Publishable key é pública; o acesso ao painel é
       // conferido no banco (função painel_* só responde para e-mails da tabela administradores).
       const URL_SUPABASE = "https://nbabmcctrncfguoedhiz.supabase.co";
-      const CHAVE_PUBLICA = "";
+      const CHAVE_PUBLICA = "sb_publishable_Ron7Xu-5_ZB4sbclvACRKg_JeDVf0wx";
       const app = document.querySelector("#app");
       const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
       const data = (v) => v ? new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(v)) : "—";
