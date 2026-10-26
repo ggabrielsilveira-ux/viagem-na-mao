@@ -757,6 +757,7 @@ const knownPlaceIds = new Set(activities.map((activity) => activity.id));
 
 function addCityPack(pack) {
   let added = 0;
+  if (pack.cover) cityCovers.set(slugify(pack.city), pack.cover);
   const fresh = (place) => {
     if (knownPlaceIds.has(place.id) || editorialNames.has(`${slugify(place.city)}|${slugify(place.name)}`)) return false;
     knownPlaceIds.add(place.id);
@@ -815,7 +816,7 @@ function addCityPack(pack) {
 
 // Pacotes por cidade (dados/cidades/<cidade>.js, gerados por ferramentas/dividir-cidades.mjs):
 // o aparelho só baixa as cidades das viagens; o service worker (sw.js) guarda para usar sem internet.
-const CITY_PACK_VERSION = 2;
+const CITY_PACK_VERSION = 3;
 const cityPackLoads = new Map();
 
 function loadCityPack(name) {
@@ -982,8 +983,17 @@ function tripCities(trip) {
 // Imagem de capa: de preferência uma foto real (com crédito) do lugar mais perto do centro da primeira cidade.
 // Imagens de satélite e mapas não servem de capa.
 const NOT_COVER = /landsat|sat[ée]lite|satellite|mapa?|map|locator|localiza|bandeira|flag|bras[ãa]o|coat.of.arms|logo/i;
+// Capa escolhida da cidade (cartão-postal, ferramentas/gerar-capas.mjs), que vem no pacote da cidade.
+const cityCovers = new Map();
+
 function coverFor(trip) {
   const cities = tripCities(trip);
+  const first = getCityInfo(cities[0] || "");
+  const postcard = first && cityCovers.get(slugify(first.name));
+  if (postcard && safeUrl(postcard.url)) {
+    // Foto em pé ou quase quadrada aparece inteira, sobre o próprio fundo desfocado.
+    return { activity: { name: postcard.lugar }, image: postcard.url, whole: (postcard.proporcao || 1.5) < 1.45, photo: { url: postcard.url, author: postcard.autor, license: postcard.licenca, page: postcard.pagina } };
+  }
   const matches = activities.filter((activity) => cities.some((city) => activityMatchesCity(activity, city)));
   const center = getCityInfo(cities[0] || "")?.coordinates;
   const distance = (activity) => {
@@ -1295,7 +1305,7 @@ function focusCardHtml(trip) {
   const clock = tripClock(trip);
   const action = clock.phase === "durante" ? "Continuar viagem" : clock.phase === "depois" ? "Rever viagem" : "Abrir viagem";
   return `<article class="focus-card">
-      <div class="focus-photo">
+      <div class="focus-photo${cover.whole ? " is-whole" : ""}" style="--cover-bg:url('${escapeHtml(cover.image)}')">
         <img src="${escapeHtml(cover.image)}" alt="">
         <span class="chip chip-glass focus-chip" data-countdown="${escapeHtml(trip.id)}">${icon("calendar")} ${escapeHtml(tripCountdownText(trip))}</span>
         ${cover.photo ? `<a class="photo-credit" href="${escapeHtml(safeUrl(cover.photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(cover.photo.author)} · ${escapeHtml(cover.photo.license)}</a>` : ""}
@@ -1367,6 +1377,9 @@ function renderTripHeader() {
   const cover = coverFor(trip);
   const image = $("#trip-cover-image");
   image.src = cover.image;
+  const frame = image.closest(".cover");
+  frame.classList.toggle("is-whole", Boolean(cover.whole));
+  frame.style.setProperty("--cover-bg", `url("${cover.image}")`);
   image.style.visibility = "";
   image.alt = cover.photo ? `Foto de ${cover.activity.name}` : "Paisagem ilustrativa";
   $("#trip-cover-destination").textContent = tripCities(trip).join(" · ") || trip.country || "Destino a definir";

@@ -27,6 +27,9 @@ function load(file, key) {
 
 const cityData = load("atracoes-cidades.js", "CITY_DATA");
 const osmData = load("osm-lugares.js", "OSM_DATA");
+// Capa de cada cidade (cartão-postal), gerada por gerar-capas.mjs.
+let covers = {};
+try { covers = JSON.parse(readFileSync(join(ROOT, "dados", "capas-cidades.json"), "utf8")); } catch {}
 const belongs = (place, city) => sameCity(place.city, city) || (place.nearCities || []).some(([name]) => sameCity(name, city));
 
 writeFileSync(join(ROOT, "dados", "cidades.js"),
@@ -41,6 +44,7 @@ for (const city of cityData.cities) {
   const slug = slugify(city.name);
   const pack = {
     city: city.name,
+    cover: covers[city.name] ? { lugar: covers[city.name].lugar, url: covers[city.name].url, autor: covers[city.name].autor, licenca: covers[city.name].licenca, pagina: covers[city.name].pagina, proporcao: covers[city.name].proporcao } : null,
     places: cityData.places.filter((place) => belongs(place, city.name)),
     osm: osmData.places.filter((place) => belongs(place, city.name))
   };
