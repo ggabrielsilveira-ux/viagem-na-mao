@@ -1230,3 +1230,7 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .cover.is-whole::before, .focus-photo.is-whole::before { content: ""; position: absolute; inset: -24px; background: var(--cover-bg) center / cover no-repeat; filter: blur(18px) brightness(0.75); }
 .cover.is-whole img, .focus-photo.is-whole img { position: relative; object-fit: contain; }
 .focus-photo.is-whole { overflow: hidden; }
+
+.deck-radius { margin: 0 16px 6px; }
+.deck-radius .radius-option { min-height: 30px; }
+.deck-radius .radius-from { margin-top: 4px; }

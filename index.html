@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=34">
+    <link rel="stylesheet" href="styles.css?v=35">
     <script src="icones.js?v=26" defer></script>
     <script src="dados/fontes-abertas.js?v=25" defer></script>
     <script src="dados/cidades.js?v=2" defer></script>
@@ -24,7 +24,7 @@
     <script src="dados/mensagens.js?v=25" defer></script>
     <script src="dados/inspiracao.js?v=1" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-    <script src="script.js?v=34" defer></script>
+    <script src="script.js?v=35" defer></script>
     <script src="conta.js?v=25" defer></script>
   </head>
   <body>
@@ -256,6 +256,7 @@
           <div class="app-bar-title"><h1 id="deck-title">Descobrir</h1><span class="app-bar-kicker" id="discovery-position" aria-live="polite"></span><div class="deck-progress"><span id="deck-progress-bar"></span></div></div>
           <label class="select-chip"><svg class="icon" data-icon="map-pin"></svg><select id="city-filter" aria-label="Filtrar por cidade"><option value="all">Todas</option></select></label>
         </header>
+        <div class="discover-radius deck-radius" id="deck-radius"></div>
         <div class="deck" id="activity-stage" aria-live="polite"></div>
         <div class="deck-actions" aria-label="Escolha o que fazer com este lugar">
           <div class="deck-action"><button id="skip-activity" class="round-btn round-skip" type="button" aria-label="Passar, não curti"><svg class="icon" data-icon="x"></svg></button><span>Passar</span></div>

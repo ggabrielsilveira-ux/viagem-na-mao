@@ -889,6 +889,20 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
   });
 }
 
+// Versão nova publicada: o app aberto em segundo plano (celular) recarrega ao voltar para a tela,
+// só nas telas sem edição em andamento (início e viagem, sem janela aberta).
+const LOADED_SCRIPT = document.querySelector('script[src^="script.js"]')?.getAttribute("src") || "";
+let lastVersionCheck = Date.now();
+document.addEventListener("visibilitychange", async () => {
+  if (document.hidden || !navigator.onLine || Date.now() - lastVersionCheck < 10 * 60 * 1000) return;
+  lastVersionCheck = Date.now();
+  try {
+    const html = await (await fetch("./", { cache: "no-store" })).text();
+    const latest = html.match(/<script src="(script\.js\?v=\d+)"/)?.[1];
+    if (latest && LOADED_SCRIPT && latest !== LOADED_SCRIPT && ["home", "trip"].includes(route.screen) && !sheet.open) location.reload();
+  } catch {}
+});
+
 function updateOfflineBanner() {
   let banner = $("#offline-banner");
   if (navigator.onLine) { banner?.remove(); return; }
@@ -969,7 +983,8 @@ function tripMoney(trip, value, digits = 0) {
 
 function photoOf(activity) {
   const photo = getOpenData(activity.id)?.photo;
-  return photo && safeUrl(photo.url) ? photo : null;
+  // Satélite, mapa ou bandeira não servem de foto do lugar: aparece a imagem ilustrativa.
+  return photo && safeUrl(photo.url) && !NOT_COVER.test(photo.file || photo.url) ? photo : null;
 }
 
 function imageOf(activity) {
@@ -1511,13 +1526,20 @@ function placeTile(activity, badge = "") {
   return `<button class="place-tile" type="button" data-place="${escapeHtml(activity.id)}"><img src="${escapeHtml(imageOf(activity))}" alt="" loading="lazy">${badge}<span><strong>${escapeHtml(activity.name)}</strong><small>${escapeHtml(activity.city)}</small></span></button>`;
 }
 
-function renderDiscoverRadius(trip) {
+// Mesmo controle na aba Descobrir e na tela de cartões (no cartão, sem a explicação para caber sem rolar).
+function renderDiscoverRadius(trip, target = "#discover-radius") {
   const { km, from } = trip.discoverRadius;
   const located = trip.destinations.some((destination) => (destination.lodgings || []).some((lodging) => lodging.coordinates));
-  $("#discover-radius").innerHTML = `<div class="radius-row"><span class="radius-label">${icon("map-pin")} Até</span>
+  const compact = target !== "#discover-radius";
+  $(target).innerHTML = `<div class="radius-row"><span class="radius-label">${icon("map-pin")} Até</span>
     <div class="radius-options" role="group" aria-label="Distância máxima dos lugares">${DISCOVER_RADII.map((value) => `<button type="button" class="radius-option${value === km ? " is-active" : ""}" data-discover-radius="${value || "tudo"}" aria-pressed="${value === km}">${value ? `${value} km` : "Tudo"}</button>`).join("")}</div></div>
     ${located ? `<label class="radius-from">a partir ${km ? "" : "(quando escolher a distância) "}<select data-discover-from><option value="centro"${from === "centro" ? " selected" : ""}>do centro da cidade</option><option value="hospedagem"${from === "hospedagem" ? " selected" : ""}>da hospedagem</option></select></label>`
-      : `<p class="radius-from">a partir do centro da cidade${km ? "" : " (cadastre a hospedagem para medir dela)"}</p>`}`;
+      : compact ? "" : `<p class="radius-from">a partir do centro da cidade${km ? "" : " (cadastre a hospedagem para medir dela)"}</p>`}`;
+}
+
+function refreshDiscovery() {
+  if (route.screen === "deck") renderDeck();
+  else renderDiscoverTab();
 }
 
 document.addEventListener("change", (event) => {
@@ -1525,7 +1547,7 @@ document.addEventListener("change", (event) => {
   if (!select) return;
   getCurrentTrip().discoverRadius.from = select.value === "hospedagem" ? "hospedagem" : "centro";
   saveState();
-  renderDiscoverTab();
+  refreshDiscovery();
 });
 
 function renderDiscoverTab() {
@@ -1628,6 +1650,7 @@ function placeCardHtml(activity, trip, extraClass = "") {
 function renderDeck() {
   const trip = getCurrentTrip();
   renderCityFilter(trip);
+  renderDiscoverRadius(trip, "#deck-radius");
   const ideas = getDiscoverableActivities(trip);
   currentActivityId = ideas[0]?.id || null;
   ["#skip-activity", "#maybe-activity", "#like-activity"].forEach((selector) => { $(selector).disabled = !currentActivityId; });
@@ -5775,7 +5798,7 @@ document.addEventListener("click", (event) => {
     const value = radiusButton.dataset.discoverRadius;
     trip.discoverRadius.km = value === "tudo" ? null : Number(value);
     saveState();
-    renderDiscoverTab();
+    refreshDiscovery();
     return;
   }
   const apertoGo = event.target.closest("[data-aperto-go]");
