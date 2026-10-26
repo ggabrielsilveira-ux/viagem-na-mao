@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Trancoso. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["trancoso"] = {"cidade":"Trancoso","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-16.58885,-39.09773,"farmacia","Farmácia Almesca",{"h":"Mo-Su 08:00-22:00"}],[-16.58882,-39.09788,"farmacia","1903 gyofarma medicamento"],[-16.59223,-39.10307,"farmacia","Farmácia Trancoso"],[-16.59187,-39.103,"farmacia",""],[-16.59098,-39.10212,"farmacia","Indiana"]]};

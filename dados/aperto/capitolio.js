@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Capitólio. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["capitolio"] = {"cidade":"Capitólio","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-20.61399,-46.04771,"farmacia","DSG Farma"],[-20.61453,-46.04549,"farmacia",""],[-20.6129,-46.05393,"banheiro",""],[-20.6147,-46.05246,"banheiro",""],[-20.61471,-46.04322,"hospital","Santa Casa"]]};

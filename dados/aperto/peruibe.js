@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Peruíbe. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["peruibe"] = {"cidade":"Peruíbe","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-24.27553,-46.99087,"hospital","Fundação Casa Peruibe"],[-24.31884,-46.99433,"farmacia","Drogaria São Paulo"],[-24.31327,-47.00216,"hospital","UPA 24h Peruíbe",{"h":"24/7","e":"yes"}],[-24.26914,-46.95827,"farmacia","Drogaria Kallu"],[-24.31937,-47.00296,"hospital","Maternidade Municipal de Peruibe"],[-24.31918,-47.00302,"farmacia",""]]};

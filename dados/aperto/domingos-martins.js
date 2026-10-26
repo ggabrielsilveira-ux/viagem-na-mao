@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Domingos Martins. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["domingos-martins"] = {"cidade":"Domingos Martins","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-20.40977,-40.67326,"hospital","Policlínica Ary Ribeiro da Silva",{"e":"yes"}],[-20.36239,-40.66215,"hospital","Hospital e Maternidade Doutor Arthur Gerhardt",{"e":"yes"}]]};

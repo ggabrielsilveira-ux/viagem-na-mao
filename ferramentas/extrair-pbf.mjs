@@ -482,8 +482,14 @@ async function main() {
   const groups = plan(missing, await geofabrikIndex());
   let total = 0;
   for (const [id, group] of groups) {
-    const head = await fetch(group.url, { method: "HEAD", headers: { "User-Agent": USER_AGENT } });
-    group.bytes = Number(head.headers.get("content-length")) || 0;
+    // O tamanho é só informativo: se o Geofabrik demorar, segue sem ele.
+    group.bytes = 0;
+    for (let attempt = 0; attempt < 3 && !group.bytes; attempt++) {
+      try {
+        const head = await fetch(group.url, { method: "HEAD", headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(30000) });
+        group.bytes = Number(head.headers.get("content-length")) || 0;
+      } catch {}
+    }
     total += group.bytes;
     console.log(`${id.padEnd(26)} ${(group.bytes / 1e6).toFixed(0).padStart(6)} MB  ${group.cities.map((city) => city.name).join(", ")}`);
   }

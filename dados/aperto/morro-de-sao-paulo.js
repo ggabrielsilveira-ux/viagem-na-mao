@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Morro de São Paulo. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["morro-de-sao-paulo"] = {"cidade":"Morro de São Paulo","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-13.37812,-38.91672,"farmacia",""],[-13.3784,-38.91417,"farmacia",""],[-13.37817,-38.91651,"farmacia","Farmácia São Lucas"],[-13.37841,-38.91433,"farmacia","Farmácia Nossa Senhora da Luz"],[-13.38998,-38.93365,"banheiro",""],[-13.3829,-38.91025,"farmacia",""]]};

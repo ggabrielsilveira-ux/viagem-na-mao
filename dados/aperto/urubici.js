@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Urubici. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["urubici"] = {"cidade":"Urubici","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-28.04041,-49.60222,"banheiro",""],[-27.96909,-49.64459,"banheiro",""],[-28.0173,-49.59232,"hospital","Hospital de Caridade e Maternidade São José"],[-28.01525,-49.59383,"farmacia","Farmácia Popular Urubici Farmácia do Zeca"],[-28.01492,-49.59366,"farmacia","Farmácia MasterFarma Urubici"]]};

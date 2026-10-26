@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Cananéia. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["cananeia"] = {"cidade":"Cananéia","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-25.01654,-47.93726,"hospital","Pronto Socorro"],[-25.00802,-47.93102,"farmacia",""],[-25.01168,-47.92962,"farmacia","Laboratório Laborclin"],[-25.01054,-47.93006,"farmacia",""],[-25.02084,-47.92511,"agua",""],[-25.01136,-47.93965,"hospital",""],[-25.01933,-47.93528,"hospital",""],[-25.01365,-47.92802,"hospital","Santa Casa"]]};

@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Imbituba. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["imbituba"] = {"cidade":"Imbituba","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-28.15529,-48.65597,"farmacia","Jorge"],[-28.23973,-48.66722,"farmacia","Farmácia Preço Popular"],[-28.24134,-48.66724,"banheiro",""],[-28.2458,-48.67773,"hospital","Hospital São Camilo"]]};

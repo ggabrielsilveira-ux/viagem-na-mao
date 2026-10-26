@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Ilha do Mel. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["ilha-do-mel"] = {"cidade":"Ilha do Mel","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-25.57081,-48.31396,"hospital","Clinica de Saude"],[-25.57988,-48.35834,"farmacia","Farmacia Hiperfarma Pontal do Sul"],[-25.51098,-48.31162,"banheiro",""],[-25.54258,-48.30396,"hospital",""]]};

@@ -1,2 +1,2 @@
 // Na Hora do Aperto · Maragogi. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
-(window.APERTO = window.APERTO || {})["maragogi"] = {"cidade":"Maragogi","geradoEm":"2026-10-25","raioKm":10,"pontos":[[-9.01367,-35.22196,"farmacia","Farmácia Santo Cristo",{"h":"Mo-Su 09:00-22:00"}],[-9.00768,-35.21812,"farmacia","Deus é Fiel"],[-9.08969,-35.25803,"farmacia","Farmácia Santa Rita",{"h":"Mo-Su 08:00-21:00"}]]};
+(window.APERTO = window.APERTO || {})["maragogi"] = {"cidade":"Maragogi","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-9.01367,-35.22196,"farmacia","Farmácia Santo Cristo",{"h":"Mo-Su 09:00-22:00"}],[-9.00768,-35.21812,"farmacia","Deus é Fiel"],[-9.08969,-35.25803,"farmacia","Farmácia Santa Rita",{"h":"Mo-Su 08:00-21:00"}]]};

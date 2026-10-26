@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Monte Verde. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["monte-verde"] = {"cidade":"Monte Verde","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-22.93256,-46.02418,"agua",""],[-22.8624,-46.03875,"banheiro","",{"a":"limited"}],[-22.91199,-45.95989,"farmacia","Hakim"],[-22.85784,-46.03599,"hospital","Associação Beneficente Monte Verde",{"h":"24/7","e":"yes"}]]};

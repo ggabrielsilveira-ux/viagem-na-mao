@@ -1,0 +1,2 @@
+// Na Hora do Aperto · São Miguel dos Milagres. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["sao-miguel-dos-milagres"] = {"cidade":"São Miguel dos Milagres","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-9.26448,-35.37251,"agua","Fonte dos Milagres - Cacimba Pública"],[-9.258,-35.36821,"agua","Cacimba Sebastião Antônio dos Santos - Massau"]]};

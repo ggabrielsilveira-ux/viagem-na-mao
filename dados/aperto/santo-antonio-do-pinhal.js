@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Santo Antônio do Pinhal. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["santo-antonio-do-pinhal"] = {"cidade":"Santo Antônio do Pinhal","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-22.82582,-45.6284,"banheiro",""],[-22.82466,-45.66804,"farmacia","Farmácia Manipharm Santo Antônio",{"h":"Everyday - 08:00 21:00"}],[-22.82573,-45.66599,"farmacia","Drogaria Mantiqueira",{"h":"Mo-Mo 08:00-21:00"}],[-22.74396,-45.62496,"hospital","Complexo Municipal de Saúde"]]};

@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Iguape. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["iguape"] = {"cidade":"Iguape","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-24.71083,-47.55826,"farmacia","Farmayelen"],[-24.71123,-47.55939,"hospital","Unidade Mista de Saúde"],[-24.71099,-47.55956,"hospital","Pronto Socorro"],[-24.70377,-47.55976,"farmacia","Farmelhor"],[-24.70425,-47.55964,"farmacia",""],[-24.70225,-47.56083,"farmacia",""],[-24.72748,-47.53459,"hospital",""]]};

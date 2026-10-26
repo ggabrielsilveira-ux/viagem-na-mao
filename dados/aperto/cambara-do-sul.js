@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Cambará do Sul. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["cambara-do-sul"] = {"cidade":"Cambará do Sul","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-29.04911,-50.1437,"farmacia","Padre Réus"],[-29.04894,-50.14281,"farmacia","Farmácia Central"],[-29.05048,-50.14805,"hospital","Fundação Hospitalar São José"]]};

@@ -808,7 +808,7 @@ function addCityPack(pack) {
 
 // Pacotes por cidade (dados/cidades/<cidade>.js, gerados por ferramentas/dividir-cidades.mjs):
 // o aparelho só baixa as cidades das viagens; o service worker (sw.js) guarda para usar sem internet.
-const CITY_PACK_VERSION = 1;
+const CITY_PACK_VERSION = 2;
 const cityPackLoads = new Map();
 
 function loadCityPack(name) {
@@ -861,7 +861,7 @@ function prefetchTripOffline() {
   if (!navigator.serviceWorker?.controller) return;
   tripCityNames().forEach((name) => {
     const info = getCityInfo(name);
-    if (info) fetch(`dados/aperto/${slugify(info.name)}.js?v=1`).catch(() => {});
+    if (info) fetch(`dados/aperto/${slugify(info.name)}.js?v=2`).catch(() => {});
   });
   state.trips.forEach((trip) => {
     [...(trip.saved || []), ...(trip.maybe || [])].forEach((item) => {
@@ -2895,7 +2895,7 @@ function loadAperto(slug) {
   if (window.APERTO?.[slug]) return Promise.resolve(window.APERTO[slug]);
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = `dados/aperto/${slug}.js?v=1`;
+    script.src = `dados/aperto/${slug}.js?v=2`;
     script.onload = () => (window.APERTO?.[slug] ? resolve(window.APERTO[slug]) : reject(new Error("sem dados")));
     script.onerror = () => { script.remove(); reject(new Error("sem dados")); };
     document.head.append(script);

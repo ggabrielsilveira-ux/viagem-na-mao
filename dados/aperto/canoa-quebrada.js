@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Canoa Quebrada. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["canoa-quebrada"] = {"cidade":"Canoa Quebrada","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-4.52604,-37.7028,"farmacia","Canoa Farma",{"h":"Mo-Su 09:00-21:00"}],[-4.5261,-37.70278,"farmacia","CanoaFarma",{"h":"Mo-Sa 08:00-20:00"}],[-4.56264,-37.76386,"hospital","Hospital Municipal Eduardo Dias",{"h":"24/7"}]]};

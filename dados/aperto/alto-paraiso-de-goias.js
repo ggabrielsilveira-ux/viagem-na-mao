@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Alto Paraíso de Goiás. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["alto-paraiso-de-goias"] = {"cidade":"Alto Paraíso de Goiás","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-14.13367,-47.5161,"farmacia","Farmácia Paraíso"],[-14.13388,-47.5189,"farmacia","Drogaria Rede Popular"],[-14.06325,-47.4631,"hospital","Posto de Saúde do Moinho",{"e":"no"}],[-14.13737,-47.51975,"hospital","Hospital Municipal"]]};

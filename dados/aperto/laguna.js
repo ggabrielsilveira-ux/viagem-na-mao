@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Laguna. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["laguna"] = {"cidade":"Laguna","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-28.48568,-48.77987,"hospital","Hospital de Caridade Senhor Bom Jesus dos Passos",{"e":"yes"}],[-28.48753,-48.76543,"banheiro",""],[-28.49253,-48.76319,"banheiro",""],[-28.48297,-48.76643,"banheiro",""],[-28.47858,-48.76725,"banheiro",""],[-28.48466,-48.78228,"farmacia","Farmácia União"],[-28.47991,-48.78416,"farmacia","São João"]]};

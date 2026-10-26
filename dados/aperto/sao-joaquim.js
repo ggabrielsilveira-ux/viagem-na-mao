@@ -1,0 +1,2 @@
+// Na Hora do Aperto · São Joaquim. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["sao-joaquim"] = {"cidade":"São Joaquim","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-28.29155,-49.94271,"farmacia","Farmácia Avenida"],[-28.29268,-49.93271,"farmacia","Líder Farma"],[-28.29274,-49.93028,"hospital","Hospital de Caridade Coração de Jesus"]]};

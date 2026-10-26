@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Bom Jardim da Serra. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["bom-jardim-da-serra"] = {"cidade":"Bom Jardim da Serra","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-28.33931,-49.62464,"farmacia","Farmácia Saúde Popular"],[-28.34001,-49.62511,"farmacia","Super Popular"],[-28.39295,-49.54913,"banheiro","",{"p":"yes"}],[-28.34253,-49.62779,"hospital","Hospital Municipal Américo Caetano do Amaral"]]};

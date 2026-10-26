@@ -1,0 +1,2 @@
+// Na Hora do Aperto · Governador Celso Ramos. Dados © colaboradores do OpenStreetMap (ODbL), gerado por ferramentas/gerar-aperto.mjs.
+(window.APERTO = window.APERTO || {})["governador-celso-ramos"] = {"cidade":"Governador Celso Ramos","geradoEm":"2026-10-26","raioKm":10,"pontos":[[-27.32323,-48.54175,"farmacia",""],[-27.33465,-48.54587,"farmacia","Mazel Farmácia"],[-27.33382,-48.54603,"farmacia","Farmácia SuperPopular"],[-27.33404,-48.54602,"farmacia","Farmácia Patrícia"]]};
