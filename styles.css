@@ -1173,3 +1173,14 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 
 /* Aviso de sem internet */
 #offline-banner { position: fixed; z-index: 60; bottom: calc(env(safe-area-inset-bottom, 0px) + 92px); left: 50%; max-width: calc(100% - 32px); padding: 8px 14px; border-radius: 999px; color: #fff; background: rgba(28, 38, 33, 0.92); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2); font-size: 13px; font-weight: 700; text-align: center; transform: translateX(-50%); pointer-events: none; }
+
+/* Descobrir: distância máxima */
+.discover-radius { margin: 0 0 14px; }
+.radius-row { display: flex; align-items: center; gap: 10px; }
+.radius-label { display: inline-flex; flex: none; align-items: center; gap: 4px; color: var(--ink-2); font-size: 14px; font-weight: 700; }
+.radius-label .icon { width: 16px; height: 16px; color: var(--brand-2); }
+.radius-options { display: grid; flex: 1; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+.radius-option { min-height: 34px; border: 0; border-radius: 999px; color: var(--ink-2); background: none; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.radius-option.is-active { color: #fff; background: var(--brand-2); }
+.radius-from { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
+.radius-from select { padding: 2px 4px; border: 0; color: var(--brand-2); background: none; font: inherit; font-weight: 700; }

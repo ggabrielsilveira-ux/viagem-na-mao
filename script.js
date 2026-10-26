@@ -353,6 +353,8 @@ function migrateDestination(value) {
   return destination;
 }
 
+const DISCOVER_RADII = [5, 10, 25, null];
+
 function migrateTrip(value) {
   const trip = { ...blankTrip(), ...(value || {}) };
   trip.id ||= blankTrip().id;
@@ -368,6 +370,8 @@ function migrateTrip(value) {
   const retro = trip.retro && typeof trip.retro === "object" ? trip.retro : {};
   trip.retro = { title: String(retro.title || ""), coverPhotoId: String(retro.coverPhotoId || ""), hidden: Array.isArray(retro.hidden) ? retro.hidden : [], order: Array.isArray(retro.order) ? retro.order : [] };
   trip.closureDismissed = Boolean(trip.closureDismissed);
+  const radius = trip.discoverRadius && typeof trip.discoverRadius === "object" ? trip.discoverRadius : {};
+  trip.discoverRadius = { km: DISCOVER_RADII.includes(radius.km) ? radius.km : null, from: radius.from === "hospedagem" ? "hospedagem" : "centro" };
   return trip;
 }
 
@@ -1400,9 +1404,28 @@ function renderBudgetCard(trip) {
 let deckCity = "all";
 let currentActivityId = null;
 
+// Distância máxima do Descobrir (null = tudo, até 50 km como no catálogo).
+function discoverOrigin(trip, destination) {
+  const lodging = trip.discoverRadius?.from === "hospedagem" && destination.lodgings ? sortedLodgings(destination).find((item) => item.coordinates) : null;
+  return lodging?.coordinates || getCityInfo(destination.name)?.coordinates || null;
+}
+
+function withinDiscoverRadius(trip, activity) {
+  const km = trip.discoverRadius?.km;
+  if (!km) return true;
+  const coordinates = getOpenData(activity.id)?.coordinates || activity.coordinates;
+  // Sem coordenada não dá para medir: o lugar continua aparecendo.
+  if (!coordinates) return true;
+  return trip.destinations.some((destination) => {
+    if (!activityMatchesCity(activity, destination.name)) return false;
+    const origin = discoverOrigin(trip, destination);
+    return !origin || distanceKm(origin, coordinates) <= km;
+  });
+}
+
 function getDiscoverableActivities(trip, city = deckCity) {
   return activities.filter((activity) => {
-    const inTrip = trip.destinations.some((destination) => activityMatchesCity(activity, destination.name));
+    const inTrip = trip.destinations.some((destination) => activityMatchesCity(activity, destination.name)) && withinDiscoverRadius(trip, activity);
     const matchesCity = city === "all" || activityMatchesCity(activity, city);
     const matchesInterest = trip.interests.length === 0 || activity.interests.some((interest) => trip.interests.includes(interest));
     const handled = trip.saved.some((item) => item.id === activity.id)
@@ -1414,6 +1437,7 @@ function getDiscoverableActivities(trip, city = deckCity) {
 
 function discoveryStats(trip, city = deckCity) {
   const pool = activities.filter((activity) => trip.destinations.some((destination) => activityMatchesCity(activity, destination.name))
+    && withinDiscoverRadius(trip, activity)
     && (city === "all" || activityMatchesCity(activity, city))
     && (trip.interests.length === 0 || activity.interests.some((interest) => trip.interests.includes(interest))));
   const remaining = getDiscoverableActivities(trip, city);
@@ -1433,8 +1457,26 @@ function placeTile(activity, badge = "") {
   return `<button class="place-tile" type="button" data-place="${escapeHtml(activity.id)}"><img src="${escapeHtml(imageOf(activity))}" alt="" loading="lazy">${badge}<span><strong>${escapeHtml(activity.name)}</strong><small>${escapeHtml(activity.city)}</small></span></button>`;
 }
 
+function renderDiscoverRadius(trip) {
+  const { km, from } = trip.discoverRadius;
+  const located = trip.destinations.some((destination) => (destination.lodgings || []).some((lodging) => lodging.coordinates));
+  $("#discover-radius").innerHTML = `<div class="radius-row"><span class="radius-label">${icon("map-pin")} Até</span>
+    <div class="radius-options" role="group" aria-label="Distância máxima dos lugares">${DISCOVER_RADII.map((value) => `<button type="button" class="radius-option${value === km ? " is-active" : ""}" data-discover-radius="${value || "tudo"}" aria-pressed="${value === km}">${value ? `${value} km` : "Tudo"}</button>`).join("")}</div></div>
+    ${located ? `<label class="radius-from">a partir ${km ? "" : "(quando escolher a distância) "}<select data-discover-from><option value="centro"${from === "centro" ? " selected" : ""}>do centro da cidade</option><option value="hospedagem"${from === "hospedagem" ? " selected" : ""}>da hospedagem</option></select></label>`
+      : `<p class="radius-from">a partir do centro da cidade${km ? "" : " (cadastre a hospedagem para medir dela)"}</p>`}`;
+}
+
+document.addEventListener("change", (event) => {
+  const select = event.target.closest("[data-discover-from]");
+  if (!select) return;
+  getCurrentTrip().discoverRadius.from = select.value === "hospedagem" ? "hospedagem" : "centro";
+  saveState();
+  renderDiscoverTab();
+});
+
 function renderDiscoverTab() {
   const trip = getCurrentTrip();
+  renderDiscoverRadius(trip);
   const cities = [...new Set(tripCities(trip))];
   if (deckCity !== "all" && !cities.some((city) => sameCity(city, deckCity))) deckCity = "all";
   const stats = discoveryStats(trip);
@@ -1450,7 +1492,7 @@ function renderDiscoverTab() {
     </div>
     <div class="spot-body">
       <h3>${escapeHtml(place)}</h3>
-      <p>${stats.remaining ? `Próximo: ${escapeHtml(stats.next.name)}` : stats.total ? "Você já avaliou todos os lugares deste filtro. Reveja o que ficou em Talvez ou troque de cidade." : "Ainda não há lugares para os seus interesses aqui. Ajuste os interesses ao editar a viagem."}</p>
+      <p>${stats.remaining ? `Próximo: ${escapeHtml(stats.next.name)}` : stats.total ? "Você já avaliou todos os lugares deste filtro. Reveja o que ficou em Talvez ou troque de cidade." : trip.discoverRadius.km ? `Nenhum lugar até ${trip.discoverRadius.km} km para os seus interesses. Aumente a distância acima.` : "Ainda não há lugares para os seus interesses aqui. Ajuste os interesses ao editar a viagem."}</p>
       ${action ? `<button class="btn btn-primary btn-block" type="button" data-open-deck>${escapeHtml(action)} ${icon("arrow-right")}</button>` : `<button class="btn btn-secondary btn-block" type="button" data-open-list="maybe-preview-list">${icon("bookmark")} Ver Talvez</button>`}
     </div>`;
   $("#discover-progress").innerHTML = stats.total
@@ -5671,6 +5713,15 @@ document.addEventListener("click", (event) => {
   const openTripButton = event.target.closest("[data-open-trip]");
   if (openTripButton) {
     openTrip(openTripButton.dataset.openTrip);
+    return;
+  }
+  const radiusButton = event.target.closest("[data-discover-radius]");
+  if (radiusButton) {
+    const trip = getCurrentTrip();
+    const value = radiusButton.dataset.discoverRadius;
+    trip.discoverRadius.km = value === "tudo" ? null : Number(value);
+    saveState();
+    renderDiscoverTab();
     return;
   }
   const apertoGo = event.target.closest("[data-aperto-go]");
