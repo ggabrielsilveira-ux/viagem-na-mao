@@ -44,7 +44,8 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET" || request.headers.has("range")) return;
   const url = new URL(request.url);
   if (url.origin === self.location.origin) {
-    if (request.mode === "navigate") event.respondWith(networkFirst(request));
+    // Só a página do app é guardada; outras páginas (como o painel) vão sempre pela rede.
+    if (request.mode === "navigate") { if (url.pathname === "/" || url.pathname === "/index.html") event.respondWith(networkFirst(request)); return; }
     else if (url.searchParams.has("v")) event.respondWith(versioned(request));
     else event.respondWith(staleWhileRevalidate(request));
     return;

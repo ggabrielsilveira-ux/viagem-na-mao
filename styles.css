@@ -1234,3 +1234,11 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .deck-radius { margin: 0 16px 6px; }
 .deck-radius .radius-option { min-height: 30px; }
 .deck-radius .radius-from { margin-top: 4px; }
+
+/* Convite para criar a conta de testador */
+.account-invite { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-bottom: 14px; padding: 14px; border: 1px solid rgba(31, 107, 80, 0.25); border-radius: var(--radius-lg); background: var(--brand-soft); }
+.account-invite-icon { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 12px; color: #fff; background: var(--brand-2); }
+.account-invite-icon .icon { width: 20px; height: 20px; }
+.account-invite strong { display: block; font-size: 15px; }
+.account-invite p { margin: 4px 0 10px; color: var(--ink-2); font-size: 13px; line-height: 1.45; }
+.account-invite-actions { display: flex; align-items: center; gap: 14px; }

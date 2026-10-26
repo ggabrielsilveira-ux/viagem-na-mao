@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Painel do teste — Viagem na Mão</title>
+    <link rel="icon" href="marca/viagem-na-mao-icon.svg" type="image/svg+xml">
+    <style>
+      :root { --tinta: #1d2a24; --tinta-2: #4a5852; --linha: #e3ded3; --fundo: #f5f3ee; --verde: #1f6b50; --suave: #e3eee7; }
+      * { box-sizing: border-box; }
+      body { margin: 0; color: var(--tinta); background: var(--fundo); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+      main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+      h1 { margin: 0 0 4px; font-size: 24px; }
+      .sub { margin: 0 0 20px; color: var(--tinta-2); font-size: 14px; }
+      .cartao { padding: 18px; border: 1px solid var(--linha); border-radius: 16px; background: #fff; }
+      .entrar { max-width: 420px; }
+      label { display: grid; gap: 6px; margin-bottom: 12px; font-weight: 600; font-size: 14px; }
+      input { height: 44px; padding: 0 12px; border: 1px solid var(--linha); border-radius: 10px; font: inherit; }
+      button { height: 42px; padding: 0 16px; border: 0; border-radius: 999px; color: #fff; background: var(--verde); font: inherit; font-weight: 700; cursor: pointer; }
+      button.secundario { color: var(--verde); background: var(--suave); }
+      button:disabled { opacity: 0.6; }
+      .status { min-height: 20px; color: var(--tinta-2); font-size: 14px; }
+      .numeros { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 18px; }
+      .numero strong { display: block; font-size: 28px; line-height: 1.1; }
+      .numero span { color: var(--tinta-2); font-size: 13px; }
+      .acoes { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+      .tabela { overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      th, td { padding: 8px 10px; border-bottom: 1px solid var(--linha); text-align: left; white-space: nowrap; }
+      th { color: var(--tinta-2); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+      td.n { text-align: right; }
+      .nota { margin-top: 16px; color: var(--tinta-2); font-size: 13px; }
+      .ativo { color: var(--verde); font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Painel do teste</h1>
+      <p class="sub">Quem está testando o Viagem na Mão. Só números: o conteúdo das viagens de cada pessoa não aparece aqui.</p>
+      <section id="app"></section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <script>
+      // Mesma configuração do conta.js. A Publishable key é pública; o acesso ao painel é
+      // conferido no banco (função painel_* só responde para e-mails da tabela administradores).
+      const URL_SUPABASE = "https://nbabmcctrncfguoedhiz.supabase.co";
+      const CHAVE_PUBLICA = "";
+      const app = document.querySelector("#app");
+      const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      const data = (v) => v ? new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(v)) : "—";
+      const recente = (v) => v && Date.now() - new Date(v).getTime() < 7 * 86400000;
+
+      if (!CHAVE_PUBLICA || !window.supabase) {
+        app.innerHTML = '<div class="cartao"><p>O painel liga junto com as contas do app (falta configurar o Supabase).</p></div>';
+      } else {
+        const sb = window.supabase.createClient(URL_SUPABASE, CHAVE_PUBLICA, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "viagem-na-mao-painel" } });
+        let emailPendente = "";
+
+        function telaEntrar(msg = "") {
+          app.innerHTML = `<div class="cartao entrar">
+            ${emailPendente
+              ? `<label>Código enviado para ${esc(emailPendente)}<input id="codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="8"></label>
+                 <div class="acoes"><button id="verificar">Entrar</button><button class="secundario" id="voltar">Trocar e-mail</button></div>`
+              : `<label>E-mail de administrador<input id="email" type="email" autocomplete="email"></label>
+                 <div class="acoes"><button id="enviar">Receber código</button></div>`}
+            <p class="status" id="status">${esc(msg)}</p></div>`;
+          const status = app.querySelector("#status");
+          app.querySelector("#enviar")?.addEventListener("click", async () => {
+            const email = app.querySelector("#email").value.trim().toLowerCase();
+            if (!email.includes("@")) { status.textContent = "Confira o e-mail."; return; }
+            status.textContent = "Enviando…";
+            const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+            if (error) { status.textContent = "Não foi possível enviar o código para este e-mail."; return; }
+            emailPendente = email;
+            telaEntrar();
+          });
+          app.querySelector("#voltar")?.addEventListener("click", () => { emailPendente = ""; telaEntrar(); });
+          app.querySelector("#verificar")?.addEventListener("click", async () => {
+            const token = app.querySelector("#codigo").value.replace(/\D/g, "");
+            status.textContent = "Entrando…";
+            const { error } = await sb.auth.verifyOtp({ email: emailPendente, token, type: "email" });
+            if (error) { status.textContent = "Código inválido ou vencido."; return; }
+            emailPendente = "";
+            carregar();
+          });
+        }
+
+        async function carregar() {
+          app.innerHTML = '<p class="status">Carregando…</p>';
+          const [resumo, lista] = await Promise.all([sb.rpc("painel_resumo"), sb.rpc("painel_testadores")]);
+          if (resumo.error || lista.error) {
+            await sb.auth.signOut();
+            telaEntrar("Este e-mail não tem acesso ao painel.");
+            return;
+          }
+          const r = resumo.data;
+          const linhas = lista.data || [];
+          const numeros = [
+            [r.contas, "contas de testadores"], [r.contas_7_dias, "contas novas (7 dias)"], [r.aparelhos, "aparelhos usando"],
+            [r.ativos_hoje, "ativos hoje"], [r.ativos_7_dias, "ativos (7 dias)"], [r.ativos_30_dias, "ativos (30 dias)"],
+            [r.sem_conta, "usando sem conta"], [r.com_viagem, "aparelhos com viagem"], [r.viagens, "viagens criadas"],
+            [r.memorias, "memórias guardadas"], [r.instalados, "com o app na tela inicial"], [r.lista_espera, "na lista de espera do site"]
+          ];
+          app.innerHTML = `<div class="numeros">${numeros.map(([n, t]) => `<div class="cartao numero"><strong>${esc(n)}</strong><span>${esc(t)}</span></div>`).join("")}</div>
+            <div class="acoes"><button class="secundario" id="atualizar">Atualizar</button><button class="secundario" id="csv">Baixar planilha (CSV)</button><button class="secundario" id="sair">Sair</button></div>
+            <div class="cartao tabela"><table><thead><tr><th>Testador</th><th>Conta criada</th><th>Último uso</th><th>Dias de uso</th><th>Viagens</th><th>Cidades</th><th>Memórias</th><th>Gastos</th><th>App instalado</th></tr></thead>
+            <tbody>${linhas.map((l) => `<tr><td>${esc(l.email)}</td><td>${data(l.conta_criada)}</td><td class="${recente(l.ultimo_uso) ? "ativo" : ""}">${data(l.ultimo_uso)}</td><td class="n">${l.dias_de_uso}</td><td class="n">${l.viagens}</td><td class="n">${l.cidades}</td><td class="n">${l.memorias}</td><td class="n">${l.gastos}</td><td>${l.instalado ? "sim" : "não"}</td></tr>`).join("") || '<tr><td colspan="9">Ninguém criou conta ainda.</td></tr>'}</tbody></table></div>
+            <p class="nota">Os números de uso chegam no máximo uma vez por dia por aparelho, quando ele está com internet. "Usando sem conta" são aparelhos que abriram o app sem criar conta (não dá para saber quem são).</p>`;
+          app.querySelector("#atualizar").onclick = carregar;
+          app.querySelector("#sair").onclick = async () => { await sb.auth.signOut(); telaEntrar(); };
+          app.querySelector("#csv").onclick = () => {
+            const cab = ["email", "conta_criada", "ultimo_uso", "dias_de_uso", "viagens", "cidades", "memorias", "gastos", "instalado"];
+            const csv = [cab.join(";"), ...linhas.map((l) => cab.map((c) => String(l[c] ?? "").replace(/;/g, ",")).join(";"))].join("\n");
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+            a.download = `testadores-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+          };
+        }
+
+        sb.auth.getSession().then(({ data: { session } }) => (session ? carregar() : telaEntrar()));
+      }
+    </script>
+  </body>
+</html>

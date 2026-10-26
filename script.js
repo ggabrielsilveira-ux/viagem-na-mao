@@ -1336,8 +1336,22 @@ function focusCardHtml(trip) {
     </article>`;
 }
 
+// Convite para criar a conta de testador (só quando as contas estão ligadas e a pessoa ainda não entrou).
+// "Agora não" esconde por 7 dias.
+function renderHomeAccount() {
+  const panel = $("#home-account");
+  if (!panel) return;
+  const snoozed = state.flags?.accountCardUntil && state.flags.accountCardUntil > getBrasiliaDateKey();
+  if (!window.contaAtiva?.() || window.contaLogada?.() || snoozed) { panel.innerHTML = ""; return; }
+  panel.innerHTML = `<div class="account-invite"><span class="account-invite-icon">${icon("users")}</span>
+    <div><strong>Participe do teste do Viagem na Mão</strong><p>Crie sua conta com o seu e-mail: suas viagens ficam guardadas na nuvem e você ajuda a melhorar o app.</p>
+    <div class="account-invite-actions"><button class="btn btn-primary btn-sm" type="button" data-account-create>Criar minha conta</button><button class="link-btn" type="button" data-account-later>Agora não</button></div></div></div>`;
+}
+window.renderHomeAccount = renderHomeAccount;
+
 function renderHome() {
   setAmountToggle($("#toggle-home-amounts"));
+  renderHomeAccount();
   const name = (state.profile?.name || "").trim();
   $("#home-greeting").textContent = greetingText();
   $("#avatar-initial").innerHTML = name ? escapeHtml(name[0].toUpperCase()) : icon("user");
@@ -5799,6 +5813,17 @@ document.addEventListener("click", (event) => {
     trip.discoverRadius.km = value === "tudo" ? null : Number(value);
     saveState();
     refreshDiscovery();
+    return;
+  }
+  if (event.target.closest("[data-account-create]")) {
+    openSettingsSheet();
+    return;
+  }
+  if (event.target.closest("[data-account-later]")) {
+    const until = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+    state.flags = { ...(state.flags || {}), accountCardUntil: until };
+    saveState();
+    renderHomeAccount();
     return;
   }
   const apertoGo = event.target.closest("[data-aperto-go]");

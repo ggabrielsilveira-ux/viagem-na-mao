@@ -153,6 +153,41 @@ function temAcesso() {
 
 const PLAN_LABELS = { teste: "Teste gratuito", mensal: "Mensal", anual: "Anual" };
 
+// ---------------------------------------------------------------------------
+// Estatística de uso do teste (ferramentas/supabase-metricas.sql): no máximo uma vez por dia,
+// só contagens. Nada de nomes, destinos, valores, textos ou fotos.
+// ---------------------------------------------------------------------------
+
+const USAGE_KEY = "viagem-na-mao-uso-v1";
+
+function readUsage() {
+  try { return JSON.parse(window.localStorage.getItem(USAGE_KEY) || "{}"); } catch { return {}; }
+}
+
+async function registrarUso({ force = false } = {}) {
+  if (!supabaseClient || !navigator.onLine) return;
+  const usage = readUsage();
+  const today = new Date().toISOString().slice(0, 10);
+  if (!force && usage.dia === today && usage.conta === (conta.user?.id || "")) return;
+  const aparelho = usage.aparelho || (crypto.randomUUID ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (c ^ (Math.random() * 16) >> (c / 4)).toString(16)));
+  const cidades = new Set(state.trips.flatMap((trip) => trip.destinations.map((destination) => slugify(destination.name || ""))).filter(Boolean)).size;
+  const { error } = await supabaseClient.rpc("registrar_uso", {
+    p_aparelho: aparelho,
+    p_viagens: state.trips.length,
+    p_cidades: cidades,
+    p_memorias: state.trips.reduce((total, trip) => total + (trip.memories || []).length, 0),
+    p_gastos: state.trips.reduce((total, trip) => total + (trip.expenses || []).length, 0),
+    p_instalado: window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true,
+    p_versao: (document.querySelector('script[src^="script.js"]')?.getAttribute("src") || "").split("v=")[1] || ""
+  });
+  if (error) return;
+  try { window.localStorage.setItem(USAGE_KEY, JSON.stringify({ aparelho, dia: today, conta: conta.user?.id || "" })); } catch { /* segue */ }
+}
+
+// A tela inicial convida a criar a conta de testador (script.js usa estas duas).
+window.contaAtiva = () => Boolean(supabaseClient);
+window.contaLogada = () => Boolean(conta.user);
+
 // Primeiro login neste aparelho: decide o que fazer com as viagens daqui e as da nuvem.
 async function firstSync() {
   const remote = await fetchRemote();
@@ -217,12 +252,13 @@ function paintAccount() {
     return;
   }
   accountRoot.innerHTML = `<h3>${icon("user")} Sua conta</h3>
-    <p class="muted">Entre para guardar viagens e memórias na nuvem e usar em outro celular. O teste é fechado: entre com o e-mail que recebeu o convite.</p>
+    <p class="muted">Crie sua conta de testador com o seu e-mail: suas viagens e memórias ficam guardadas na nuvem e você pode usar em outro celular. Não precisa de senha: chega um código no e-mail.</p>
     ${pendingEmail
       ? `<label class="field">Código enviado para ${escapeHtml(pendingEmail)}<input id="account-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Código de 6 dígitos"></label>
          <div class="row-actions"><button class="btn btn-secondary" type="button" id="account-back">Trocar e-mail</button><button class="btn btn-primary" type="button" id="account-verify">Entrar</button></div>`
       : `<label class="field">Seu e-mail<input id="account-email" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label>
-         <button class="btn btn-primary btn-block" type="button" id="account-send">Receber código por e-mail</button>`}
+         <button class="btn btn-primary btn-block" type="button" id="account-send">Receber código por e-mail</button>
+         <p class="settings-meta">Ao continuar, você concorda com os <a href="https://viagemnamao.com/termos" target="_blank" rel="noopener noreferrer">Termos de uso</a> e a <a href="https://viagemnamao.com/privacidade" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</p>`}
     <p class="form-status" id="account-status" role="status" aria-live="polite"></p>`;
   const status = accountRoot.querySelector("#account-status");
   accountRoot.querySelector("#account-send")?.addEventListener("click", async (event) => {
@@ -230,12 +266,10 @@ function paintAccount() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { status.textContent = "Confira o e-mail digitado."; return; }
     event.currentTarget.disabled = true;
     status.textContent = "Enviando…";
-    const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+    const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
     if (error) {
       event.currentTarget.disabled = false;
-      status.textContent = /signups? not allowed|not found|otp_disabled/i.test(error.message)
-        ? "Este e-mail ainda não está na lista de testadores. Peça um convite."
-        : /rate|seconds/i.test(error.message) ? "Espere um pouco antes de pedir outro código." : "Não consegui enviar agora. Tente de novo.";
+      status.textContent = /rate|seconds/i.test(error.message) ? "Espere um pouco antes de pedir outro código." : "Não consegui enviar agora. Tente de novo em instantes.";
       return;
     }
     pendingEmail = email;
@@ -268,7 +302,7 @@ if (supabaseClient) {
   supabaseClient.auth.onAuthStateChange((event, session) => {
     const before = conta.user?.id;
     conta.user = session?.user || null;
-    if (!conta.user) { conta.plano = null; paintAccount(); return; }
+    if (!conta.user) { conta.plano = null; paintAccount(); window.renderHomeAccount?.(); return; }
     if (before === conta.user.id) return;
     // Deixa o evento terminar antes de chamar o banco (recomendação do Supabase).
     window.setTimeout(async () => {
@@ -279,6 +313,11 @@ if (supabaseClient) {
         await firstSync().catch((error) => console.error("Falha no primeiro login.", error));
       } else await pullIfNewer();
       paintAccount();
+      window.renderHomeAccount?.();
+      registrarUso().catch(() => {});
     }, 0);
   });
 }
+
+// Sem conta, o aparelho também conta no teste (só os números). Com conta, conta junto com o e-mail.
+if (supabaseClient) window.setTimeout(() => registrarUso().catch(() => {}), 4000);
