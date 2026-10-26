@@ -282,23 +282,26 @@ const reflections = [
 // Fotos da tela inicial: destinos famosos, do Wikimedia Commons, com crédito (imagens/destinos/).
 // As frases de reflexão acima giram junto, em sequência própria.
 const HERO_DESTINATIONS = [
+  { name: "Cristo Redentor", place: "Rio de Janeiro, Brasil", image: "imagens/destinos/cristo.jpg", author: "Donatas Dabravolskas", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Redentor_Over_Clouds_1.jpg" },
   { name: "Torre Eiffel", place: "Paris, França", image: "imagens/destinos/eiffel.jpg", author: "Tristan Nitot", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Tour_eiffel_at_sunrise_from_the_trocadero.jpg" },
+  { name: "Cataratas do Iguaçu", place: "Foz do Iguaçu, Brasil", image: "imagens/destinos/iguacu.jpg", author: "Bernard Gagnon", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Iguaz%C3%BA_Falls_03.jpg" },
   { name: "Museu do Louvre", place: "Paris, França", image: "imagens/destinos/louvre.jpg", author: "Benh LIEU SONG (Flickr)", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Louvre_Museum_Wikimedia_Commons.jpg" },
+  { name: "Machu Picchu", place: "Cusco (região), Peru", image: "imagens/destinos/machupicchu.jpg", author: "Diego Delso", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Machu_Picchu,_Per%C3%BA,_2015-07-30,_DD_47.JPG" },
+  { name: "Coliseu", place: "Roma, Itália", image: "imagens/destinos/coliseu.jpg", author: "Anil Öztas", license: "CC BY 4.0", page: "https://commons.wikimedia.org/wiki/File:Rom_(IT),_Kolosseum_--_2024_--_0610.jpg" },
+  { name: "Lençóis Maranhenses", place: "Barreirinhas, Brasil", image: "imagens/destinos/lencois.jpg", author: "Paulo Cattelan", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Parque_Nacional_dos_Len%C3%A7%C3%B3is_Maranhenses_Paulo_Cattelan_(03).jpg" },
   { name: "Grande Muralha da China", place: "Pequim (arredores), China", image: "imagens/destinos/muralha.jpg", author: "Luka Peternel", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Jinshanling-facing-east-2019-Luka-Peternel.jpg" },
-  { name: "Coliseu", place: "Roma, Itália", image: "imagens/destinos/coliseu.jpg", author: "Anil Öztas", license: "CC BY 4.0", page: "https://commons.wikimedia.org/wiki/File:Rom_(IT),_Kolosseum_--_2024_--_0971.jpg" },
+  { name: "Santorini", place: "Grécia", image: "imagens/destinos/santorini.jpg", author: "Giles Laurent", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:1000_Three_domes_of_Oia_in_Santorini_Photo_by_Giles_Laurent.jpg" },
   { name: "Taj Mahal", place: "Agra, Índia", image: "imagens/destinos/taj.jpg", author: "Diego Delso", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:El_Taj_Mahal-Agra_India0023.JPG" },
   { name: "Estátua da Liberdade", place: "Nova York, Estados Unidos", image: "imagens/destinos/liberdade.jpg", author: "銀河市長", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Statue_of_liberty_front.jpg" },
   { name: "Pirâmides de Gizé", place: "Gizé, Egito", image: "imagens/destinos/gize.jpg", author: "Ricardo Liberato", license: "CC BY-SA 2.0", page: "https://commons.wikimedia.org/wiki/File:All_Gizah_Pyramids.jpg" },
-  { name: "Cristo Redentor", place: "Rio de Janeiro, Brasil", image: "imagens/destinos/cristo.jpg", author: "Nico Kaiser", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:Cristo_Redentor_-_Rio_de_Janeiro,_Brasil.jpg" },
   { name: "Basílica da Sagrada Família", place: "Barcelona, Espanha", image: "imagens/destinos/sagrada.jpg", author: "Bernard Gagnon", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Sagrada_Familia_03.jpg" },
-  { name: "Palácio de Versalhes", place: "Versalhes, França", image: "imagens/destinos/versalhes.jpg", author: "Myrabella", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Chateau_Versailles_Galerie_des_Glaces.jpg" },
-  { name: "Ópera de Sydney", place: "Sydney, Austrália", image: "imagens/destinos/sydney.jpg", focus: "44% 50%", author: "Dietmar Rabich", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Sydney_(AU),_Opera_House_--_2019_--_2152.jpg" },
-  { name: "Muro de Berlim", place: "Berlim, Alemanha", image: "imagens/destinos/berlim.jpg", focus: "25% 50%", author: "Pudelek (Marcin Szala)", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Berlin_Wall_near_East_Side_Gallery.JPG" },
+  { name: "Palácio de Versalhes", place: "Versalhes, França", image: "imagens/destinos/versalhes.jpg", author: "Paolo Costa Baldi", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Versailles_view_from_the_Parterre_d%27eau.jpg" },
+  { name: "Ópera de Sydney", place: "Sydney, Austrália", image: "imagens/destinos/sydney.jpg", author: "Dietmar Rabich", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Sydney_(AU),_Opera_House_--_2019_--_2152.jpg" },
+  { name: "Portão de Brandemburgo", place: "Berlim, Alemanha", image: "imagens/destinos/brandemburgo.jpg", author: "Thomas Wolf", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Brandenburger_Tor_abends.jpg" },
   { name: "Alhambra", place: "Granada, Espanha", image: "imagens/destinos/alhambra.jpg", author: "Jebulon", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Dawn_Charles_V_Palace_Alhambra_Granada_Andalusia_Spain.jpg" },
   { name: "Basílica de São Pedro", place: "Cidade do Vaticano", image: "imagens/destinos/saopedro.jpg", author: "Alvesgaspar", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Basilica_di_San_Pietro_in_Vaticano_September_2015-1a.jpg" },
-  { name: "Times Square", place: "Nova York, Estados Unidos", image: "imagens/destinos/times.jpg", author: "Anthony Quintano", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:The_Night_Before_New_Year%27s_Eve_High_Above_Times_Square.jpg" },
   { name: "Vila do Papai Noel", place: "Rovaniemi, Finlândia", image: "imagens/destinos/rovaniemi.jpg", author: "flightlog", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:Santa_Claus_Village_in_Rovaniemi_20120209_01.jpg" },
-  { name: "Aurora boreal (vila de Ersfjordbotn)", place: "Tromsø (arredores), Noruega", image: "imagens/destinos/ersfjordbotn.jpg", author: "Rainer Sparenberg/IAU OAE", license: "CC BY 4.0", page: "https://commons.wikimedia.org/wiki/File:Aurorae_(still_images),_Second_Place_(ann21047b).jpg" },
+  { name: "Aurora boreal", place: "Ersfjordbotn, perto de Tromsø, Noruega", image: "imagens/destinos/ersfjordbotn.jpg", author: "Rainer Sparenberg/IAU OAE", license: "CC BY 4.0", page: "https://commons.wikimedia.org/wiki/File:Aurorae_(still_images),_Second_Place_(ann21047b).jpg" },
   { name: "Dolomitas", place: "Itália", image: "imagens/destinos/dolomitas.jpg", author: "Wolfgang Moroder", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Frea_pass_Sella_group_Dolomites.jpg" }
 ];
 
@@ -976,11 +979,20 @@ function tripCities(trip) {
   return trip.destinations.map((destination) => destination.name).filter(Boolean);
 }
 
-// Imagem de capa: de preferência uma foto real (com crédito) de um lugar da viagem.
+// Imagem de capa: de preferência uma foto real (com crédito) do lugar mais perto do centro da primeira cidade.
+// Imagens de satélite e mapas não servem de capa.
+const NOT_COVER = /landsat|sat[ée]lite|satellite|mapa?|map|locator|localiza|bandeira|flag|bras[ãa]o|coat.of.arms|logo/i;
 function coverFor(trip) {
   const cities = tripCities(trip);
   const matches = activities.filter((activity) => cities.some((city) => activityMatchesCity(activity, city)));
-  const withPhoto = matches.find((activity) => photoOf(activity));
+  const center = getCityInfo(cities[0] || "")?.coordinates;
+  const distance = (activity) => {
+    const coordinates = getOpenData(activity.id)?.coordinates;
+    return center && coordinates ? distanceKm(center, coordinates) : 999;
+  };
+  const withPhoto = matches
+    .filter((activity) => photoOf(activity) && !NOT_COVER.test(photoOf(activity).file || photoOf(activity).url))
+    .sort((x, y) => distance(x) - distance(y))[0];
   const activity = withPhoto || matches[0];
   return { activity, image: activity ? imageOf(activity) : reflections[0].image, photo: withPhoto ? photoOf(withPhoto) : null };
 }
@@ -1161,7 +1173,7 @@ function renderInspiration() {
   const current = $(".hero-img.is-active");
   const next = current?.id === "hero-img-a" ? $("#hero-img-b") : $("#hero-img-a");
   next.src = item.image;
-  next.style.objectPosition = destination.focus || "50% 50%";
+  $("#hero").style.setProperty("--hero-bg", `url("${item.image}")`);
   next.alt = `${destination.name}, ${destination.place}`;
   const swap = () => {
     next.classList.add("is-active");
@@ -1176,12 +1188,41 @@ function renderInspiration() {
   $("#hero-location").textContent = `${destination.name} — ${destination.place}`;
   const credit = $("#hero-credit");
   credit.href = destination.page;
-  credit.textContent = `Foto: ${destination.author} · ${destination.license} · Wikimedia Commons`;
+  credit.textContent = `© ${destination.author} · ${destination.license}`;
+  credit.title = "Foto: Wikimedia Commons";
   $("#home-verse-text").textContent = `“${item.verse}”`;
   $("#home-verse-reference").textContent = item.reference;
   $("#hero-dots").innerHTML = HERO_DESTINATIONS.map((_, index) => `<span class="${index === inspirationIndex ? "is-active" : ""}"></span>`).join("");
   const preload = new Image();
   preload.src = HERO_DESTINATIONS[(inspirationIndex + 1) % HERO_DESTINATIONS.length].image;
+}
+
+// Cartão "Sobre o lugar": resumo da Wikipedia e dados do Wikidata (dados/inspiracao.js, gerado por ferramentas/gerar-inspiracao.mjs).
+function openInspirationSheet() {
+  const destination = HERO_DESTINATIONS[inspirationIndex];
+  const info = window.INSPIRATION_INFO?.[destination.name] || null;
+  const city = info?.cidade ? getCityInfo(info.cidade) : null;
+  const facts = [
+    info?.visitantes && [icon("users"), `${info.visitantes.texto}`, `medição de ${info.visitantes.ano}`],
+    info?.criacao && [icon("calendar"), `Desde ${info.criacao}`, "criação ou inauguração"],
+    info?.altura && [icon("mountain"), info.altura, "de altura"],
+    info?.unesco && [icon("landmark"), "Patrimônio Mundial", "UNESCO"]
+  ].filter(Boolean);
+  openSheet(`${sheetTitle(destination.name)}
+    <figure class="place-figure"><div class="place-figure-photo" style="--hero-bg:url('${escapeHtml(destination.image)}')"><img src="${escapeHtml(destination.image)}" alt="${escapeHtml(`${destination.name}, ${destination.place}`)}"></div>
+      <figcaption><a href="${escapeHtml(safeUrl(destination.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(destination.author)} · ${escapeHtml(destination.license)} · Wikimedia Commons</a></figcaption></figure>
+    <p class="place-where">${icon("map-pin")} ${escapeHtml(destination.place)}</p>
+    ${facts.length ? `<div class="place-facts">${facts.map(([iconHtml, value, label]) => `<div class="place-fact">${iconHtml}<strong>${escapeHtml(value)}</strong><small>${escapeHtml(label)}</small></div>`).join("")}</div>` : ""}
+    ${info?.resumo ? `<p class="place-summary">${escapeHtml(info.resumo)}</p>` : '<p class="muted">Ainda não temos um resumo sobre este lugar.</p>'}
+    ${city ? `<button class="btn btn-primary btn-block" type="button" id="plan-inspiration">${icon("plus")} Planejar uma viagem para ${escapeHtml(city.name)}</button>` : ""}
+    ${info ? `<p class="text-credit place-sources">Texto: <a href="${escapeHtml(safeUrl(info.fonte.url))}" target="_blank" rel="noopener noreferrer">Wikipedia</a> (CC BY-SA 4.0)${facts.length ? ' · Dados: <a href="https://www.wikidata.org/" target="_blank" rel="noopener noreferrer">Wikidata</a>' : ""}.</p>` : ""}`, (root) => {
+    root.querySelector("#plan-inspiration")?.addEventListener("click", () => {
+      closeSheet({ force: true });
+      startNewTrip();
+      wizard.data.cities = [{ name: city.name, country: city.country, nights: 0 }];
+      renderWizard();
+    });
+  });
 }
 
 function changeInspiration(direction) {
@@ -5896,6 +5937,7 @@ document.addEventListener("click", (event) => {
 });
 
 $("#previous-inspiration").addEventListener("click", () => changeInspiration(-1));
+$("#open-inspiration").addEventListener("click", openInspirationSheet);
 $("#next-inspiration").addEventListener("click", () => changeInspiration(1));
 $("#toggle-home-amounts").addEventListener("click", toggleAmounts);
 $("#toggle-budget-visibility").addEventListener("click", toggleAmounts);

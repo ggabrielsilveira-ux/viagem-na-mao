@@ -16,14 +16,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=30">
+    <link rel="stylesheet" href="styles.css?v=32">
     <script src="icones.js?v=26" defer></script>
     <script src="dados/fontes-abertas.js?v=25" defer></script>
     <script src="dados/cidades.js?v=2" defer></script>
     <script src="dados/guia-paises.js?v=25" defer></script>
     <script src="dados/mensagens.js?v=25" defer></script>
+    <script src="dados/inspiracao.js?v=1" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-    <script src="script.js?v=32" defer></script>
+    <script src="script.js?v=33" defer></script>
     <script src="conta.js?v=25" defer></script>
   </head>
   <body>
@@ -61,9 +62,10 @@
               <img class="hero-img is-active" id="hero-img-a" alt="">
               <img class="hero-img" id="hero-img-b" alt="" aria-hidden="true">
               <div class="inspiration-shade"></div>
+              <button class="inspiration-open" id="open-inspiration" type="button" aria-label="Saber mais sobre este lugar"></button>
               <p class="inspiration-kicker" id="home-title">Viajar também é agradecer.</p>
               <div class="inspiration-meta">
-                <p class="hero-place"><svg class="icon" data-icon="map-pin"></svg><span id="hero-location"></span></p>
+                <p class="hero-place"><svg class="icon" data-icon="map-pin"></svg><span id="hero-location"></span><span class="hero-more"><svg class="icon" data-icon="info"></svg> Saiba mais</span></p>
                 <a class="hero-credit" id="hero-credit" target="_blank" rel="noopener noreferrer"></a>
               </div>
               <button class="inspiration-arrow is-prev" id="previous-inspiration" type="button" aria-label="Imagem anterior"><svg class="icon" data-icon="chevron-left"></svg></button>

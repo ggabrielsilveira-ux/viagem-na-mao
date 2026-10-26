@@ -1184,3 +1184,44 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .radius-option.is-active { color: #fff; background: var(--brand-2); }
 .radius-from { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
 .radius-from select { padding: 2px 4px; border: 0; color: var(--brand-2); background: none; font: inherit; font-weight: 700; }
+
+/* Inspiração do dia: foto inteira sobre o próprio fundo desfocado */
+.inspiration-card.hero::before { content: ""; position: absolute; inset: -24px; background: var(--hero-bg) center / cover no-repeat; filter: blur(18px) brightness(0.72) saturate(1.1); }
+.inspiration-card.hero .hero-img { object-fit: contain; }
+.inspiration-card .inspiration-shade { background: linear-gradient(180deg, rgba(10, 18, 14, 0.35) 0%, rgba(10, 18, 14, 0) 32%, rgba(10, 18, 14, 0) 58%, rgba(10, 18, 14, 0.62) 100%); }
+.inspiration-card .inspiration-kicker { top: 14px; left: 16px; max-width: 75%; font-size: 15px; font-style: italic; line-height: 1.3; opacity: 0.95; }
+.inspiration-open { position: absolute; inset: 0; z-index: 1; padding: 0; border: 0; background: none; cursor: pointer; }
+.inspiration-card .inspiration-meta, .inspiration-card .inspiration-arrow, .inspiration-card .hero-dots { z-index: 2; }
+.inspiration-card .inspiration-meta { pointer-events: none; }
+.inspiration-card .hero-credit { pointer-events: auto; justify-self: start; max-width: 100%; color: rgba(255, 255, 255, 0.6); font-size: 9px; }
+.hero-more { display: inline-flex; flex: none; align-items: center; gap: 3px; margin-left: 6px; padding: 2px 7px; border-radius: 999px; background: rgba(255, 255, 255, 0.2); font-size: 11px; font-weight: 700; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.hero-more .icon { width: 12px; height: 12px; }
+
+/* Cartão "Sobre o lugar" */
+.place-figure { margin: 0 0 10px; }
+.place-figure-photo { position: relative; overflow: hidden; height: 210px; border-radius: 18px; background: #1c2a24; }
+.place-figure-photo::before { content: ""; position: absolute; inset: -24px; background: var(--hero-bg) center / cover no-repeat; filter: blur(18px) brightness(0.72); }
+.place-figure-photo img { position: relative; width: 100%; height: 100%; object-fit: contain; }
+.place-figure figcaption { margin-top: 4px; font-size: 10px; }
+.place-figure figcaption a { color: var(--muted); text-decoration: none; }
+.place-where { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; color: var(--ink-2); font-weight: 700; }
+.place-where .icon { width: 16px; height: 16px; color: var(--brand-2); }
+.place-facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
+.place-fact { display: grid; gap: 2px; padding: 10px 12px; border-radius: 14px; background: var(--brand-soft); }
+.place-fact .icon { width: 16px; height: 16px; color: var(--brand-2); }
+.place-fact strong { font-size: 14px; line-height: 1.3; }
+.place-fact small { color: var(--muted); font-size: 12px; }
+.place-summary { margin-bottom: 16px; color: var(--ink-2); font-size: 15px; line-height: 1.6; }
+.place-sources { margin-top: 12px; }
+
+/* Frases e versículos mais discretos */
+.spotlight { gap: 10px; padding: 12px 44px 20px 12px; }
+.spotlight-sun { width: 34px; height: 34px; }
+.spotlight-sun .icon { width: 28px; height: 28px; }
+.spotlight-kicker { font-size: 11px; letter-spacing: 1.2px; }
+.spotlight-text { font-size: 16px; line-height: 1.4; }
+#trip-message .spotlight-text { font-size: 15px; }
+.spotlight-art { height: 22px; }
+.verse-card blockquote { font-size: 15px; opacity: 0.9; }
+.verse-card figcaption { font-size: 12px; }
+.photo-credit { max-width: calc(100% - 24px); font-size: 9px !important; opacity: 0.7; }
