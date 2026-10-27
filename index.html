@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=39">
+    <link rel="stylesheet" href="styles.css?v=40">
     <script src="icones.js?v=26" defer></script>
     <script src="dados/fontes-abertas.js?v=25" defer></script>
     <script src="dados/cidades.js?v=2" defer></script>
@@ -24,7 +24,7 @@
     <script src="dados/mensagens.js?v=25" defer></script>
     <script src="dados/inspiracao.js?v=1" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-    <script src="script.js?v=39" defer></script>
+    <script src="script.js?v=40" defer></script>
     <script src="conta.js?v=33" defer></script>
   </head>
   <body>
@@ -43,7 +43,6 @@
             <p id="home-subtitle">Sua próxima história começa aqui.</p>
           </div>
           <div id="home-reflection"></div>
-          <div id="home-account"></div>
           <div id="home-invite" hidden></div>
           <div id="home-focus"></div>
 
@@ -57,8 +56,33 @@
             </div>
           </section>
 
+
+          <section class="all-trips" id="all-trips" aria-labelledby="all-trips-title">
+            <div class="home-section-head">
+              <h2 class="home-section-title" id="all-trips-title">Suas viagens</h2>
+              <button class="icon-btn icon-btn-sm" id="toggle-home-amounts" type="button" aria-label="Ocultar valores"><svg class="icon" data-icon="eye"></svg></button>
+            </div>
+            <div id="trip-cards" class="trip-list"></div>
+          </section>
+
+          <div id="home-account"></div>
+          <button type="button" class="inspire-teaser" data-home-nav="inspiration">
+            <span class="inspire-teaser-icon" aria-hidden="true"><svg class="icon" data-icon="compass"></svg></span>
+            <span><strong>Sonhando com o próximo destino?</strong><small>Explore a aba Inspiração.</small></span>
+            <svg class="icon" data-icon="chevron-right"></svg>
+          </button>
+
+          <div id="home-feedback"></div>
+
+        </div>
+
+        <div class="screen-body inspiration-view" id="inspiration-view" hidden>
+          <div class="inspiration-head">
+            <h1>Para onde vamos?</h1>
+            <p>Lugares que inspiram a próxima história. Toque na foto para saber mais e começar a planejar.</p>
+          </div>
           <section class="inspiration" aria-labelledby="inspiration-title">
-            <h2 class="home-section-title" id="inspiration-title">Inspiração do dia</h2>
+            <h2 class="visually-hidden" id="inspiration-title">Inspiração do dia</h2>
             <div class="inspiration-card hero" id="hero">
               <img class="hero-img is-active" id="hero-img-a" alt="">
               <img class="hero-img" id="hero-img-b" alt="" aria-hidden="true">
@@ -71,25 +95,18 @@
               </div>
               <button class="inspiration-arrow is-prev" id="previous-inspiration" type="button" aria-label="Imagem anterior"><svg class="icon" data-icon="chevron-left"></svg></button>
               <button class="inspiration-arrow is-next" id="next-inspiration" type="button" aria-label="Próxima imagem"><svg class="icon" data-icon="chevron-right"></svg></button>
-              <div class="hero-dots" id="hero-dots" aria-hidden="true"></div>
+              <span class="hero-count" id="hero-dots" aria-live="polite"></span>
             </div>
           </section>
-
-          <section class="all-trips" id="all-trips" aria-labelledby="all-trips-title">
-            <div class="home-section-head">
-              <h2 class="home-section-title" id="all-trips-title">Suas viagens</h2>
-              <button class="icon-btn icon-btn-sm" id="toggle-home-amounts" type="button" aria-label="Ocultar valores"><svg class="icon" data-icon="eye"></svg></button>
-            </div>
-            <div id="trip-cards" class="trip-list"></div>
+          <section class="destination-section" aria-labelledby="destinations-title">
+            <h2 class="home-section-title" id="destinations-title">Todos os destinos</h2>
+            <div class="destination-grid" id="destination-grid"></div>
           </section>
-
-          <div id="home-feedback"></div>
-
           <figure class="verse-card">
             <blockquote id="home-verse-text"></blockquote>
             <figcaption id="home-verse-reference"></figcaption>
           </figure>
-          <p class="footnote">Fotos da tela inicial e dos lugares: Wikimedia Commons, com crédito em cada uma. Outras imagens ilustrativas: Unsplash.</p>
+          <p class="footnote">Fotos desta aba e dos lugares: Wikimedia Commons, com crédito em cada uma. Outras imagens ilustrativas: Unsplash.</p>
         </div>
 
         <nav class="home-nav" aria-label="Navegação principal">

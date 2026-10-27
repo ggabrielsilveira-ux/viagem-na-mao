@@ -1251,7 +1251,7 @@ function renderInspiration() {
   credit.title = "Foto: Wikimedia Commons";
   $("#home-verse-text").textContent = `“${item.verse}”`;
   $("#home-verse-reference").textContent = item.reference;
-  $("#hero-dots").innerHTML = HERO_DESTINATIONS.map((_, index) => `<span class="${index === inspirationIndex ? "is-active" : ""}"></span>`).join("");
+  $("#hero-dots").textContent = `${inspirationIndex + 1} de ${HERO_DESTINATIONS.length}`;
   const preload = new Image();
   preload.src = HERO_DESTINATIONS[(inspirationIndex + 1) % HERO_DESTINATIONS.length].image;
 }
@@ -1320,24 +1320,25 @@ function reflectionDismissed(key) {
   return state.flags.reflections?.[key] === getBrasiliaDateKey();
 }
 
-function reflectionSpotlight(key, kicker, text) {
+function reflectionSpotlight(key, kicker, text, variant = "") {
   if (!text || reflectionDismissed(key)) return "";
-  return `<section class="spotlight" aria-label="Reflexão">
+  return `<section class="spotlight${variant ? ` spotlight-${variant}` : ""}" aria-label="Reflexão">
       <span class="spotlight-sun" aria-hidden="true">${icon("sun")}</span>
       <div class="spotlight-copy">
         <p class="spotlight-kicker">${escapeHtml(kicker)}</p>
         <p class="spotlight-text">${escapeHtml(text)}</p>
       </div>
-      <svg class="spotlight-art" viewBox="0 0 320 90" aria-hidden="true" preserveAspectRatio="none"><path d="M0 70 C60 40 110 62 170 50 C230 38 270 58 320 44 L320 90 L0 90 Z" fill="#56D7AE" opacity=".35"/><path d="M0 82 C80 62 150 80 220 70 C260 64 290 72 320 66 L320 90 L0 90 Z" fill="#56D7AE" opacity=".5"/></svg>
+      ${variant === "home" ? HOME_REFLECTION_ART : ""}<svg class="spotlight-art" viewBox="0 0 320 90" aria-hidden="true" preserveAspectRatio="none"><path d="M0 70 C60 40 110 62 170 50 C230 38 270 58 320 44 L320 90 L0 90 Z" fill="#56D7AE" opacity=".35"/><path d="M0 82 C80 62 150 80 220 70 C260 64 290 72 320 66 L320 90 L0 90 Z" fill="#56D7AE" opacity=".5"/></svg>
       <button class="spotlight-close" type="button" data-dismiss-reflection="${escapeHtml(key)}" aria-label="Dispensar reflexão">${icon("x")}</button>
     </section>`;
 }
 
+// Paisagem leve (SVG, sem imagem) atrás da faixa de reflexão da Home.
+const HOME_REFLECTION_ART = `<svg class="spotlight-landscape" viewBox="0 0 160 100" aria-hidden="true" preserveAspectRatio="xMaxYMax meet"><circle cx="112" cy="54" r="11" fill="#FF8068" opacity=".9"/><path d="M20 100 C45 78 62 64 84 70 C104 76 118 58 140 62 C150 64 156 70 160 74 L160 100 Z" fill="#56D7AE" opacity=".16"/><path d="M0 100 C30 88 58 80 86 86 C112 92 136 82 160 86 L160 100 Z" fill="#56D7AE" opacity=".22"/><path d="M78 94 C100 91 124 95 150 92" fill="none" stroke="#FF8068" stroke-width="1.5" stroke-linecap="round" opacity=".55"/></svg>`;
+
 function renderHomeReflection() {
   const today = getBrasiliaDateKey();
-  const kickers = ["Um momento pra agradecer", "Pausa pra refletir"];
-  const kicker = kickers[Number(today.slice(-2)) % kickers.length];
-  $("#home-reflection").innerHTML = reflectionSpotlight("home", kicker, messageFor("reflexoes", `home|${today}`));
+  $("#home-reflection").innerHTML = reflectionSpotlight("home", "Uma pausa para refletir", messageFor("reflexoes", `home|${today}`), "home");
   hydrateIcons($("#home-reflection"));
 }
 
@@ -1393,7 +1394,25 @@ function renderHomeFeedback() {
 }
 window.renderHomeFeedback = renderHomeFeedback;
 
+// A tela Início tem duas vistas: a Home e a aba Inspiração (route.view), com a mesma barra de baixo.
+function renderHomeView() {
+  const inspiration = route.view === "inspiration";
+  $("#home-top").hidden = inspiration;
+  $("#inspiration-view").hidden = !inspiration;
+  $$("[data-home-nav]").forEach((item) => {
+    if (!item.closest(".home-nav")) return;
+    const active = item.dataset.homeNav === (inspiration ? "inspiration" : "top");
+    item.classList.toggle("is-active", active);
+    if (active) item.setAttribute("aria-current", "page");
+    else item.removeAttribute("aria-current");
+  });
+  if (inspiration && !$("#destination-grid").childElementCount) {
+    $("#destination-grid").innerHTML = HERO_DESTINATIONS.map((item, index) => `<button type="button" class="destination-tile" data-destination-index="${index}"><img src="${escapeHtml(item.image)}" alt="" loading="lazy"><span><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.place)}</small></span></button>`).join("");
+  }
+}
+
 function renderHome() {
+  renderHomeView();
   setAmountToggle($("#toggle-home-amounts"));
   renderHomeAccount();
   renderHomeFeedback();
@@ -1407,7 +1426,7 @@ function renderHome() {
   $(".quick-access").dataset.trip = focus?.id || "";
   if (!focus) {
     $("#home-subtitle").textContent = "Sua próxima história começa aqui.";
-    focusContainer.innerHTML = `<div class="home-empty">${icon("plane")}<h3>Que tal planejar a primeira viagem?</h3><p>Junte destinos, roteiro, custos e memórias em um só lugar.</p><button class="btn btn-primary" type="button" data-new-trip>${icon("plus")} Planejar viagem</button></div>`;
+    focusContainer.innerHTML = `<div class="home-empty"><svg class="home-empty-art" viewBox="0 0 320 90" aria-hidden="true"><path d="M20 84 C80 70 130 40 175 52" fill="none" stroke="#9fbfb0" stroke-width="2" stroke-dasharray="5 6"/><ellipse cx="70" cy="34" rx="22" ry="9" fill="#e3eee7"/><ellipse cx="262" cy="46" rx="28" ry="11" fill="#e3eee7"/><path d="M120 90 C170 62 230 62 300 90 Z" fill="#eef4f0"/></svg>${icon("plane", "home-empty-plane")}<h3>Sua próxima viagem</h3><p class="home-empty-ask">Para onde vamos?</p><p>Escolha seu destino e comece a planejar.</p><button class="btn btn-primary" type="button" data-new-trip>${icon("plus")} Planejar viagem</button></div>`;
   } else {
     const phase = tripClock(focus).phase;
     $("#home-subtitle").textContent = phase === "durante" ? "Bom passeio! Sua viagem está acontecendo." : phase === "depois" ? "Que tal reviver sua última viagem?" : "Sua próxima história começa aqui.";
@@ -6023,15 +6042,22 @@ document.addEventListener("click", (event) => {
   }
   const homeNav = event.target.closest("[data-home-nav]");
   if (homeNav) {
-    const target = { top: "#home-top", trips: "#all-trips", inspiration: ".inspiration" }[homeNav.dataset.homeNav];
-    if (homeNav.dataset.homeNav === "top") window.scrollTo({ top: 0, behavior: "smooth" });
-    else $(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    $$("[data-home-nav]").forEach((item) => {
-      const active = item === homeNav;
-      item.classList.toggle("is-active", active);
-      if (active) item.setAttribute("aria-current", "page");
-      else item.removeAttribute("aria-current");
-    });
+    const where = homeNav.dataset.homeNav;
+    if (where === "inspiration") {
+      if (route.view !== "inspiration") navigate({ screen: "home", view: "inspiration" });
+      else window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (route.view === "inspiration") navigate({ screen: "home", view: "home" }, { replace: true });
+    if (where === "trips") $("#all-trips")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+  const destination = event.target.closest("[data-destination-index]");
+  if (destination) {
+    inspirationIndex = Number(destination.dataset.destinationIndex);
+    renderInspiration();
+    openInspirationSheet();
     return;
   }
   if (event.target.closest("[data-new-trip]")) {

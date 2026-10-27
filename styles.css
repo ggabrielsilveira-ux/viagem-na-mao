@@ -1274,3 +1274,47 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .feedback-types .chip { cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; }
 .feedback-types .chip.is-active { border-color: var(--brand-2); color: #fff; background: var(--brand-2); }
 #feedback-text { min-height: 120px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; font: inherit; resize: vertical; }
+
+/* Home V04: faixa de reflexão verde-escuro (só na Home) */
+.spotlight-home { min-height: 128px; padding: 16px 48px 18px 16px; border: 0; color: #fff8ec; background: linear-gradient(120deg, var(--brand-deep) 0%, var(--brand) 100%); box-shadow: 0 12px 28px rgba(16, 68, 49, 0.25); }
+.spotlight-home .spotlight-sun { color: var(--accent); }
+.spotlight-home .spotlight-kicker { color: var(--accent); }
+.spotlight-home .spotlight-text { max-width: 74%; color: #fff8ec; font-size: 18px; line-height: 1.35; }
+.spotlight-home .spotlight-art { display: none; }
+.spotlight-home .spotlight-close { color: #fff8ec; background: rgba(255, 255, 255, 0.14); }
+.spotlight-landscape { position: absolute; right: 0; bottom: 0; width: 46%; height: 100%; pointer-events: none; }
+@media (max-width: 360px) { .spotlight-home .spotlight-text { max-width: 100%; font-size: 16px; } .spotlight-landscape { opacity: 0.45; } }
+
+/* Home V04: estado vazio "Sua próxima viagem" */
+.home-empty { position: relative; overflow: hidden; padding: 24px 22px 26px; border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow); }
+.home-empty-art { display: block; width: 100%; height: 64px; margin: -6px 0 -30px; }
+.home-empty .home-empty-plane { position: relative; width: 40px; height: 40px; color: var(--brand-2); transform: rotate(-12deg); }
+.home-empty h3 { margin: 10px 0 2px; font-size: 22px; }
+.home-empty .home-empty-ask { margin-bottom: 4px; color: var(--ink); font-weight: 700; }
+
+/* Home V04: convite compacto à Inspiração */
+.inspire-teaser { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; border: 0; border-radius: var(--radius-lg); color: var(--ink); background: var(--brand-soft); font: inherit; text-align: left; cursor: pointer; }
+.inspire-teaser-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; color: var(--brand-2); background: #fff; }
+.inspire-teaser-icon .icon { width: 22px; height: 22px; }
+.inspire-teaser strong { display: block; font-size: 15px; }
+.inspire-teaser small { display: block; color: var(--muted); font-size: 13px; }
+.inspire-teaser > .icon { width: 18px; height: 18px; color: var(--brand-2); }
+
+/* Aba Inspiração */
+.inspiration-view { display: grid; gap: 18px; padding-top: 4px; padding-bottom: calc(var(--tab-h) + 40px + var(--safe-bottom)); }
+.inspiration-head h1 { font-family: var(--font-display); font-size: 28px; letter-spacing: -0.6px; }
+.inspiration-head p { margin-top: 4px; color: var(--muted); }
+.inspiration-view .inspiration-card.hero { height: 240px; }
+.hero-count { position: absolute; z-index: 2; right: 14px; bottom: 12px; padding: 2px 9px; border-radius: 999px; color: #fff; background: rgba(10, 18, 14, 0.45); font-size: 11.5px; font-weight: 700; }
+.destination-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.destination-tile { overflow: hidden; padding: 0; border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink); background: var(--surface); font: inherit; text-align: left; cursor: pointer; }
+.destination-tile img { width: 100%; height: 92px; object-fit: cover; }
+.destination-tile span { display: block; padding: 8px 10px 10px; }
+.destination-tile strong { display: block; overflow: hidden; font-size: 13.5px; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+.destination-tile small { display: block; overflow: hidden; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.inspiration-view .verse-card { margin-top: 8px; }
+
+.spotlight-landscape { width: 40%; height: 82%; }
+.spotlight-home .spotlight-text { max-width: 70%; }
+#home-account:empty { display: none; }
+#home-account .account-invite { margin-bottom: 0; }
