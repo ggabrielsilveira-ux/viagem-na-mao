@@ -1619,3 +1619,17 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .cities-note { display: flex; gap: 8px; align-items: flex-start; margin: -4px 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--brand-soft); color: var(--ink); font-size: 13.5px; line-height: 1.4; }
 .cities-note .icon { flex: none; width: 18px; height: 18px; margin-top: 1px; color: var(--brand-2); }
 .city-search-hint { margin: 14px 2px; color: var(--ink-2); font-size: 14px; }
+
+/* Roteiro: sugestão automática em destaque no topo */
+.plan-banner { display: grid; grid-template-columns: auto 1fr; gap: 10px 12px; align-items: center; margin-bottom: 14px; padding: 14px; border: 1px solid #cfe1d6; border-radius: 18px; background: var(--brand-soft); }
+.plan-banner-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: #fff; background: var(--brand); }
+.plan-banner strong { display: block; font-size: 15px; }
+.plan-banner small { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; line-height: 1.35; }
+.plan-banner .btn { grid-column: 1 / -1; }
+
+/* Cadastro: cidades em ordem, arrastando pela alça */
+.stepper-row.is-sortable { grid-template-columns: auto 1fr auto; }
+.stepper-row .drag-handle { margin-right: 0; padding: 6px 2px; }
+.wizard-intro p .icon { width: 16px; height: 16px; vertical-align: -3px; }
+.stepper-list.is-reordering .stepper-row { transition: transform 160ms ease; }
+.stepper-row.is-dragging { position: relative; z-index: 5; transition: none !important; border-color: var(--brand-2); box-shadow: 0 16px 34px rgba(21, 32, 27, 0.22); }

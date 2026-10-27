@@ -676,7 +676,7 @@ function openDepartureSheet() {
 function openEditSheet() {
   const trip = getCurrentTrip();
   if (!trip) return;
-  const options = [["cities", "map-pin", "Cidades"], ["dates", "calendar", "Datas e horário de saída"], ["people", "users", "Quem vai e como"], ["interests", "heart", "Interesses"], ["budget", "wallet", "Orçamento"]];
+  const options = [["cities", "map-pin", "Cidades"], ...(trip.destinations.length > 1 ? [["split", "arrow-up-down", "Ordem das cidades e noites"]] : []), ["dates", "calendar", "Datas e horário de saída"], ["people", "users", "Quem vai e como"], ["interests", "heart", "Interesses"], ["budget", "wallet", "Orçamento"]];
   openSheet(`${sheetTitle("Editar viagem")}
     <label class="field">Nome da viagem<input id="edit-trip-name" maxlength="60" value="${escapeHtml(trip.name)}" placeholder="Ex.: Férias de verão"></label>
     <button class="btn btn-primary btn-block" type="button" id="edit-trip-name-save">${icon("check")} Salvar nome</button>
@@ -2185,6 +2185,10 @@ function renderItinerary() {
   const trip = getCurrentTrip();
   const days = getTripDays(trip);
   const strip = $("#day-strip");
+  $("#plan-banner").innerHTML = days.length && trip.saved.length ? `<div class="plan-banner">
+    <span class="plan-banner-icon">${icon("sparkles")}</span>
+    <div><strong>Monte o roteiro em um toque</strong><small>Distribuímos ${trip.saved.length === 1 ? "o lugar curtido" : `os ${trip.saved.length} lugares curtidos`} pelos dias de cada cidade, começando pelos mais perto. Seus compromissos não mudam.</small></div>
+    <button class="btn btn-primary btn-block" id="generate-itinerary" type="button">${icon("sparkles")} Sugerir roteiro</button></div>` : "";
   if (!days.length) {
     strip.innerHTML = "";
     $("#day-header").innerHTML = "";
@@ -2535,6 +2539,52 @@ function attachStopDrag(list, trip, date) {
     event.stopPropagation();
   }, true);
   list.addEventListener("contextmenu", (event) => { if (drag || pending) event.preventDefault(); });
+}
+
+// Reordenar linhas [data-sort-index] arrastando pela alça; onMove(from, to) aplica a nova ordem.
+function attachRowSort(list, onMove) {
+  let drag = null;
+  list.addEventListener("pointerdown", (event) => {
+    const handle = event.target.closest(".drag-handle");
+    const row = handle?.closest("[data-sort-index]");
+    if (!row || drag || (event.pointerType === "mouse" && event.button !== 0)) return;
+    event.preventDefault();
+    const rows = [...list.querySelectorAll("[data-sort-index]")];
+    if (rows.length < 2) return;
+    drag = { row, rows, pointerId: event.pointerId, startY: event.clientY, from: rows.indexOf(row), to: rows.indexOf(row), step: row.getBoundingClientRect().height + 10 };
+    drag.mids = rows.map((item) => { const rect = item.getBoundingClientRect(); return rect.top + rect.height / 2; });
+    list.classList.add("is-reordering");
+    row.classList.add("is-dragging");
+    try { handle.setPointerCapture(event.pointerId); } catch { /* ponteiro já liberado */ }
+    navigator.vibrate?.(15);
+  });
+  list.addEventListener("pointermove", (event) => {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    const dy = event.clientY - drag.startY;
+    drag.row.style.transform = `translateY(${dy}px)`;
+    const center = drag.mids[drag.from] + dy;
+    const to = drag.mids.filter((mid, index) => index !== drag.from && mid < center).length;
+    drag.to = to;
+    drag.rows.forEach((item, index) => {
+      if (item === drag.row) return;
+      let shift = 0;
+      if (drag.from < to && index > drag.from && index <= to) shift = -drag.step;
+      if (drag.from > to && index >= to && index < drag.from) shift = drag.step;
+      item.style.transform = shift ? `translateY(${shift}px)` : "";
+    });
+  });
+  const release = (event) => {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    const { rows, row, from, to } = drag;
+    drag = null;
+    list.classList.remove("is-reordering");
+    row.classList.remove("is-dragging");
+    rows.forEach((item) => { item.style.transform = ""; });
+    if (from !== to) onMove(from, to);
+  };
+  list.addEventListener("pointerup", release);
+  list.addEventListener("pointercancel", release);
+  list.addEventListener("touchmove", (event) => { if (drag) event.preventDefault(); }, { passive: false });
 }
 
 function generateItinerary() {
@@ -3679,7 +3729,7 @@ function updateWizardNext() {
   const steps = wizardSteps();
   const step = steps[wizard.step];
   // O número de etapas pode mudar (ex.: datas que exigem refazer a divisão de noites).
-  const titles = { cities: "Destinos", dates: "Datas", split: "Dias por cidade", people: "Quem vai", interests: "Interesses", budget: "Orçamento" };
+  const titles = { cities: "Destinos", dates: "Datas", split: "Ordem e noites", people: "Quem vai", interests: "Interesses", budget: "Orçamento" };
   $("#wizard-step-label").textContent = `Etapa ${wizard.step + 1} de ${steps.length} · ${titles[step]}`;
   $("#wizard-progress").style.width = `${((wizard.step + 1) / steps.length) * 100}%`;
   const last = wizard.step === steps.length - 1;
@@ -3810,14 +3860,14 @@ function renderDatesStep(body) {
 function renderSplitStep(body) {
   const data = wizard.data;
   if (data.cities.reduce((sum, city) => sum + city.nights, 0) !== totalNights()) distributeNights();
-  body.innerHTML = `<div class="wizard-intro"><h2>Quantas noites em cada cidade?</h2><p>Dividimos igualmente; ajuste como preferir.</p></div><div class="stepper-list" id="split-list"></div><p class="nights-note" id="split-note"></p>`;
+  body.innerHTML = `<div class="wizard-intro"><h2>Ordem e noites em cada cidade</h2><p>Arraste pelo ${icon("grip-vertical")} para pôr as cidades na ordem da viagem. As datas se ajustam sozinhas.</p></div><div class="stepper-list" id="split-list"></div><p class="nights-note" id="split-note"></p>`;
   const paint = () => {
     let cursor = data.startDate;
     $("#split-list").innerHTML = data.cities.map((city, index) => {
       const arrival = cursor;
       const departure = index === data.cities.length - 1 ? data.endDate : addDays(cursor, city.nights);
       cursor = departure;
-      return `<div class="stepper-row"><div><strong>${escapeHtml(city.name)}</strong><small>${escapeHtml(formatRange(arrival, departure, false))}</small></div>
+      return `<div class="stepper-row is-sortable" data-sort-index="${index}"><span class="drag-handle" aria-hidden="true">${icon("grip-vertical")}</span><div><strong>${index + 1}. ${escapeHtml(city.name)}</strong><small>${escapeHtml(formatRange(arrival, departure, false))}</small></div>
         <div class="stepper"><button class="icon-btn icon-btn-sm" type="button" data-nights="${index}" data-delta="-1" aria-label="Menos uma noite em ${escapeHtml(city.name)}"${city.nights <= 0 ? " disabled" : ""}>${icon("minus")}</button><output>${nightsLabel(city.nights)}</output><button class="icon-btn icon-btn-sm" type="button" data-nights="${index}" data-delta="1" aria-label="Mais uma noite em ${escapeHtml(city.name)}">${icon("plus")}</button></div></div>`;
     }).join("");
     const diff = totalNights() - data.cities.reduce((sum, city) => sum + city.nights, 0);
@@ -3826,6 +3876,12 @@ function renderSplitStep(body) {
     updateWizardNext();
   };
   paint();
+  attachRowSort($("#split-list"), (from, to) => {
+    const [moved] = data.cities.splice(from, 1);
+    data.cities.splice(to, 0, moved);
+    paint();
+    toast("Ordem atualizada");
+  });
   $("#split-list").addEventListener("click", (event) => {
     const button = event.target.closest("[data-nights]");
     if (!button) return;
@@ -6303,7 +6359,7 @@ $("#skip-activity").addEventListener("click", () => triggerSwipe("skip"));
 $("#maybe-activity").addEventListener("click", () => triggerSwipe("maybe"));
 $("#like-activity").addEventListener("click", () => triggerSwipe("like"));
 $("#add-itinerary-button").addEventListener("click", openManualEventSheet);
-$("#generate-itinerary").addEventListener("click", generateItinerary);
+$("#plan-banner").addEventListener("click", (event) => { if (event.target.closest("#generate-itinerary")) generateItinerary(); });
 $("#expense-fab").addEventListener("click", openExpenseSheet);
 $("#view-currency").addEventListener("click", (event) => {
   const button = event.target.closest("[data-view-brl]");
