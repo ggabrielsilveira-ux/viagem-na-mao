@@ -254,19 +254,46 @@ async function loadPerfil() {
   }
 }
 
-// Só dígitos; número brasileiro sem DDI ganha o 55.
-function normalizeWhatsapp(value) {
-  const digits = String(value || "").replace(/\D/g, "");
-  if (digits.length === 10 || digits.length === 11) return `55${digits}`;
-  return digits;
+// Código do país (DDI) do WhatsApp: Brasil por padrão; quem mora fora escolhe o país.
+const PHONE_COUNTRIES = [
+  ["55", "Brasil"], ["351", "Portugal"], ["1", "Estados Unidos e Canadá"], ["34", "Espanha"], ["39", "Itália"], ["33", "França"],
+  ["49", "Alemanha"], ["44", "Reino Unido"], ["353", "Irlanda"], ["41", "Suíça"], ["31", "Países Baixos"], ["32", "Bélgica"],
+  ["43", "Áustria"], ["54", "Argentina"], ["56", "Chile"], ["598", "Uruguai"], ["595", "Paraguai"], ["57", "Colômbia"],
+  ["51", "Peru"], ["52", "México"], ["81", "Japão"], ["82", "Coreia do Sul"], ["61", "Austrália"], ["64", "Nova Zelândia"],
+  ["971", "Emirados Árabes"], ["972", "Israel"], ["27", "África do Sul"], ["244", "Angola"], ["258", "Moçambique"]
+];
+
+// Só dígitos, com o DDI na frente. Número escrito com "+" (ou 00) já traz o DDI; senão usa o país escolhido.
+function normalizeWhatsapp(value, country = "55") {
+  const text = String(value || "").trim();
+  const digits = text.replace(/\D/g, "");
+  if (!digits) return "";
+  if (text.startsWith("+") || text.startsWith("00")) return digits.replace(/^00/, "");
+  if (country === "55" && digits.startsWith("55") && (digits.length === 12 || digits.length === 13)) return digits;
+  return `${country}${digits.replace(/^0+/, "")}`;
+}
+
+// País do número guardado: o DDI mais longo que combina (351 antes de 35...).
+function whatsappCountry(digits) {
+  const d = String(digits || "");
+  return [...PHONE_COUNTRIES].sort((a, b) => b[0].length - a[0].length).find(([code]) => d.startsWith(code))?.[0] || "55";
+}
+
+// Número sem o DDI, para o campo ao lado do país.
+function whatsappLocal(digits) {
+  const d = String(digits || "");
+  const country = whatsappCountry(d);
+  const local = d.startsWith(country) ? d.slice(country.length) : d;
+  if (country === "55" && local.length === 11) return `(${local.slice(0, 2)}) ${local.slice(2, 7)}-${local.slice(7)}`;
+  if (country === "55" && local.length === 10) return `(${local.slice(0, 2)}) ${local.slice(2, 6)}-${local.slice(6)}`;
+  return local;
 }
 
 function formatWhatsapp(digits) {
   const d = String(digits || "");
-  const local = d.startsWith("55") && (d.length === 12 || d.length === 13) ? d.slice(2) : d;
-  if (local.length === 11) return `(${local.slice(0, 2)}) ${local.slice(2, 7)}-${local.slice(7)}`;
-  if (local.length === 10) return `(${local.slice(0, 2)}) ${local.slice(2, 6)}-${local.slice(6)}`;
-  return d ? `+${d}` : "";
+  if (!d) return "";
+  const country = whatsappCountry(d);
+  return country === "55" ? whatsappLocal(d) : `+${country} ${whatsappLocal(d)}`;
 }
 
 function openPerfilSheet({ first = false } = {}) {
@@ -275,7 +302,12 @@ function openPerfilSheet({ first = false } = {}) {
   openSheet(`${sheetTitle(first ? "Complete seu cadastro" : "Seu cadastro")}
     <p class="muted">${first ? "Falta pouco: assim sabemos quem está testando e podemos falar com você sobre o app." : "Seus dados de testador. Só a equipe do Viagem na Mão vê."}</p>
     <label class="field">Nome completo<input id="perfil-nome" maxlength="120" autocomplete="name" value="${escapeHtml(perfil.nome || "")}" placeholder="Ex.: Maria da Silva"></label>
-    <label class="field">WhatsApp com DDD<input id="perfil-whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" value="${escapeHtml(formatWhatsapp(perfil.whatsapp))}" placeholder="(48) 99999-9999"></label>
+    <div class="field"><span>WhatsApp</span>
+      <div class="perfil-phone">
+        <select id="perfil-ddi" aria-label="País do número">${PHONE_COUNTRIES.map(([code, name]) => `<option value="${code}"${code === whatsappCountry(perfil.whatsapp) ? " selected" : ""}>${escapeHtml(name)} +${code}</option>`).join("")}</select>
+        <input id="perfil-whatsapp" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="24" aria-label="Número do WhatsApp" value="${escapeHtml(whatsappLocal(perfil.whatsapp))}" placeholder="(48) 99999-9999">
+      </div>
+    </div>
     <div class="field"><span>Aniversário (opcional, sem o ano)</span>
       <div class="perfil-birthday">
         <select id="perfil-dia" aria-label="Dia do aniversário"><option value="">Dia</option>${Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0")).map((d) => `<option value="${d}"${d === day ? " selected" : ""}>${Number(d)}</option>`).join("")}</select>
@@ -287,15 +319,24 @@ function openPerfilSheet({ first = false } = {}) {
     <button class="btn btn-primary btn-block" type="button" id="perfil-salvar">${icon("check")} Salvar cadastro</button>
     <p class="account-terms">Usamos estes dados só para o teste do Viagem na Mão, como explica a <a href="https://viagemnamao.com/privacidade" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</p>`, (root) => {
     const status = root.querySelector("#perfil-status");
+    const ddi = root.querySelector("#perfil-ddi");
+    const phone = root.querySelector("#perfil-whatsapp");
+    const paintPhone = () => { phone.placeholder = ddi.value === "55" ? "(48) 99999-9999" : "Número"; };
+    paintPhone();
+    ddi.addEventListener("change", paintPhone);
     root.querySelector("#perfil-salvar").addEventListener("click", async (event) => {
       const button = event.currentTarget;
       const nome = root.querySelector("#perfil-nome").value.trim().replace(/\s+/g, " ");
-      const whatsapp = normalizeWhatsapp(root.querySelector("#perfil-whatsapp").value);
+      const whatsapp = normalizeWhatsapp(phone.value, ddi.value);
       const dia = root.querySelector("#perfil-dia").value;
       const mes = root.querySelector("#perfil-mes").value;
       const novidades = root.querySelector("#perfil-novidades").checked;
       if (nome.split(" ").length < 2) { status.textContent = "Escreva o nome completo (nome e sobrenome)."; return; }
-      if (whatsapp.length < 12 || whatsapp.length > 15) { status.textContent = "Confira o WhatsApp: número com DDD."; return; }
+      const localDigits = whatsapp.slice(whatsappCountry(whatsapp).length).length;
+      if (whatsappCountry(whatsapp) === "55" ? localDigits < 10 || localDigits > 11 : whatsapp.length < 10 || whatsapp.length > 15) {
+        status.textContent = ddi.value === "55" ? "Confira o WhatsApp: número com DDD." : "Confira o WhatsApp: número completo, com o código de área.";
+        return;
+      }
       if (Boolean(dia) !== Boolean(mes)) { status.textContent = "Escolha o dia e o mês do aniversário, ou deixe os dois em branco."; return; }
       button.disabled = true;
       status.textContent = "Salvando…";

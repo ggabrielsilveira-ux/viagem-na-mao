@@ -130,7 +130,9 @@ const CITIES = [
   ["Gyeongju", "Gyeongju", "Coreia do Sul"], ["Daegu", "Daegu", "Coreia do Sul"], ["Jeonju", "Jeonju", "Coreia do Sul"], ["Suwon", "Suwon", "Coreia do Sul"],
   ["Gangneung", "Gangneung", "Coreia do Sul"], ["Andong", "Andong", "Coreia do Sul"], ["Yeosu", "Yeosu", "Coreia do Sul"], ["Daejeon", "Daejeon", "Coreia do Sul", [36.3504, 127.3845]], ["Gwangju", "Gwangju", "Coreia do Sul"],
   ["Lienz", "Lienz", "Áustria", [46.8297, 12.7695]],
-  ["Perca", "Perca", "Itália"], ["Lago de Braies", "Braies", "Itália", [46.6944, 12.0853]], ["Brunico", "Bruneck", "Itália"]
+  ["Perca", "Perca", "Itália"], ["Lago de Braies", "Braies", "Itália", [46.6944, 12.0853]], ["Brunico", "Bruneck", "Itália"],
+  ["Tarragona", "Tarragona", "Espanha"], ["Salou", "Salou", "Espanha"], ["Lérida", "Lérida", "Espanha"], ["Benidorm", "Benidorm", "Espanha"],
+  ["Almería", "Almería", "Espanha"], ["Níjar", "Níjar", "Espanha"], ["Andorra-a-Velha", "Andorra-a-Velha", "Andorra"], ["Soldeu", "Soldeu", "Andorra"]
 ];
 
 // Tipo do Wikidata (P31) → categoria exibida e interesses do app.

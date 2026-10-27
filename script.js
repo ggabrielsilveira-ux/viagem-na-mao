@@ -885,7 +885,7 @@ function addCityPack(pack) {
 
 // Pacotes por cidade (dados/cidades/<cidade>.js, gerados por ferramentas/dividir-cidades.mjs):
 // o aparelho só baixa as cidades das viagens; o service worker (sw.js) guarda para usar sem internet.
-const CITY_PACK_VERSION = 7;
+const CITY_PACK_VERSION = 8;
 const cityPackLoads = new Map();
 
 function loadCityPack(name) {
@@ -2333,6 +2333,22 @@ function nextFreeTime(trip, date) {
   return `${String(Math.min(hours + 2, 22)).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
+// Lugares do catálogo das cidades da viagem cujo nome combina com o texto: começo do nome primeiro,
+// depois começo de uma palavra, depois em qualquer parte.
+function placeSuggestions(trip, text, limit = 5) {
+  const query = normalizeText(text);
+  if (query.length < 3) return [];
+  const cities = tripCities(trip);
+  const rank = (name) => (name.startsWith(query) ? 0 : name.split(/[s'’-]+/).some((word) => word.startsWith(query)) ? 1 : name.includes(query) ? 2 : 3);
+  return activities
+    .filter((activity) => cities.some((city) => activityMatchesCity(activity, city)))
+    .map((activity) => ({ activity, score: rank(normalizeText(activity.name)) }))
+    .filter((item) => item.score < 3)
+    .sort((a, b) => a.score - b.score || a.activity.name.length - b.activity.name.length)
+    .slice(0, limit)
+    .map((item) => item.activity);
+}
+
 function openEventForm(eventId = null) {
   const trip = getCurrentTrip();
   if (!getTripDays(trip).length) return;
@@ -2344,6 +2360,7 @@ function openEventForm(eventId = null) {
   openSheet(`${sheetTitle(existing ? "Editar compromisso" : "Novo compromisso")}
     ${existing ? directionsButton(trip, { coordinates: existing.coordinates, address: existing.address, name: existing.title, date: existing.date }) : ""}
     <label class="field">Lugar ou compromisso<input id="event-title" maxlength="100" value="${escapeHtml(draft.title)}" placeholder="Ex.: Jantar no Cervejaria Ramiro"></label>
+    ${existing ? "" : `<div class="place-suggest" id="event-suggest"></div>`}
     <div class="cat-chips" id="event-categories">${Object.entries(EXPENSE_CATEGORIES).map(([key, [label, iconName]]) => `<button type="button" class="cat-chip${key === draft.category ? " is-selected" : ""}" data-category="${key}">${icon(iconName)}${escapeHtml(label)}</button>`).join("")}</div>
     <label class="field">Endereço<input id="event-address" maxlength="2000" value="${escapeHtml(draft.address || "")}" placeholder="Endereço, nome do lugar ou link do mapa"></label>
     <button class="btn btn-secondary btn-block" type="button" id="event-locate">${icon("map-pin")} Localizar no mapa</button>
@@ -2366,6 +2383,41 @@ function openEventForm(eventId = null) {
     };
     paintGeo();
     if (!existing) root.querySelector("#event-title").focus();
+    // Ao digitar o nome, sugere lugares do catálogo das cidades da viagem (Coli… → Coliseu).
+    // Escolhido um deles, o compromisso entra no roteiro como lugar curtido, com foto e detalhes.
+    let catalogId = null;
+    const titleInput = root.querySelector("#event-title");
+    const suggest = root.querySelector("#event-suggest");
+    const paintSuggest = () => {
+      if (!suggest) return;
+      const found = catalogId ? [] : placeSuggestions(trip, titleInput.value);
+      suggest.innerHTML = found.length ? `<p class="place-suggest-title">Lugares do catálogo</p>${found.map((activity) => {
+        const inPlan = trip.saved.some((item) => item.id === activity.id);
+        return `<button type="button" class="place-option" data-suggest-place="${escapeHtml(activity.id)}"><img src="${escapeHtml(imageOf(activity))}" alt="" loading="lazy"><span><strong>${escapeHtml(activity.name)}</strong><small>${escapeHtml([activity.city, activity.category].filter(Boolean).join(" · "))}${inPlan ? " · já no roteiro" : ""}</small></span></button>`;
+      }).join("")}` : catalogId ? `<p class="place-chosen">${icon("circle-check")} Do catálogo: entra no roteiro com foto e detalhes. <button type="button" class="link-btn" data-place-clear>Usar como compromisso</button></p>` : "";
+    };
+    titleInput?.addEventListener("input", () => {
+      if (catalogId && titleInput.value.trim() !== getActivity(catalogId)?.name) catalogId = null;
+      paintSuggest();
+    });
+    suggest?.addEventListener("click", (event) => {
+      if (event.target.closest("[data-place-clear]")) { catalogId = null; paintSuggest(); return; }
+      const option = event.target.closest("[data-suggest-place]");
+      const activity = option && getActivity(option.dataset.suggestPlace);
+      if (!activity) return;
+      catalogId = activity.id;
+      titleInput.value = activity.name;
+      const coordinates = getOpenData(activity.id)?.coordinates || activity.coordinates || null;
+      if (coordinates) {
+        draft.coordinates = coordinates;
+        draft.label = [activity.name, activity.city, activity.country].filter(Boolean).join(", ");
+        address.value = [activity.name, activity.city].filter(Boolean).join(", ");
+        locatedFor = address.value.trim();
+        results.innerHTML = "";
+        paintGeo();
+      }
+      paintSuggest();
+    });
     root.querySelector("#event-categories").addEventListener("click", (event) => {
       const chip = event.target.closest("[data-category]");
       if (!chip) return;
@@ -2426,6 +2478,23 @@ function openEventForm(eventId = null) {
       draft.time = root.querySelector("#event-time").value || "09:00";
       if (!draft.title) {
         status.textContent = "Dê um nome para o compromisso.";
+        return;
+      }
+      if (catalogId && !existing) {
+        const before = JSON.stringify([trip.saved, trip.maybe, trip.dismissed]);
+        const current = trip.saved.find((item) => item.id === catalogId);
+        if (current) Object.assign(current, { date: draft.date, time: draft.time });
+        else trip.saved.push({ id: catalogId, date: draft.date, time: draft.time });
+        trip.maybe = trip.maybe.filter((item) => item.id !== catalogId);
+        trip.dismissed = trip.dismissed.filter((item) => item !== catalogId);
+        if (!saveState()) {
+          [trip.saved, trip.maybe, trip.dismissed] = JSON.parse(before);
+          return;
+        }
+        selectedDay = draft.date;
+        closeSheet();
+        renderItinerary();
+        toast(`${draft.title} foi para o roteiro`);
         return;
       }
       const record = { id: draft.id, title: draft.title, category: draft.category, address: draft.address, coordinates: draft.coordinates, label: draft.label, date: draft.date, time: draft.time, type: "manual" };

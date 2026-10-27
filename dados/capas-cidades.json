@@ -2959,5 +2959,68 @@
   "autor": "Paul Evans - User: (WT-shared) Snave at wts wikivoyage",
   "licenca": "Public domain",
   "pagina": "https://commons.wikimedia.org/wiki/File:Daejeon_Skyline.JPG"
+ },
+ "Tarragona": {
+  "lugar": "Tarragona",
+  "arquivo": "E5320-Vista-de-Tarragona.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/E5320-Vista-de-Tarragona.jpg/1280px-E5320-Vista-de-Tarragona.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "User:Vmenkov",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:E5320-Vista-de-Tarragona.jpg",
+  "proporcao": 1.33
+ },
+ "Salou": {
+  "lugar": "Salou",
+  "arquivo": "Salou004.JPG",
+  "url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Salou004.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "autor": "Salvador Sáinz",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Salou004.JPG",
+  "proporcao": 1.51
+ },
+ "Lérida": {
+  "lugar": "Lérida",
+  "arquivo": "Lleida (40262867523).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Lleida_%2840262867523%29.jpg/1280px-Lleida_%2840262867523%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Jorge Franganillo from Barcelona, Spain",
+  "licenca": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Lleida_(40262867523).jpg",
+  "proporcao": 1.67
+ },
+ "Benidorm": {
+  "lugar": "Benidorm",
+  "arquivo": "Vista de Benidorm, España, 2014-07-02, DD 67.JPG",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Vista_de_Benidorm%2C_Espa%C3%B1a%2C_2014-07-02%2C_DD_67.JPG/1280px-Vista_de_Benidorm%2C_Espa%C3%B1a%2C_2014-07-02%2C_DD_67.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Diego Delso",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Vista_de_Benidorm,_Espa%C3%B1a,_2014-07-02,_DD_67.JPG",
+  "proporcao": 1.81
+ },
+ "Almería": {
+  "lugar": "Almería",
+  "arquivo": "Almeria. Vista desde Alcazaba.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Almeria._Vista_desde_Alcazaba.jpg/1280px-Almeria._Vista_desde_Alcazaba.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Elenaguiadealmeria",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Almeria._Vista_desde_Alcazaba.jpg",
+  "proporcao": 1.5
+ },
+ "Andorra-a-Velha": {
+  "lugar": "Andorra-a-Velha",
+  "arquivo": "Andorra la Vella - view2.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Andorra_la_Vella_-_view2.jpg/1280px-Andorra_la_Vella_-_view2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Tiia Monto",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Andorra_la_Vella_-_view2.jpg",
+  "proporcao": 2.43
+ },
+ "Soldeu": {
+  "lugar": "Soldeu",
+  "arquivo": "Sant Bartomeu de Soldeu.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Sant_Bartomeu_de_Soldeu.jpg/1280px-Sant_Bartomeu_de_Soldeu.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Joan Simon from Barcelona, España",
+  "licenca": "CC BY-SA 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Sant_Bartomeu_de_Soldeu.jpg",
+  "proporcao": 1.33
  }
 }

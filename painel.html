@@ -49,7 +49,7 @@
       const app = document.querySelector("#app");
       const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
       const data = (v) => v ? new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(v)) : "—";
-      const zap = (d) => { const l = d.startsWith("55") && d.length >= 12 ? d.slice(2) : d; return l.length === 11 ? `(${l.slice(0, 2)}) ${l.slice(2, 7)}-${l.slice(7)}` : l.length === 10 ? `(${l.slice(0, 2)}) ${l.slice(2, 6)}-${l.slice(6)}` : `+${d}`; };
+      const zap = (d) => { if (!d.startsWith("55") || d.length < 12) return `+${d}`; const l = d.slice(2); return l.length === 11 ? `(${l.slice(0, 2)}) ${l.slice(2, 7)}-${l.slice(7)}` : `(${l.slice(0, 2)}) ${l.slice(2, 6)}-${l.slice(6)}`; };
       const recente = (v) => v && Date.now() - new Date(v).getTime() < 7 * 86400000;
 
       if (!CHAVE_PUBLICA || !window.supabase) {
