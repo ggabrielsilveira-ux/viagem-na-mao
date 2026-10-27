@@ -13,7 +13,7 @@ const supabaseClient = SUPABASE_CONFIG.publishableKey && window.supabase
   ? window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.publishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } })
   : null;
 
-const conta = { user: null, plano: null, status: "", syncing: false, timer: null, applyingRemote: false };
+const conta = { user: null, plano: null, perfil: null, status: "", syncing: false, timer: null, applyingRemote: false };
 
 function readSync() {
   try { return JSON.parse(window.localStorage.getItem(SYNC_KEY) || "{}"); } catch { return {}; }
@@ -28,8 +28,10 @@ function writeSync(patch) {
 // Junta dois estados: viagens que faltam entram; na mesma viagem vale a versão mais recente,
 // e as memórias das duas versões são somadas (nada se perde ao usar dois aparelhos).
 function mergeStates(local, remote) {
-  const remoteTrips = (remote.trips || []).map(migrateTrip);
-  const byId = new Map(local.trips.map((trip) => [trip.id, trip]));
+  // Viagens excluídas em qualquer aparelho não voltam.
+  const deleted = new Map([...(remote.deletedTrips || []), ...(local.deletedTrips || [])].filter((item) => item && item.id).map((item) => [item.id, item]));
+  const remoteTrips = (remote.trips || []).map(migrateTrip).filter((trip) => !deleted.has(trip.id));
+  const byId = new Map(local.trips.filter((trip) => !deleted.has(trip.id)).map((trip) => [trip.id, trip]));
   for (const incoming of remoteTrips) {
     const mine = byId.get(incoming.id);
     if (!mine) { byId.set(incoming.id, incoming); continue; }
@@ -38,7 +40,9 @@ function mergeStates(local, remote) {
     const known = new Set(newer.memories.map((memory) => memory.id));
     byId.set(incoming.id, { ...newer, memories: [...newer.memories, ...other.memories.filter((memory) => !known.has(memory.id))] });
   }
-  return { ...remote, ...local, trips: [...byId.values()], currentTripId: local.currentTripId || remote.currentTripId || null };
+  const trips = [...byId.values()];
+  const currentTripId = [local.currentTripId, remote.currentTripId].find((tripId) => tripId && trips.some((trip) => trip.id === tripId)) || trips[0]?.id || null;
+  return { ...remote, ...local, trips, currentTripId, deletedTrips: [...deleted.values()].slice(-200) };
 }
 
 function applyRemoteState(data) {
@@ -223,6 +227,93 @@ async function firstSync() {
   });
 }
 
+
+// ---------------------------------------------------------------------------
+// Cadastro do testador (tabela perfis, ferramentas/supabase-perfis.sql): nome completo e WhatsApp
+// obrigatórios; aniversário (só dia e mês) e aceite de novidades opcionais.
+// ---------------------------------------------------------------------------
+
+const MONTHS_PT = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+
+async function loadPerfil() {
+  const { data } = await supabaseClient.from("perfis").select("nome, whatsapp, aniversario, aceita_novidades").eq("user_id", conta.user.id).maybeSingle();
+  conta.perfil = data || null;
+  // O primeiro nome vira a saudação da tela inicial (a pessoa ainda pode trocar em Ajustes).
+  if (conta.perfil?.nome && !(state.profile?.name || "").trim()) {
+    state.profile = { ...(state.profile || {}), name: conta.perfil.nome.trim().split(/\s+/)[0] };
+    saveState();
+    window.renderHomeAccount?.();
+    if (route.screen === "home") renderHome();
+  }
+}
+
+// Só dígitos; número brasileiro sem DDI ganha o 55.
+function normalizeWhatsapp(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (digits.length === 10 || digits.length === 11) return `55${digits}`;
+  return digits;
+}
+
+function formatWhatsapp(digits) {
+  const d = String(digits || "");
+  const local = d.startsWith("55") && (d.length === 12 || d.length === 13) ? d.slice(2) : d;
+  if (local.length === 11) return `(${local.slice(0, 2)}) ${local.slice(2, 7)}-${local.slice(7)}`;
+  if (local.length === 10) return `(${local.slice(0, 2)}) ${local.slice(2, 6)}-${local.slice(6)}`;
+  return d ? `+${d}` : "";
+}
+
+function openPerfilSheet({ first = false } = {}) {
+  const perfil = conta.perfil || {};
+  const [day, month] = (perfil.aniversario || "/").split("/");
+  openSheet(`${sheetTitle(first ? "Complete seu cadastro" : "Seu cadastro")}
+    <p class="muted">${first ? "Falta pouco: assim sabemos quem está testando e podemos falar com você sobre o app." : "Seus dados de testador. Só a equipe do Viagem na Mão vê."}</p>
+    <label class="field">Nome completo<input id="perfil-nome" maxlength="120" autocomplete="name" value="${escapeHtml(perfil.nome || "")}" placeholder="Ex.: Maria da Silva"></label>
+    <label class="field">WhatsApp com DDD<input id="perfil-whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" value="${escapeHtml(formatWhatsapp(perfil.whatsapp))}" placeholder="(48) 99999-9999"></label>
+    <div class="field"><span>Aniversário (opcional, sem o ano)</span>
+      <div class="perfil-birthday">
+        <select id="perfil-dia" aria-label="Dia do aniversário"><option value="">Dia</option>${Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0")).map((d) => `<option value="${d}"${d === day ? " selected" : ""}>${Number(d)}</option>`).join("")}</select>
+        <select id="perfil-mes" aria-label="Mês do aniversário"><option value="">Mês</option>${MONTHS_PT.map((name, i) => { const m = String(i + 1).padStart(2, "0"); return `<option value="${m}"${m === month ? " selected" : ""}>${name}</option>`; }).join("")}</select>
+      </div>
+    </div>
+    <label class="check-item perfil-optin"><input type="checkbox" id="perfil-novidades"${perfil.aceita_novidades ? " checked" : ""}><span><strong>Quero receber novidades e ofertas</strong><small>Pelo WhatsApp e por e-mail. Você pode desistir quando quiser.</small></span></label>
+    <p class="form-status" id="perfil-status" role="status" aria-live="polite"></p>
+    <button class="btn btn-primary btn-block" type="button" id="perfil-salvar">${icon("check")} Salvar cadastro</button>
+    <p class="account-terms">Usamos estes dados só para o teste do Viagem na Mão, como explica a <a href="https://viagemnamao.com/privacidade" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</p>`, (root) => {
+    const status = root.querySelector("#perfil-status");
+    root.querySelector("#perfil-salvar").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      const nome = root.querySelector("#perfil-nome").value.trim().replace(/\s+/g, " ");
+      const whatsapp = normalizeWhatsapp(root.querySelector("#perfil-whatsapp").value);
+      const dia = root.querySelector("#perfil-dia").value;
+      const mes = root.querySelector("#perfil-mes").value;
+      const novidades = root.querySelector("#perfil-novidades").checked;
+      if (nome.split(" ").length < 2) { status.textContent = "Escreva o nome completo (nome e sobrenome)."; return; }
+      if (whatsapp.length < 12 || whatsapp.length > 15) { status.textContent = "Confira o WhatsApp: número com DDD."; return; }
+      if (Boolean(dia) !== Boolean(mes)) { status.textContent = "Escolha o dia e o mês do aniversário, ou deixe os dois em branco."; return; }
+      button.disabled = true;
+      status.textContent = "Salvando…";
+      const row = {
+        user_id: conta.user.id, nome, whatsapp, aniversario: dia ? `${dia}/${mes}` : null,
+        aceita_novidades: novidades, atualizado_em: new Date().toISOString(),
+        ...(novidades && !conta.perfil?.aceita_novidades ? { aceite_novidades_em: new Date().toISOString() } : {})
+      };
+      const { error } = await supabaseClient.from("perfis").upsert(row);
+      button.disabled = false;
+      if (error) { status.textContent = "Não consegui salvar agora. Tente de novo em instantes."; return; }
+      const firstName = nome.split(" ")[0];
+      if (first || !(state.profile?.name || "").trim()) {
+        state.profile = { ...(state.profile || {}), name: firstName };
+        saveState();
+      }
+      conta.perfil = { nome, whatsapp, aniversario: row.aniversario, aceita_novidades: novidades };
+      closeSheet({ force: true });
+      if (route.screen === "home") renderHome();
+      toast(first ? `Tudo pronto, ${firstName}! Boas viagens.` : "Cadastro atualizado");
+    });
+  });
+}
+window.openPerfilSheet = openPerfilSheet;
+
 // ---------------------------------------------------------------------------
 // Seção "Sua conta" nos Ajustes
 // ---------------------------------------------------------------------------
@@ -240,11 +331,14 @@ function paintAccount() {
   if (conta.user) {
     const when = sync.lastSyncAt ? new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(sync.lastSyncAt)) : "ainda não";
     accountRoot.innerHTML = `<h3>${icon("user")} Sua conta</h3>
-      <p class="settings-ok">${icon("circle-check")} ${escapeHtml(conta.user.email)}</p>
+      <p class="settings-ok">${icon("circle-check")} ${escapeHtml(conta.perfil?.nome || conta.user.email)}</p>
+      ${conta.perfil ? `<p class="settings-meta">${icon("user")} ${escapeHtml(conta.user.email)} · WhatsApp ${escapeHtml(formatWhatsapp(conta.perfil.whatsapp))}</p>` : `<p class="settings-meta">${icon("info")} Falta completar o seu cadastro.</p>`}
       <p class="settings-meta">${icon("shield-check")} Plano: ${escapeHtml(PLAN_LABELS[conta.plano?.plano] || "Teste gratuito")} · viagens e memórias guardadas na nuvem, só você vê.</p>
       <p class="settings-meta">${icon("clock")} Última sincronização: ${escapeHtml(when)}${conta.status ? ` · ${escapeHtml(conta.status)}` : ""}</p>
+      <button class="btn btn-secondary btn-block" type="button" id="account-perfil">${icon("pencil")} ${conta.perfil ? "Editar cadastro" : "Completar cadastro"}</button>
       <div class="row-actions"><button class="btn btn-secondary" type="button" id="account-sync"${conta.syncing ? " disabled" : ""}>${icon("download")} Sincronizar</button><button class="btn btn-secondary" type="button" id="account-logout">Sair</button></div>`;
     accountRoot.querySelector("#account-sync").onclick = () => syncNow({ silent: false });
+    accountRoot.querySelector("#account-perfil").onclick = () => openPerfilSheet({ first: !conta.perfil });
     accountRoot.querySelector("#account-logout").onclick = async () => {
       await syncNow();
       await supabaseClient.auth.signOut();
@@ -308,11 +402,12 @@ if (supabaseClient) {
   supabaseClient.auth.onAuthStateChange((event, session) => {
     const before = conta.user?.id;
     conta.user = session?.user || null;
-    if (!conta.user) { conta.plano = null; paintAccount(); window.renderHomeAccount?.(); return; }
+    if (!conta.user) { conta.plano = null; conta.perfil = null; paintAccount(); window.renderHomeAccount?.(); return; }
     if (before === conta.user.id) return;
     // Deixa o evento terminar antes de chamar o banco (recomendação do Supabase).
     window.setTimeout(async () => {
       await loadPlan().catch(() => {});
+      await loadPerfil().catch(() => {});
       paintAccount();
       if (event === "SIGNED_IN" && readSync().userId !== conta.user.id) {
         writeSync({ userId: conta.user.id, lastPulledAt: "", fotosEnviadas: [] });
@@ -321,6 +416,11 @@ if (supabaseClient) {
       paintAccount();
       window.renderHomeAccount?.();
       registrarUso().catch(() => {});
+      // Sem cadastro ainda: pede nome e WhatsApp (uma vez por abertura do app).
+      if (!conta.perfil && !conta.perfilPedido && !document.querySelector("#sheet")?.open) {
+        conta.perfilPedido = true;
+        openPerfilSheet({ first: true });
+      }
     }, 0);
   });
 }

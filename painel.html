@@ -49,6 +49,7 @@
       const app = document.querySelector("#app");
       const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
       const data = (v) => v ? new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(v)) : "—";
+      const zap = (d) => { const l = d.startsWith("55") && d.length >= 12 ? d.slice(2) : d; return l.length === 11 ? `(${l.slice(0, 2)}) ${l.slice(2, 7)}-${l.slice(7)}` : l.length === 10 ? `(${l.slice(0, 2)}) ${l.slice(2, 6)}-${l.slice(6)}` : `+${d}`; };
       const recente = (v) => v && Date.now() - new Date(v).getTime() < 7 * 86400000;
 
       if (!CHAVE_PUBLICA || !window.supabase) {
@@ -104,13 +105,13 @@
           ];
           app.innerHTML = `<div class="numeros">${numeros.map(([n, t]) => `<div class="cartao numero"><strong>${esc(n)}</strong><span>${esc(t)}</span></div>`).join("")}</div>
             <div class="acoes"><button class="secundario" id="atualizar">Atualizar</button><button class="secundario" id="csv">Baixar planilha (CSV)</button><button class="secundario" id="sair">Sair</button></div>
-            <div class="cartao tabela"><table><thead><tr><th>Testador</th><th>Conta criada</th><th>Último uso</th><th>Dias de uso</th><th>Viagens</th><th>Cidades</th><th>Memórias</th><th>Gastos</th><th>App instalado</th></tr></thead>
-            <tbody>${linhas.map((l) => `<tr><td>${esc(l.email)}</td><td>${data(l.conta_criada)}</td><td class="${recente(l.ultimo_uso) ? "ativo" : ""}">${data(l.ultimo_uso)}</td><td class="n">${l.dias_de_uso}</td><td class="n">${l.viagens}</td><td class="n">${l.cidades}</td><td class="n">${l.memorias}</td><td class="n">${l.gastos}</td><td>${l.instalado ? "sim" : "não"}</td></tr>`).join("") || '<tr><td colspan="9">Ninguém criou conta ainda.</td></tr>'}</tbody></table></div>
+            <div class="cartao tabela"><table><thead><tr><th>Testador</th><th>WhatsApp</th><th>Aniversário</th><th>Novidades</th><th>Conta criada</th><th>Último uso</th><th>Dias de uso</th><th>Viagens</th><th>Cidades</th><th>Memórias</th><th>Gastos</th><th>App instalado</th></tr></thead>
+            <tbody>${linhas.map((l) => `<tr><td><strong>${esc(l.nome || "(sem cadastro)")}</strong><br><small>${esc(l.email)}</small></td><td>${l.whatsapp ? `<a href="https://wa.me/${esc(l.whatsapp)}" target="_blank" rel="noopener">${esc(zap(l.whatsapp))}</a>` : "—"}</td><td>${esc(l.aniversario || "—")}</td><td>${l.aceita_novidades ? "sim" : "não"}</td><td>${data(l.conta_criada)}</td><td class="${recente(l.ultimo_uso) ? "ativo" : ""}">${data(l.ultimo_uso)}</td><td class="n">${l.dias_de_uso}</td><td class="n">${l.viagens}</td><td class="n">${l.cidades}</td><td class="n">${l.memorias}</td><td class="n">${l.gastos}</td><td>${l.instalado ? "sim" : "não"}</td></tr>`).join("") || '<tr><td colspan="12">Ninguém criou conta ainda.</td></tr>'}</tbody></table></div>
             <p class="nota">Os números de uso chegam no máximo uma vez por dia por aparelho, quando ele está com internet. "Usando sem conta" são aparelhos que abriram o app sem criar conta (não dá para saber quem são).</p>`;
           app.querySelector("#atualizar").onclick = carregar;
           app.querySelector("#sair").onclick = async () => { await sb.auth.signOut(); telaEntrar(); };
           app.querySelector("#csv").onclick = () => {
-            const cab = ["email", "conta_criada", "ultimo_uso", "dias_de_uso", "viagens", "cidades", "memorias", "gastos", "instalado"];
+            const cab = ["nome", "email", "whatsapp", "aniversario", "aceita_novidades", "conta_criada", "ultimo_uso", "dias_de_uso", "viagens", "cidades", "memorias", "gastos", "instalado"];
             const csv = [cab.join(";"), ...linhas.map((l) => cab.map((c) => String(l[c] ?? "").replace(/;/g, ",")).join(";"))].join("\n");
             const a = document.createElement("a");
             a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));

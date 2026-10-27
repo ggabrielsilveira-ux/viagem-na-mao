@@ -381,7 +381,7 @@ function migrateTrip(value) {
 let storageNotice = "";
 
 function readStoredState() {
-  const initial = { trips: [], currentTripId: null, hideAmounts: false, displayCurrency: "BRL", displayCurrencyRate: 1, messageHistory: {}, flags: {}, lastBackupAt: null, reminders: "app", invites: {}, profile: { name: "" } };
+  const initial = { trips: [], currentTripId: null, hideAmounts: false, displayCurrency: "BRL", displayCurrencyRate: 1, messageHistory: {}, flags: {}, lastBackupAt: null, reminders: "app", invites: {}, profile: { name: "" }, deletedTrips: [] };
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (!stored) return initial;
@@ -398,6 +398,7 @@ function readStoredState() {
       initial.reminders = value.reminders === "off" ? "off" : "app";
       initial.profile = { name: String(value.profile?.name || "") };
       initial.invites = value.invites && typeof value.invites === "object" ? value.invites : {};
+      initial.deletedTrips = Array.isArray(value.deletedTrips) ? value.deletedTrips.filter((item) => item && item.id) : [];
       return initial;
     }
     if (value.trip) {
@@ -663,7 +664,22 @@ function openEditSheet() {
     <label class="field">Nome da viagem<input id="edit-trip-name" maxlength="60" value="${escapeHtml(trip.name)}" placeholder="Ex.: Férias de verão"></label>
     <button class="btn btn-primary btn-block" type="button" id="edit-trip-name-save">${icon("check")} Salvar nome</button>
     <div class="edit-options">${options.map(([step, iconName, label]) => `<button type="button" data-edit-step="${step}"><span>${icon(iconName)}</span>${escapeHtml(label)}${icon("chevron-right")}</button>`).join("")}</div>
-    <p class="footnote">A hospedagem de cada cidade se edita no Resumo, em “Por onde você vai passar”.</p>`, (root) => {
+    <p class="footnote">A hospedagem de cada cidade se edita no Resumo, em “Por onde você vai passar”.</p>
+    <div id="trip-delete-actions"><button class="btn btn-danger btn-block" type="button" id="trip-delete">${icon("trash-2")} Excluir viagem</button></div>
+    <div class="confirm-box" id="trip-delete-confirm" hidden>
+      <p><strong>Excluir “${escapeHtml(trip.name || "Minha viagem")}”?</strong> Roteiro, gastos, ideias e memórias desta viagem saem deste aparelho e da sua conta. Não dá para desfazer.</p>
+      <div class="row-actions"><button class="btn btn-secondary" type="button" id="trip-delete-cancel">Cancelar</button><button class="btn btn-danger" type="button" id="trip-delete-ok">${icon("trash-2")} Excluir</button></div>
+    </div>`, (root) => {
+    root.querySelector("#trip-delete").addEventListener("click", () => {
+      root.querySelector("#trip-delete-actions").hidden = true;
+      root.querySelector("#trip-delete-confirm").hidden = false;
+      root.querySelector("#trip-delete-confirm").scrollIntoView({ block: "nearest" });
+    });
+    root.querySelector("#trip-delete-cancel").addEventListener("click", () => {
+      root.querySelector("#trip-delete-actions").hidden = false;
+      root.querySelector("#trip-delete-confirm").hidden = true;
+    });
+    root.querySelector("#trip-delete-ok").addEventListener("click", () => deleteTrip(trip.id));
     const input = root.querySelector("#edit-trip-name");
     const save = () => {
       const name = input.value.trim();
@@ -691,6 +707,24 @@ function openEditSheet() {
       editTrip(button.dataset.editStep);
     });
   });
+}
+
+function deleteTrip(id) {
+  const trip = state.trips.find((item) => item.id === id);
+  if (!trip) return;
+  const photos = (trip.memories || []).flatMap((memory) => memory.photos || []);
+  const previous = { trips: state.trips, currentTripId: state.currentTripId, deletedTrips: state.deletedTrips };
+  state.trips = state.trips.filter((item) => item.id !== id);
+  state.deletedTrips = [...(state.deletedTrips || []).filter((item) => item.id !== id), { id, at: new Date().toISOString() }].slice(-200);
+  if (state.currentTripId === id) state.currentTripId = state.trips[0]?.id || null;
+  if (!saveState()) {
+    Object.assign(state, previous);
+    return;
+  }
+  deletePhotos(photos).catch(() => {});
+  closeSheet({ force: true });
+  navigate({ screen: "home" }, { replace: true });
+  toast("Viagem excluída");
 }
 
 function formatRange(start, end, withYear = true) {
@@ -1372,9 +1406,13 @@ function renderHome() {
   addImageFallbacks(focusContainer);
 
   const container = $("#trip-cards");
-  const trips = [...state.trips].sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
-  $("#all-trips").hidden = !trips.length;
-  container.innerHTML = trips.map((trip) => {
+  // Viagens que já terminaram vão para "Viagens anteriores" (a mais recente primeiro).
+  const today = getBrasiliaDateKey();
+  const ended = (trip) => Boolean(trip.endDate) && trip.endDate < today;
+  const upcoming = state.trips.filter((trip) => !ended(trip)).sort((a, b) => (a.startDate || "9999").localeCompare(b.startDate || "9999"));
+  const past = state.trips.filter(ended).sort((a, b) => b.endDate.localeCompare(a.endDate));
+  $("#all-trips").hidden = !state.trips.length;
+  const card = (trip) => {
     const cover = coverFor(trip);
     const budget = Number(trip.budget) || 0;
     return `<button class="trip-card" type="button" data-open-trip="${escapeHtml(trip.id)}">
@@ -1386,7 +1424,9 @@ function renderHome() {
       </span>
       ${icon("chevron-right")}
     </button>`;
-  }).join("");
+  };
+  container.innerHTML = (upcoming.length ? upcoming.map(card).join("") : `<p class="muted past-empty">Nenhuma viagem pela frente. Que tal planejar a próxima?</p>`)
+    + (past.length ? `<details class="past-trips"${upcoming.length ? "" : " open"}><summary>${icon("clock")} Viagens anteriores <span class="count-pill">${past.length}</span>${icon("chevron-down", "chevron")}</summary><div class="trip-list">${past.map(card).join("")}</div></details>` : "");
   addImageFallbacks(container);
 }
 
