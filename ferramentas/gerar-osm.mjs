@@ -193,6 +193,16 @@ async function getPhotos(files) {
   return photos;
 }
 
+// Nome para exibir: o em português; senão o nome local se for de alfabeto latino; senão o em inglês
+// ou uma transliteração (Coreia, Japão, China, Tailândia...), para o brasileiro conseguir ler.
+const readable = (tags) => (/[A-Za-zÀ-ÿ]/.test(displayName(tags)) ? 1 : 0);
+function displayName(tags) {
+  if (tags["name:pt"]) return tags["name:pt"];
+  if (/[A-Za-zÀ-ÿ]/.test(tags.name || "")) return tags.name;
+  const latin = tags["name:en"] || tags.int_name || Object.entries(tags).find(([key, value]) => /^name:[a-z]+-Latn/.test(key) && value)?.[1];
+  return latin || tags.name;
+}
+
 async function main() {
   const cityData = loadWindowFile("atracoes-cidades.js", "CITY_DATA");
   if (!cityData) throw new Error("Rode antes: node ferramentas/gerar-atracoes-cidades.mjs");
@@ -212,11 +222,13 @@ async function main() {
     const candidates = elements
       .map((element) => ({ element, kind: kindOf(element.tags || {}) }))
       .filter(({ element, kind }) => kind && !known.has(element.tags.wikidata))
-      .sort((a, b) => score(b.element.tags) - score(a.element.tags));
+      // Com nome legível (alfabeto latino) primeiro; os demais só completam a cota.
+      .sort((a, b) => readable(b.element.tags) - readable(a.element.tags) || score(b.element.tags) - score(a.element.tags));
     for (const { element, kind } of candidates) {
       const tags = element.tags;
-      const name = tags["name:pt"] || tags.name;
-      const key = normalize(name);
+      const name = displayName(tags);
+      // Nome sem letra latina normaliza para vazio: aí a chave é o próprio nome, senão todos colidem.
+      const key = normalize(name) || name;
       if (seenNames.has(key) || knownNames.has(`${normalize(city.name)}|${key}`)) continue;
       const [group] = KINDS[kind];
       if ((groups[group] || 0) >= LIMITS[group]) continue;

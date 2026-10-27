@@ -30,10 +30,40 @@ const CAPA_FIXA = {
   "Puerto Madryn": "Playa en Puerto Madryn, Argentina.jpg",
   "La Serena": "Faro Monumental de La Serena. 08.12.2022.jpg",
   "El Paso": "El Paso skyline.jpg",
-  "Palm Springs": "Palm Springs Tramway Mountain Top View March 1996 01.jpg"
+  "Palm Springs": "Palm Springs Tramway Mountain Top View March 1996 01.jpg",
+  "Maceió": "Ponta Verde Lighthouse landscape - Maceió, Brazil (edited).jpg",
+  "São Luís": "Praça Antônio Lobo, São Luís, Maranhão aka Sao Luis, Maranhao 10.jpg",
+  "Bento Gonçalves": "Locomotiva estacao bento goncalves.jpg",
+  "Maragogi": "Maragogi - Alagoas (16364632559).jpg",
+  "Palmas": "Vista de Palmas, Tocantins.jpg",
+  "Cancún": "Cancun-beach-Mexico-2016-Luka-Peternel.jpg",
+  "Rio Branco": "Calçadão da Gameleira, Rio Branco Acre 1.jpg",
+  "Boa Vista": "Teatro de Boa Vista-RR.jpg",
+  "Porto Belo": "Muelle Porto Belo (38587560).jpeg",
+  "Itajaí": "Itajaí - panoramio (2).jpg",
+  "São Francisco do Sul": "Ilha de São Francisco do Sul (6840580399).jpg",
+  "São Joaquim": "Parque Nacional de São Joaquim - Raphael Sombrio (01).jpg",
+  "Treze Tílias": "Trezetilias rathaus.JPG",
+  "Caxias do Sul": "Vista Caxias do Sul, a partir do Cristo2.jpg",
+  "Guaratuba": "BAÍA DE GUARATUBA, Paraná, Brasil by Ude Dalcomuni Cit - panoramio.jpg",
+  "Matinhos": "Matinhos-praia.jpg",
+  "Bertioga": "PRAIA DA ENSEADA - BERTIOGA-SP (5) - panoramio.jpg",
+  "Santo Antônio do Pinhal": "Santo Antonio do Pinhal - panoramio - IsmaelSilva.jpg",
+  "Brotas": "Brotas - SP by - Águas Radicais - panoramio.jpg",
+  "Serra Negra": "Serra Negra, Brazil 2012.jpg",
+  "Marselha": "Marseille vieux port pano.jpg",
+  "San Andrés": "Isla de San Andrés Colombia 0.jpg",
+  "Punta Cana": "Punta Cana Beach 01.jpg",
+  "Salta": "Cabildo de Salta, Argentina.jpg",
+  "Aracaju": "Orla Atalaia - Aracaju, Sergipe - panoramio.jpg",
+  "Santos": "ROGERIO CASSIMIRO jardins SANTOS SP (26033615347).jpg",
+  "Pomerode": "RenatoSoares Rota Enxaimel Pomerode SC (40181310614).jpg",
+  "Garibaldi": "Trem do Vinho.jpg",
+  "Daejeon": "Daejeon Skyline.JPG",
+  "Daegu": "Daegu from Migliore.jpg"
 };
 // Cidades em que a imagem oficial não serve de capa (detalhe, noturna, ângulo estranho): busca foto de destaque/qualidade.
-const CAPA_BUSCA = new Set(["Toronto", "Vancouver", "Melbourne", "Ubatuba", "Daegu", "Daejeon"]);
+const CAPA_BUSCA = new Set(["Toronto", "Vancouver", "Melbourne", "Ubatuba"]);
 // Detalhes e interiores não servem de capa.
 const NOT_VIEW = /detail|detalhe|interior|inside|close-?up|floatplane|seaplane/i;
 

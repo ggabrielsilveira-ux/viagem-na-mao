@@ -885,7 +885,7 @@ function addCityPack(pack) {
 
 // Pacotes por cidade (dados/cidades/<cidade>.js, gerados por ferramentas/dividir-cidades.mjs):
 // o aparelho só baixa as cidades das viagens; o service worker (sw.js) guarda para usar sem internet.
-const CITY_PACK_VERSION = 6;
+const CITY_PACK_VERSION = 7;
 const cityPackLoads = new Map();
 
 function loadCityPack(name) {

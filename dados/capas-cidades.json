@@ -2689,5 +2689,275 @@
   "licenca": "CC BY-SA 3.0",
   "pagina": "https://commons.wikimedia.org/wiki/File:Lavaredo.jpg",
   "proporcao": 1.5
+ },
+ "Maceió": {
+  "lugar": "Maceió",
+  "arquivo": "Ponta Verde Lighthouse landscape - Maceió, Brazil (edited).jpg",
+  "proporcao": 1.51,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Ponta_Verde_Lighthouse_landscape_-_Macei%C3%B3%2C_Brazil_%28edited%29.jpg/1280px-Ponta_Verde_Lighthouse_landscape_-_Macei%C3%B3%2C_Brazil_%28edited%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Original: André Lage Freitas Derivative work: Wilfredor Derivative work: Aristea",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Ponta_Verde_Lighthouse_landscape_-_Macei%C3%B3,_Brazil_(edited).jpg"
+ },
+ "Aracaju": {
+  "lugar": "Aracaju",
+  "arquivo": "Orla Atalaia - Aracaju, Sergipe - panoramio.jpg",
+  "proporcao": 1.96,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Orla_Atalaia_-_Aracaju%2C_Sergipe_-_panoramio.jpg/1280px-Orla_Atalaia_-_Aracaju%2C_Sergipe_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Paulo JC Nogueira",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Orla_Atalaia_-_Aracaju,_Sergipe_-_panoramio.jpg"
+ },
+ "São Luís": {
+  "lugar": "São Luís",
+  "arquivo": "Praça Antônio Lobo, São Luís, Maranhão aka Sao Luis, Maranhao 10.jpg",
+  "proporcao": 1.78,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Pra%C3%A7a_Ant%C3%B4nio_Lobo%2C_S%C3%A3o_Lu%C3%ADs%2C_Maranh%C3%A3o_aka_Sao_Luis%2C_Maranhao_10.jpg/1280px-Pra%C3%A7a_Ant%C3%B4nio_Lobo%2C_S%C3%A3o_Lu%C3%ADs%2C_Maranh%C3%A3o_aka_Sao_Luis%2C_Maranhao_10.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Ridiculopathy",
+  "licenca": "CC0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Pra%C3%A7a_Ant%C3%B4nio_Lobo,_S%C3%A3o_Lu%C3%ADs,_Maranh%C3%A3o_aka_Sao_Luis,_Maranhao_10.jpg"
+ },
+ "Santos": {
+  "lugar": "Santos",
+  "arquivo": "ROGERIO CASSIMIRO jardins SANTOS SP (26033615347).jpg",
+  "proporcao": 1.78,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/ROGERIO_CASSIMIRO_jardins_SANTOS_SP_%2826033615347%29.jpg/1280px-ROGERIO_CASSIMIRO_jardins_SANTOS_SP_%2826033615347%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "MTur Destinos",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:ROGERIO_CASSIMIRO_jardins_SANTOS_SP_(26033615347).jpg"
+ },
+ "Bento Gonçalves": {
+  "lugar": "Bento Gonçalves",
+  "arquivo": "Locomotiva estacao bento goncalves.jpg",
+  "proporcao": 1.78,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Locomotiva_estacao_bento_goncalves.jpg/1280px-Locomotiva_estacao_bento_goncalves.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Felipe Pretto",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Locomotiva_estacao_bento_goncalves.jpg"
+ },
+ "Maragogi": {
+  "lugar": "Maragogi",
+  "arquivo": "Maragogi - Alagoas (16364632559).jpg",
+  "proporcao": 1.5,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Maragogi_-_Alagoas_%2816364632559%29.jpg/1280px-Maragogi_-_Alagoas_%2816364632559%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Marinelson Almeida - Traveling through Brazil from Niteroi, Brasil",
+  "licenca": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Maragogi_-_Alagoas_(16364632559).jpg"
+ },
+ "Palmas": {
+  "lugar": "Palmas",
+  "arquivo": "Vista de Palmas, Tocantins.jpg",
+  "proporcao": 1.78,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Vista_de_Palmas%2C_Tocantins.jpg/1280px-Vista_de_Palmas%2C_Tocantins.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "MTur Destinos",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Vista_de_Palmas,_Tocantins.jpg"
+ },
+ "Cancún": {
+  "lugar": "Cancún",
+  "arquivo": "Cancun-beach-Mexico-2016-Luka-Peternel.jpg",
+  "proporcao": 1.5,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Cancun-beach-Mexico-2016-Luka-Peternel.jpg/1280px-Cancun-beach-Mexico-2016-Luka-Peternel.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Luka Peternel",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Cancun-beach-Mexico-2016-Luka-Peternel.jpg"
+ },
+ "Rio Branco": {
+  "lugar": "Rio Branco",
+  "arquivo": "Calçadão da Gameleira, Rio Branco Acre 1.jpg",
+  "proporcao": 1.5,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Cal%C3%A7ad%C3%A3o_da_Gameleira%2C_Rio_Branco_Acre_1.jpg/1280px-Cal%C3%A7ad%C3%A3o_da_Gameleira%2C_Rio_Branco_Acre_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Marco Vicentti/MTur Destinos",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Cal%C3%A7ad%C3%A3o_da_Gameleira,_Rio_Branco_Acre_1.jpg"
+ },
+ "Boa Vista": {
+  "lugar": "Boa Vista",
+  "arquivo": "Teatro de Boa Vista-RR.jpg",
+  "proporcao": 1.78,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Teatro_de_Boa_Vista-RR.jpg/1280px-Teatro_de_Boa_Vista-RR.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Andrezza Mariot",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Teatro_de_Boa_Vista-RR.jpg"
+ },
+ "Porto Belo": {
+  "lugar": "Porto Belo",
+  "arquivo": "Muelle Porto Belo (38587560).jpeg",
+  "proporcao": 1.5,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Muelle_Porto_Belo_%2838587560%29.jpeg/1280px-Muelle_Porto_Belo_%2838587560%29.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Federico Macagno",
+  "licenca": "CC BY 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Muelle_Porto_Belo_(38587560).jpeg"
+ },
+ "Itajaí": {
+  "lugar": "Itajaí",
+  "arquivo": "Itajaí - panoramio (2).jpg",
+  "proporcao": 1.48,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Itaja%C3%AD_-_panoramio_%282%29.jpg/1280px-Itaja%C3%AD_-_panoramio_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "caetano051068",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Itaja%C3%AD_-_panoramio_(2).jpg"
+ },
+ "São Francisco do Sul": {
+  "lugar": "São Francisco do Sul",
+  "arquivo": "Ilha de São Francisco do Sul (6840580399).jpg",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Ilha_de_S%C3%A3o_Francisco_do_Sul_%286840580399%29.jpg/1280px-Ilha_de_S%C3%A3o_Francisco_do_Sul_%286840580399%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Otávio Nogueira from Fortaleza, BR",
+  "licenca": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Ilha_de_S%C3%A3o_Francisco_do_Sul_(6840580399).jpg"
+ },
+ "Pomerode": {
+  "lugar": "Pomerode",
+  "arquivo": "RenatoSoares Rota Enxaimel Pomerode SC (40181310614).jpg",
+  "proporcao": 1.5,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/RenatoSoares_Rota_Enxaimel_Pomerode_SC_%2840181310614%29.jpg/1280px-RenatoSoares_Rota_Enxaimel_Pomerode_SC_%2840181310614%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "MTur Destinos",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:RenatoSoares_Rota_Enxaimel_Pomerode_SC_(40181310614).jpg"
+ },
+ "São Joaquim": {
+  "lugar": "São Joaquim",
+  "arquivo": "Parque Nacional de São Joaquim - Raphael Sombrio (01).jpg",
+  "proporcao": 1.5,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Parque_Nacional_de_S%C3%A3o_Joaquim_-_Raphael_Sombrio_%2801%29.jpg/1280px-Parque_Nacional_de_S%C3%A3o_Joaquim_-_Raphael_Sombrio_%2801%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Raphael Sombrio",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Parque_Nacional_de_S%C3%A3o_Joaquim_-_Raphael_Sombrio_(01).jpg"
+ },
+ "Treze Tílias": {
+  "lugar": "Treze Tílias",
+  "arquivo": "Trezetilias rathaus.JPG",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Trezetilias_rathaus.JPG/1280px-Trezetilias_rathaus.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Thomoesch",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Trezetilias_rathaus.JPG"
+ },
+ "Caxias do Sul": {
+  "lugar": "Caxias do Sul",
+  "arquivo": "Vista Caxias do Sul, a partir do Cristo2.jpg",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Vista_Caxias_do_Sul%2C_a_partir_do_Cristo2.jpg/1280px-Vista_Caxias_do_Sul%2C_a_partir_do_Cristo2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Amanari",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Vista_Caxias_do_Sul,_a_partir_do_Cristo2.jpg"
+ },
+ "Garibaldi": {
+  "lugar": "Garibaldi",
+  "arquivo": "Trem do Vinho.jpg",
+  "proporcao": 1.34,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/aa/Trem_do_Vinho.jpg/1280px-Trem_do_Vinho.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "gustavo.kunst",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Trem_do_Vinho.jpg"
+ },
+ "Guaratuba": {
+  "lugar": "Guaratuba",
+  "arquivo": "BAÍA DE GUARATUBA, Paraná, Brasil by Ude Dalcomuni Cit - panoramio.jpg",
+  "proporcao": 1.31,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/BA%C3%8DA_DE_GUARATUBA%2C_Paran%C3%A1%2C_Brasil_by_Ude_Dalcomuni_Cit_-_panoramio.jpg/1280px-BA%C3%8DA_DE_GUARATUBA%2C_Paran%C3%A1%2C_Brasil_by_Ude_Dalcomuni_Cit_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Nivaldo Cit filho",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:BA%C3%8DA_DE_GUARATUBA,_Paran%C3%A1,_Brasil_by_Ude_Dalcomuni_Cit_-_panoramio.jpg"
+ },
+ "Matinhos": {
+  "lugar": "Matinhos",
+  "arquivo": "Matinhos-praia.jpg",
+  "proporcao": 1.34,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Matinhos-praia.jpg/1280px-Matinhos-praia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Ubonat",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Matinhos-praia.jpg"
+ },
+ "Bertioga": {
+  "lugar": "Bertioga",
+  "arquivo": "PRAIA DA ENSEADA - BERTIOGA-SP (5) - panoramio.jpg",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/PRAIA_DA_ENSEADA_-_BERTIOGA-SP_%285%29_-_panoramio.jpg/1280px-PRAIA_DA_ENSEADA_-_BERTIOGA-SP_%285%29_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "CORRETOR-CARVALHO",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:PRAIA_DA_ENSEADA_-_BERTIOGA-SP_(5)_-_panoramio.jpg"
+ },
+ "Santo Antônio do Pinhal": {
+  "lugar": "Santo Antônio do Pinhal",
+  "arquivo": "Santo Antonio do Pinhal - panoramio - IsmaelSilva.jpg",
+  "proporcao": 2.02,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Santo_Antonio_do_Pinhal_-_panoramio_-_IsmaelSilva.jpg/1280px-Santo_Antonio_do_Pinhal_-_panoramio_-_IsmaelSilva.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "IsmaelSilva",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Santo_Antonio_do_Pinhal_-_panoramio_-_IsmaelSilva.jpg"
+ },
+ "Brotas": {
+  "lugar": "Brotas",
+  "arquivo": "Brotas - SP by - Águas Radicais - panoramio.jpg",
+  "proporcao": 1.5,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Brotas_-_SP_by_-_%C3%81guas_Radicais_-_panoramio.jpg/1280px-Brotas_-_SP_by_-_%C3%81guas_Radicais_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Sofia Prado",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Brotas_-_SP_by_-_%C3%81guas_Radicais_-_panoramio.jpg"
+ },
+ "Serra Negra": {
+  "lugar": "Serra Negra",
+  "arquivo": "Serra Negra, Brazil 2012.jpg",
+  "proporcao": 1.78,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Serra_Negra%2C_Brazil_2012.jpg/1280px-Serra_Negra%2C_Brazil_2012.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Daniel Cavallari",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Serra_Negra,_Brazil_2012.jpg"
+ },
+ "Marselha": {
+  "lugar": "Marselha",
+  "arquivo": "Marseille vieux port pano.jpg",
+  "proporcao": 2.36,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Marseille_vieux_port_pano.jpg/1280px-Marseille_vieux_port_pano.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Velvet",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Marseille_vieux_port_pano.jpg"
+ },
+ "San Andrés": {
+  "lugar": "San Andrés",
+  "arquivo": "Isla de San Andrés Colombia 0.jpg",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Isla_de_San_Andr%C3%A9s_Colombia_0.jpg/1280px-Isla_de_San_Andr%C3%A9s_Colombia_0.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Xemenendura",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Isla_de_San_Andr%C3%A9s_Colombia_0.jpg"
+ },
+ "Punta Cana": {
+  "lugar": "Punta Cana",
+  "arquivo": "Punta Cana Beach 01.jpg",
+  "proporcao": 1.78,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Punta_Cana_Beach_01.jpg/1280px-Punta_Cana_Beach_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "NoonIcarus",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Punta_Cana_Beach_01.jpg"
+ },
+ "Salta": {
+  "lugar": "Salta",
+  "arquivo": "Cabildo de Salta, Argentina.jpg",
+  "proporcao": 2.28,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Cabildo_de_Salta%2C_Argentina.jpg/1280px-Cabildo_de_Salta%2C_Argentina.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Dpalma01",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Cabildo_de_Salta,_Argentina.jpg"
+ },
+ "Daegu": {
+  "lugar": "Daegu",
+  "arquivo": "Daegu from Migliore.jpg",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Daegu_from_Migliore.jpg/1280px-Daegu_from_Migliore.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Daegu_from_Migliore.jpg"
+ },
+ "Daejeon": {
+  "lugar": "Daejeon",
+  "arquivo": "Daejeon Skyline.JPG",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Daejeon_Skyline.JPG/1280px-Daejeon_Skyline.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Paul Evans - User: (WT-shared) Snave at wts wikivoyage",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Daejeon_Skyline.JPG"
  }
 }
