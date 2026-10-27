@@ -4152,8 +4152,19 @@ function memoriesPrivacyText() {
   return window.contaLogada?.() ? "Privado · guardado na sua conta" : "Privado · guardado só neste aparelho";
 }
 
-function bauMemoryHtml(memory) {
+let bauDayFilter = "";
+
+function bauMemoryHtml(memory, { featured = false } = {}) {
   const caption = memory.title || memory.text || memory.place || "";
+  if (featured) {
+    // Destaque: foto inteira (sem corte), título e o texto da memória.
+    return `<button class="${memory.photos?.length ? "bau-polaroid" : "bau-note"} is-featured" type="button" data-memory="${escapeHtml(memory.id)}">
+      ${memory.photos?.length ? `<span class="bau-photo"><img data-photo-id="${escapeHtml(memory.photos[0])}" alt="${escapeHtml(memory.title || "Foto da memória")}">${memory.photos.length > 1 ? `<span class="bau-more">+${memory.photos.length - 1}</span>` : ""}</span>` : ""}
+      ${memory.title ? `<strong class="bau-featured-title">${escapeHtml(memory.title)}</strong>` : ""}
+      ${memory.text ? `<span class="bau-featured-text">${escapeHtml(memory.text)}</span>` : ""}
+      ${memory.place ? `<small class="bau-place">${icon("map-pin")} ${escapeHtml(memory.place)}</small>` : ""}
+    </button>`;
+  }
   if (memory.photos?.length) {
     return `<button class="bau-polaroid" type="button" data-memory="${escapeHtml(memory.id)}">
       <span class="bau-photo"><img data-photo-id="${escapeHtml(memory.photos[0])}" alt="${escapeHtml(memory.title || "Foto da memória")}">${memory.photos.length > 1 ? `<span class="bau-more">+${memory.photos.length - 1}</span>` : ""}</span>
@@ -4207,10 +4218,31 @@ function renderMemories() {
     return;
   }
   // Estado B: o álbum com as memórias reais, por dia, sobre o fundo de álbum (imagens/bau/bau-album.jpg).
+  // O arranjo muda com a quantidade: 1 = página de destaque; 2–3 = coluna central; 4+ = por dia, com a
+  // primeira foto do dia em destaque e as demais em duas colunas; muitos dias = filtro por dia.
   container.classList.add("bau-filled");
   const byDate = {};
   memories.forEach((memory) => { (byDate[memory.date || ""] ||= []).push(memory); });
-  const lead = bauFirstVisitMessage || messageFor("reverMemorias", trip.id) || "Os dias passam. As histórias ficam.";
+  const dates = Object.keys(byDate).sort();
+  if (bauDayFilter && !byDate[bauDayFilter]) bauDayFilter = "";
+  const shownDates = bauDayFilter ? [bauDayFilter] : dates;
+  const layout = memories.length === 1 ? "solo" : memories.length <= 3 ? "few" : "many";
+  const lead = bauFirstVisitMessage || "Bateu saudade? Abre o Baú e vem reviver essa história.";
+  const photoCount = memories.reduce((total, memory) => total + (memory.photos?.length || 0), 0);
+  const summary = [plural(dates.filter(Boolean).length, "dia", "dias"), plural(memories.length, "memória", "memórias"), photoCount ? plural(photoCount, "foto", "fotos") : ""].filter(Boolean).join(" · ");
+  const daySection = (date) => {
+    const items = byDate[date];
+    let body;
+    if (layout === "many") {
+      const featured = items.find((memory) => memory.photos?.length);
+      const rest = items.filter((memory) => memory !== featured);
+      body = (featured ? `<div class="bau-featured">${bauMemoryHtml(featured, { featured: true })}</div>` : "")
+        + (rest.length ? `<div class="bau-grid">${rest.map((memory) => bauMemoryHtml(memory)).join("")}</div>` : "");
+    } else {
+      body = `<div class="bau-stack">${items.map((memory) => bauMemoryHtml(memory, { featured: layout === "solo" })).join("")}</div>`;
+    }
+    return `<section class="bau-day" id="bau-dia-${escapeHtml(date || "sem-data")}"><h3 class="bau-day-tag">${escapeHtml(bauDayTag(trip, date))}</h3>${body}</section>`;
+  };
   container.innerHTML = `
     <div class="bau-head">
       <h2>Meu Baú de Memórias</h2>
@@ -4221,13 +4253,10 @@ function renderMemories() {
       <button type="button" class="bau-tool is-mint" data-open-retro><span class="bau-tool-icon">${icon("images")}</span><span><strong>Ver retrospectiva</strong><small>Relembre a viagem em um só lugar</small></span>${icon("chevron-right")}</button>
       <button type="button" class="bau-tool is-coral" data-bau-create><span class="bau-tool-icon">${icon("music")}</span><span><strong>Criar álbum ou vídeo</strong><small>PDF, carrossel ou vídeo curto</small></span>${icon("chevron-right")}</button>
     </div>
-    ${Object.keys(byDate).sort().map((date) => `
-      <section class="bau-day">
-        <h3 class="bau-day-tag">${escapeHtml(bauDayTag(trip, date))}</h3>
-        <div class="bau-grid">${byDate[date].map(bauMemoryHtml).join("")}</div>
-      </section>`).join("")}
-    <p class="bau-private-pill">${icon("lock")} ${escapeHtml(memoriesPrivacyText())}. Compartilhar é sempre escolha sua.</p>
-    ${backupOld ? `<div class="backup-tip">${icon("download")}<p>Suas memórias ficam só neste aparelho. Faça um backup de vez em quando ou entre na sua conta para guardá-las na nuvem.</p><button class="link-btn" type="button" data-open-settings>Fazer backup</button></div>` : ""}`;
+    <p class="bau-summary">${escapeHtml(summary)}</p>
+    ${dates.length > 2 ? `<div class="bau-days" role="group" aria-label="Escolher dia"><button type="button" class="chip${bauDayFilter ? "" : " is-active"}" data-bau-day="" aria-pressed="${!bauDayFilter}">Todos</button>${dates.map((date) => `<button type="button" class="chip${date === bauDayFilter ? " is-active" : ""}" data-bau-day="${escapeHtml(date)}" aria-pressed="${date === bauDayFilter}">${escapeHtml(date ? formatDate(date, { day: "numeric", month: "short" }).replace(" de ", " ").replace(".", "") : "Sem data")} <span>${byDate[date].length}</span></button>`).join("")}</div>` : ""}
+    <div class="bau-album-pages is-${layout}">${shownDates.map(daySection).join("")}</div>
+    <p class="bau-private-pill">${icon("lock")} ${escapeHtml(memoriesPrivacyText())}. Compartilhar é sempre escolha sua.${backupOld ? ` <button class="link-btn" type="button" data-open-settings>Fazer backup</button>` : ""}</p>`;
   hydratePhotos(container);
 }
 
@@ -6113,6 +6142,12 @@ document.addEventListener("click", (event) => {
   }
   if (event.target.closest("#video-open")) {
     openVideoSheet();
+    return;
+  }
+  const bauDay = event.target.closest("[data-bau-day]");
+  if (bauDay) {
+    bauDayFilter = bauDay.dataset.bauDay;
+    renderMemories();
     return;
   }
   if (event.target.closest("[data-bau-create]")) {
