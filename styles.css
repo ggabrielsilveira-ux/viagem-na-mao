@@ -1431,3 +1431,20 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .bau-art img { -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent); mask-image: linear-gradient(to bottom, #000 88%, transparent); }
 /* O fundo fixo acompanha a largura do app (no computador o app fica centralizado em 520 px) */
 .bau-filled::before { right: 0; left: 0; width: 100%; max-width: 520px; margin: 0 auto; }
+/* Baú vazio: proporções finais (enquadramento das polaroides ~22% mais baixo, textos maiores) */
+.bau-art { aspect-ratio: 100 / 78; overflow: hidden; }
+.bau-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 31%; -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent); mask-image: linear-gradient(to bottom, #000 82%, transparent); }
+.bau-art figcaption { top: auto; bottom: 10px; }
+.bau-art-text { margin-top: 10px; padding: 0 4px 8px; }
+.bau-art-text h2 { font-size: 34px; }
+.bau-art-text .bau-lead { margin-top: 8px; font-size: 19px; }
+.bau-art-text .bau-support { max-width: 340px; margin: 18px 0 24px; font-size: 17px; line-height: 1.5; }
+.bau-art-text .btn { min-height: 60px; font-size: 17.5px; }
+.bau-art-text .bau-private { max-width: 340px; margin-top: 14px; font-size: 12.5px; }
+.bau-art-text h2 { font-size: clamp(27px, 8.6vw, 34px); white-space: nowrap; }
+.bau-art-text .bau-lead { font-size: clamp(16.5px, 4.9vw, 19px); }
+.bau-art-text .bau-support { font-size: clamp(15.5px, 4.4vw, 17px); }
+.bau-art-text .btn { padding: 0 18px; font-size: clamp(15.5px, 4.5vw, 17.5px); white-space: nowrap; }
+/* Ocupa a altura útil da tela: o texto se distribui no espaço que sobra embaixo da arte */
+.bau-art-wrap { display: flex; flex-direction: column; min-height: calc(100dvh - 150px - var(--tab-h) - var(--safe-bottom)); }
+.bau-art-text { flex: 1; align-content: center; }
