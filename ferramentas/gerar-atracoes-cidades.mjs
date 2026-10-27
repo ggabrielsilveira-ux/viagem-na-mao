@@ -125,7 +125,10 @@ const CITIES = [
   ["Valparaíso", "Valparaíso (Chile)", "Chile"], ["Pucón", "Pucón", "Chile"], ["Puerto Varas", "Puerto Varas", "Chile"],
   ["Puerto Natales", "Puerto Natales", "Chile"], ["La Serena", "La Serena", "Chile"], ["Salta", "Salta (Argentina)", "Argentina", [-24.7829, -65.4232]],
   ["Puerto Madryn", "Puerto Madryn", "Argentina"], ["El Chaltén", "El Chaltén", "Argentina"], ["Mar del Plata", "Mar del Plata", "Argentina"],
-  ["Rosário", "Rosário (Argentina)", "Argentina"], ["Colônia do Sacramento", "Colonia del Sacramento", "Uruguai"], ["Punta del Diablo", "Punta del Diablo", "Uruguai"]
+  ["Rosário", "Rosário (Argentina)", "Argentina"], ["Colônia do Sacramento", "Colonia del Sacramento", "Uruguai"], ["Punta del Diablo", "Punta del Diablo", "Uruguai"],
+  ["Busan", "Busan", "Coreia do Sul"], ["Incheon", "Incheon", "Coreia do Sul"], ["Jeju", "Jeju (cidade)", "Coreia do Sul"], ["Seogwipo", "Seogwipo", "Coreia do Sul"],
+  ["Gyeongju", "Gyeongju", "Coreia do Sul"], ["Daegu", "Daegu", "Coreia do Sul"], ["Jeonju", "Jeonju", "Coreia do Sul"], ["Suwon", "Suwon", "Coreia do Sul"],
+  ["Gangneung", "Gangneung", "Coreia do Sul"], ["Andong", "Andong", "Coreia do Sul"], ["Yeosu", "Yeosu", "Coreia do Sul"], ["Daejeon", "Daejeon", "Coreia do Sul", [36.3504, 127.3845]], ["Gwangju", "Gwangju", "Coreia do Sul"]
 ];
 
 // Tipo do Wikidata (P31) → categoria exibida e interesses do app.

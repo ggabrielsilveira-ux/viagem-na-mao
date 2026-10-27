@@ -33,7 +33,7 @@ const CAPA_FIXA = {
   "Palm Springs": "Palm Springs Tramway Mountain Top View March 1996 01.jpg"
 };
 // Cidades em que a imagem oficial não serve de capa (detalhe, noturna, ângulo estranho): busca foto de destaque/qualidade.
-const CAPA_BUSCA = new Set(["Toronto", "Vancouver", "Melbourne", "Ubatuba"]);
+const CAPA_BUSCA = new Set(["Toronto", "Vancouver", "Melbourne", "Ubatuba", "Daegu", "Daejeon"]);
 // Detalhes e interiores não servem de capa.
 const NOT_VIEW = /detail|detalhe|interior|inside|close-?up|floatplane|seaplane/i;
 
