@@ -1320,3 +1320,61 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 #home-account .account-invite { margin-bottom: 0; }
 
 .stop-go { margin-bottom: 14px; text-decoration: none; }
+
+/* Meu Baú de Memórias V05 — estado vazio */
+.bau-empty { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.bau-collage { position: relative; width: 100%; height: 232px; margin: 0 0 6px; }
+.bau-collage-photo { position: absolute; display: grid; width: 46%; padding: 8px 8px 26px; border-radius: 4px; background: #fffdf8; box-shadow: 0 10px 24px rgba(21, 32, 27, 0.16); }
+.bau-collage-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 2px; }
+.bau-collage-photo span { position: absolute; right: 8px; bottom: 6px; left: 8px; color: var(--ink-2); font-family: var(--font-serif); font-size: 12px; font-style: italic; }
+.bau-collage-photo.p1 { top: 14px; left: 4%; transform: rotate(-6deg); }
+.bau-collage-photo.p2 { top: 0; left: 30%; z-index: 2; transform: rotate(2deg); }
+.bau-collage-photo.p3 { top: 22px; right: 3%; transform: rotate(7deg); }
+.bau-collage-photo.p2::before { content: ""; position: absolute; top: -9px; left: 50%; width: 54px; height: 18px; background: rgba(86, 215, 174, 0.55); transform: translateX(-50%) rotate(-3deg); }
+.bau-collage-note { position: absolute; z-index: 3; bottom: 2px; left: 6%; display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 4px; color: var(--brand); background: #f6ecd7; box-shadow: 0 6px 14px rgba(21, 32, 27, 0.12); font-family: var(--font-serif); font-size: 13px; font-style: italic; transform: rotate(-4deg); }
+.bau-collage-note .icon { width: 13px; height: 13px; color: var(--accent); }
+.bau-collage figcaption { position: absolute; right: 2px; bottom: -4px; color: var(--muted); font-size: 10px; }
+.bau-empty h2 { margin-top: 8px; color: var(--brand); font-family: var(--font-serif); font-size: 30px; font-weight: 500; line-height: 1.1; }
+.bau-lead { color: var(--brand); font-size: 17px; font-weight: 700; }
+.bau-support { max-width: 320px; color: var(--ink-2); font-size: 15px; line-height: 1.5; }
+.bau-empty .btn { margin-top: 6px; }
+.bau-private { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+.bau-private .icon { width: 14px; height: 14px; }
+.bau-nudge { display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 4px; padding: 12px 14px; border-radius: var(--radius); color: var(--ink-2); background: var(--brand-soft); font-size: 14px; text-align: left; }
+.bau-nudge .icon { flex: none; width: 18px; height: 18px; color: var(--brand-2); }
+.bau-where { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+/* Meu Baú de Memórias V05 — com memórias */
+.bau-head h2 { color: var(--brand); font-family: var(--font-serif); font-size: 28px; font-weight: 500; line-height: 1.1; }
+.bau-head p { margin: 4px 0 12px; color: var(--ink-2); }
+.bau-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 6px; }
+.bau-tool { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: start; padding: 12px; border: 0; border-radius: var(--radius); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.bau-tool.is-mint { background: var(--brand-soft); }
+.bau-tool.is-coral { background: var(--accent-soft); }
+.bau-tool > .icon { display: none; }
+.bau-tool-icon .icon { width: 22px; height: 22px; color: var(--brand-2); }
+.bau-tool.is-coral .bau-tool-icon .icon { color: #c4553f; }
+.bau-tool strong { display: block; font-size: 14px; line-height: 1.25; }
+.bau-tool small { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+.bau-day { margin-top: 18px; }
+.bau-day-tag { display: inline-block; margin-bottom: 10px; padding: 4px 10px; border-radius: 4px; color: #7a3426; background: #ffd9cf; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; transform: rotate(-1.5deg); }
+.bau-grid { columns: 2; column-gap: 12px; }
+.bau-polaroid, .bau-note { display: block; width: 100%; margin: 0 0 12px; break-inside: avoid; border: 0; font: inherit; text-align: left; cursor: pointer; }
+.bau-polaroid { padding: 7px 7px 10px; border-radius: 4px; color: var(--ink); background: #fffdf8; box-shadow: 0 8px 20px rgba(21, 32, 27, 0.12); }
+.bau-grid > :nth-child(odd) { transform: rotate(-1.2deg); }
+.bau-grid > :nth-child(even) { transform: rotate(1.2deg); }
+.bau-photo { position: relative; display: block; }
+.bau-photo img { display: block; width: 100%; max-height: 300px; min-height: 90px; object-fit: cover; border-radius: 2px; background: var(--surface-2); }
+.bau-more { position: absolute; right: 6px; bottom: 6px; padding: 2px 8px; border-radius: 999px; color: #fff; background: rgba(10, 18, 14, 0.6); font-size: 12px; font-weight: 700; }
+.bau-caption { display: -webkit-box; margin: 8px 2px 0; overflow: hidden; color: var(--ink); font-family: var(--font-serif); font-size: 15px; font-style: italic; line-height: 1.3; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.bau-place { display: flex; align-items: center; gap: 3px; margin: 4px 2px 0; color: var(--muted); font-size: 11.5px; }
+.bau-place .icon { width: 12px; height: 12px; flex: none; }
+.bau-note { padding: 14px 14px 12px; border-radius: 4px; color: var(--ink); background: #f6ecd7; box-shadow: 0 8px 18px rgba(21, 32, 27, 0.1); }
+.bau-note strong { display: block; margin-bottom: 4px; font-size: 14px; }
+.bau-note-text { display: -webkit-box; overflow: hidden; font-family: var(--font-serif); font-size: 15px; font-style: italic; line-height: 1.4; -webkit-line-clamp: 6; -webkit-box-orient: vertical; }
+.bau-private-pill { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 8px 0 4px; padding: 8px 12px; border-radius: 999px; color: var(--muted); background: var(--surface-2); font-size: 12.5px; text-align: center; }
+.bau-private-pill .icon { width: 14px; height: 14px; flex: none; }
+.bau-create-options { display: grid; gap: 10px; margin-top: 12px; }
+@media (max-width: 350px) { .bau-tools { grid-template-columns: 1fr; } .bau-collage { height: 200px; } }
+.bau-collage { margin-bottom: 22px; }
+.bau-collage figcaption { right: 0; bottom: -22px; left: 0; text-align: center; }

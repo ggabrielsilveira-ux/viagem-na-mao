@@ -4139,6 +4139,42 @@ function renderMemoriesCard(trip) {
   hydratePhotos(card);
 }
 
+// Fotos ilustrativas do Baú vazio (CC0, as mesmas do site): exemplo de álbum, nunca memórias da pessoa.
+const BAU_EXAMPLE_PHOTOS = [
+  { src: "imagens/bau/exemplo-1.jpg", caption: "Vistas que ficam" },
+  { src: "imagens/bau/exemplo-2.jpg", caption: "Boa companhia" },
+  { src: "imagens/bau/exemplo-3.jpg", caption: "Esse dia foi especial" }
+];
+
+// Onde as memórias ficam guardadas, sem prometer o que não existe.
+function memoriesPrivacyText() {
+  return window.contaLogada?.() ? "Privado · guardado na sua conta" : "Privado · guardado só neste aparelho";
+}
+
+function bauMemoryHtml(memory) {
+  const caption = memory.title || memory.text || memory.place || "";
+  if (memory.photos?.length) {
+    return `<button class="bau-polaroid" type="button" data-memory="${escapeHtml(memory.id)}">
+      <span class="bau-photo"><img data-photo-id="${escapeHtml(memory.photos[0])}" alt="${escapeHtml(memory.title || "Foto da memória")}">${memory.photos.length > 1 ? `<span class="bau-more">+${memory.photos.length - 1}</span>` : ""}</span>
+      ${caption ? `<span class="bau-caption">${escapeHtml(caption)}</span>` : ""}
+      ${memory.place && caption !== memory.place ? `<small class="bau-place">${icon("map-pin")} ${escapeHtml(memory.place)}</small>` : ""}
+    </button>`;
+  }
+  // Só texto: cartão de bilhete, sem foto de enfeite.
+  return `<button class="bau-note" type="button" data-memory="${escapeHtml(memory.id)}">
+    ${memory.title ? `<strong>${escapeHtml(memory.title)}</strong>` : ""}
+    ${memory.text ? `<span class="bau-note-text">${escapeHtml(memory.text)}</span>` : ""}
+    ${memory.place ? `<small class="bau-place">${icon("map-pin")} ${escapeHtml(memory.place)}</small>` : ""}
+  </button>`;
+}
+
+function bauDayTag(trip, date) {
+  if (!date) return "Sem data";
+  const day = formatDate(date, { day: "numeric", month: "short" }).replace(" de ", " ").replace(".", "");
+  const index = getTripDays(trip).indexOf(date);
+  return index >= 0 ? `${day} · Dia ${index + 1}` : day;
+}
+
 function renderMemories() {
   const trip = getCurrentTrip();
   const memories = sortedMemories(trip);
@@ -4147,34 +4183,61 @@ function renderMemories() {
     saveState();
     bauFirstVisitMessage = MESSAGE_LIBRARY.bauPrimeiraAbertura?.[0] || "";
   }
-  const lead = bauFirstVisitMessage || (memories.length ? messageFor("reverMemorias", trip.id) : messageFor("bauVazio", trip.id));
+  const container = $("#memories-content");
+  const backupOld = !window.contaLogada?.() && (!state.lastBackupAt || daysBetween(state.lastBackupAt.slice(0, 10), getBrasiliaDateKey()) > 14);
+  if (!memories.length) {
+    // Estado A: convite para a primeira memória.
+    const nudge = bauFirstVisitMessage || messageFor("bauVazio", trip.id);
+    container.innerHTML = `
+      <div class="bau-empty">
+        <figure class="bau-collage" aria-label="Exemplo de álbum com fotos ilustrativas">
+          ${BAU_EXAMPLE_PHOTOS.map((photo, index) => `<span class="bau-collage-photo p${index + 1}"><img src="${photo.src}" alt="" loading="lazy"><span>${escapeHtml(photo.caption)}</span></span>`).join("")}
+          <span class="bau-collage-note">${escapeHtml(trip.destinations[0]?.name || trip.name || "Minha viagem")} ${icon("heart")}</span>
+          <figcaption>Exemplo de álbum · fotos ilustrativas (CC0)</figcaption>
+        </figure>
+        <h2>Meu Baú de Memórias</h2>
+        <p class="bau-lead">Sua viagem merece ser lembrada.</p>
+        <p class="bau-support">Uma foto, um sentimento, um instante. Comece por aquilo que te fez sorrir.</p>
+        <button class="btn btn-primary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar minha primeira memória</button>
+        <p class="bau-private">${icon("lock")} Só seu, até você escolher compartilhar.</p>
+        ${nudge ? `<p class="bau-nudge">${icon("sparkles")} ${escapeHtml(nudge)}</p>` : ""}
+        <p class="bau-where">${escapeHtml(memoriesPrivacyText())}. Dá para registrar depois também: escolha a data em que aconteceu.</p>
+      </div>`;
+    hydrateIcons(container);
+    return;
+  }
+  // Estado B: o álbum com as memórias reais, por dia.
   const byDate = {};
   memories.forEach((memory) => { (byDate[memory.date || ""] ||= []).push(memory); });
-  const backupOld = !state.lastBackupAt || daysBetween(state.lastBackupAt.slice(0, 10), getBrasiliaDateKey()) > 14;
-  const container = $("#memories-content");
+  const lead = bauFirstVisitMessage || messageFor("reverMemorias", trip.id) || "Os dias passam. As histórias ficam.";
   container.innerHTML = `
-    <div class="memories-hero">
-      <span class="memories-hero-icon">${icon("book-heart")}</span>
+    <div class="bau-head">
       <h2>Meu Baú de Memórias</h2>
       <p>${escapeHtml(lead)}</p>
-      <span class="private-pill">${icon("lock")} Privado · guardado só neste aparelho</span>
-      <button class="btn btn-primary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar momento</button>
-      ${memories.length ? `<button class="btn btn-ghost-light btn-block" type="button" data-open-retro>${icon("images")} Ver retrospectiva</button>` : ""}
     </div>
-    ${memories.length ? Object.keys(byDate).sort().map((date) => `
-      <section class="memory-day">
-        <h3>${escapeHtml(memoryDayLabel(trip, date))}</h3>
-        ${byDate[date].map((memory) => `<button class="memory-card" type="button" data-memory="${escapeHtml(memory.id)}">
-          ${memory.photos?.length ? memoryPhotosHtml(memory.photos) : ""}
-          <span class="memory-body">
-            ${memory.title ? `<strong>${escapeHtml(memory.title)}</strong>` : ""}
-            ${memory.text ? `<span class="memory-snippet">${escapeHtml(memory.text)}</span>` : ""}
-            <small>${memory.place ? `${icon("map-pin")} ${escapeHtml(memory.place)} · ` : ""}${icon("lock")} Privado</small>
-          </span>
-        </button>`).join("")}
-      </section>`).join("") : `<div class="memories-empty">${icon("images")}<p>Fotos e textos que você guardar aparecem aqui, organizados por dia. Dá para registrar depois também: escolha a data em que aconteceu.</p></div>`}
-    ${memories.length && backupOld ? `<div class="backup-tip">${icon("download")}<p>Suas memórias ficam só neste aparelho. Faça um backup de vez em quando para não perdê-las.</p><button class="link-btn" type="button" data-open-settings>Fazer backup</button></div>` : ""}`;
+    <button class="btn btn-primary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar momento</button>
+    <div class="bau-tools">
+      <button type="button" class="bau-tool is-mint" data-open-retro><span class="bau-tool-icon">${icon("images")}</span><span><strong>Ver retrospectiva</strong><small>Relembre a viagem em um só lugar</small></span>${icon("chevron-right")}</button>
+      <button type="button" class="bau-tool is-coral" data-bau-create><span class="bau-tool-icon">${icon("music")}</span><span><strong>Criar álbum ou vídeo</strong><small>PDF, carrossel ou vídeo curto</small></span>${icon("chevron-right")}</button>
+    </div>
+    ${Object.keys(byDate).sort().map((date) => `
+      <section class="bau-day">
+        <h3 class="bau-day-tag">${escapeHtml(bauDayTag(trip, date))}</h3>
+        <div class="bau-grid">${byDate[date].map(bauMemoryHtml).join("")}</div>
+      </section>`).join("")}
+    <p class="bau-private-pill">${icon("lock")} ${escapeHtml(memoriesPrivacyText())}. Compartilhar é sempre escolha sua.</p>
+    ${backupOld ? `<div class="backup-tip">${icon("download")}<p>Suas memórias ficam só neste aparelho. Faça um backup de vez em quando ou entre na sua conta para guardá-las na nuvem.</p><button class="link-btn" type="button" data-open-settings>Fazer backup</button></div>` : ""}`;
   hydratePhotos(container);
+}
+
+// "Criar álbum ou vídeo": as ferramentas que já existem na retrospectiva.
+function openBauCreateSheet() {
+  openSheet(`${sheetTitle("Criar álbum ou vídeo")}
+    <p class="muted">Feitos com as memórias da retrospectiva. Antes, dá para escolher o que aparece e a capa em “Ver retrospectiva”.</p>
+    <div class="bau-create-options">
+      <button class="btn btn-secondary btn-block" type="button" id="album-open">${icon("images")} Álbum em PDF e carrossel</button>
+      <button class="btn btn-secondary btn-block" type="button" id="video-open">${icon("music")} Vídeo curto com música</button>
+    </div>`);
 }
 
 function openMemoryDetail(id) {
@@ -6026,6 +6089,10 @@ document.addEventListener("click", (event) => {
   }
   if (event.target.closest("#video-open")) {
     openVideoSheet();
+    return;
+  }
+  if (event.target.closest("[data-bau-create]")) {
+    openBauCreateSheet();
     return;
   }
   if (event.target.closest("#album-open")) {
