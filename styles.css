@@ -79,7 +79,7 @@ img { display: block; max-width: 100%; }
 
 :focus-visible { outline: 3px solid rgba(45, 106, 80, 0.45); outline-offset: 2px; }
 
-/* Moldura do app: no computador vira um "celular" centralizado. */
+/* Moldura do app: em tablet fica centralizada em 520 px; no computador (1100 px ou mais) ganha menu lateral, no fim deste arquivo. */
 .app {
   position: relative;
   width: 100%;
@@ -1698,3 +1698,61 @@ html.sem-conta body { overflow: hidden; }
 .btn-outline:hover:not(:disabled) { background: rgba(21, 86, 63, 0.06); }
 .welcome-note { margin-top: 4px; color: var(--muted); font-size: 13.5px; }
 .auth-section { margin-top: 4px; }
+
+/* Computador: menu na lateral, conteúdo mais largo e janelas no centro da tela. */
+@media (min-width: 1100px) {
+  :root { --side-w: 248px; --content-w: 880px; }
+  body { background: var(--bg); }
+  .app { max-width: none; box-shadow: none; }
+  /* Só o início e a viagem têm o menu lateral; as outras telas usam a largura toda */
+  #screen-home, #screen-trip { padding-left: var(--side-w); }
+  .screen-body, .home-header, .app-bar > *, .discover-radius, .deck, .deck-actions, .deck-hint { box-sizing: border-box; }
+  .screen-body { max-width: var(--content-w); margin: 0 auto; padding: 24px 32px 48px; }
+  .home-body, .trip-body { padding-bottom: 48px; }
+  .home-header { max-width: var(--content-w); margin: 0 auto; padding: 20px 32px 10px; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .home-header .brand { visibility: hidden; }
+  .app-bar { padding: 14px max(32px, calc((100% - var(--content-w)) / 2 + 32px)); }
+
+  /* Menu lateral (início e abas da viagem) */
+  .home-nav, .tab-bar {
+    top: 0; right: auto; bottom: 0; left: 0;
+    display: flex; flex-direction: column; align-items: stretch; gap: 4px;
+    width: var(--side-w); max-width: none; min-height: 0; margin: 0;
+    padding: 96px 16px 24px;
+    border-top: 0; border-right: 1px solid var(--line);
+    background: #fff;
+  }
+  .home-nav::before, .tab-bar::before {
+    content: "viagem na mão"; position: absolute; top: 26px; left: 20px; right: 16px;
+    padding-left: 50px; min-height: 40px; display: flex; align-items: center;
+    color: var(--brand); font-family: var(--font-display); font-size: 21px; font-weight: 800; letter-spacing: -0.5px;
+    background: url("marca/viagem-na-mao-icon.svg") left center / 40px 40px no-repeat;
+  }
+  .home-nav button, .tab-bar button {
+    flex-direction: row; justify-content: flex-start; gap: 12px;
+    min-height: 46px; padding: 0 14px; border-radius: 14px;
+    font-size: 15px; font-weight: 700; text-align: left;
+  }
+  .home-nav button:hover, .tab-bar button:hover { background: var(--bg); color: var(--ink); }
+  .home-nav button.is-active, .tab-bar button.is-active { background: var(--brand-soft); color: var(--brand); }
+  .tab-bar button.is-active::before { display: none; }
+  /* O botão de nova viagem vira um botão normal, no topo do menu */
+  .home-nav .home-nav-add { order: -1; width: auto; height: 48px; margin: 0 0 12px; border-radius: 14px; justify-content: center; color: #fff; background: var(--brand); box-shadow: none; }
+  .home-nav .home-nav-add::after { content: "Nova viagem"; font-size: 15px; font-weight: 700; }
+  .home-nav .home-nav-add:hover { color: #fff; background: var(--brand-2); }
+
+  /* Botão de adicionar fica fora do conteúdo, à direita, sem cobrir os valores */
+  .fab { right: max(24px, calc((100% - var(--side-w) - var(--content-w)) / 2 - 80px)); bottom: 32px; }
+  .wizard-footer { max-width: none; padding-left: max(32px, calc((100% - var(--content-w)) / 2 + 32px)); padding-right: max(32px, calc((100% - var(--content-w)) / 2 + 32px)); }
+  .toast { left: var(--side-w); }
+  .bau-filled::before { left: var(--side-w); width: auto; max-width: none; }
+
+  /* Telas que já são estreitas por natureza ficam com largura de leitura */
+  .screen-deck .deck, .screen-deck .deck-actions, .screen-deck .deck-hint, .screen-deck .discover-radius { width: 100%; max-width: 560px; margin-left: auto; margin-right: auto; }
+
+  /* Janelas: no centro da tela, não grudadas embaixo */
+  .sheet { max-width: 600px; margin: auto; border-radius: 26px; }
+  .sheet-handle { display: none; }
+  .sheet-content { max-height: 86dvh; padding: 22px 26px 26px; }
+  .sheet-photo { margin: 0 -26px; }
+}
