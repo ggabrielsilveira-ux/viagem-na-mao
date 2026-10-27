@@ -1,0 +1,1084 @@
+{
+ "Rio de Janeiro": [
+  "Rio de Janeiro city"
+ ],
+ "Paraty": [
+  "Parati"
+ ],
+ "Curitiba": [
+  "Kurytyba",
+  "Curityba do Parana",
+  "Curityba",
+  "Coritiba",
+  "Corityba"
+ ],
+ "São Paulo": [
+  "San Paolo",
+  "Saint Paul",
+  "St. Paul"
+ ],
+ "Foz do Iguaçu": [
+  "Foz do Igacu"
+ ],
+ "Salvador": [
+  "Salvador da Bahia",
+  "São Salvador da Bahia de Todos os Santos",
+  "Bahia"
+ ],
+ "Fortaleza": [
+  "Ceara"
+ ],
+ "Brasília": [
+  "Brazíliaváros"
+ ],
+ "Belo Horizonte": [
+  "White Horizon"
+ ],
+ "Manaus": [
+  "Manaos",
+  "Mother of Gods",
+  "Paris of the Tropics"
+ ],
+ "João Pessoa": [
+  "Paraiba"
+ ],
+ "Búzios": [
+  "Armação dos Búzios"
+ ],
+ "Porto Seguro": [
+  "Thanks to you can"
+ ],
+ "Chapada dos Guimarães": [
+  "Chapada dos Guimarães National Park",
+  "Parque nacional da Chapada dos Guimarães",
+  "Nationalpark Chapada dos Guimarães",
+  "Nationaal park Chapada dos Guimarães",
+  "Park Narodowy Chapada dos Guimarães"
+ ],
+ "Ouro Preto": [
+  "Vila Rica do Ouro Preto",
+  "Vila Rica de Ouro Preto"
+ ],
+ "Tiradentes": [
+  "Tirandetes"
+ ],
+ "Petrópolis": [
+  "The Imperial City"
+ ],
+ "Balneário Camboriú": [
+  "Balneario de Camboriu"
+ ],
+ "Jericoacoara": [
+  "Jijoca de Jericoacoara",
+  "Jijoca"
+ ],
+ "Fernando de Noronha": [
+  "Fernando de Noroña",
+  "Fernando de Noronha-szigetcsoport"
+ ],
+ "Porto de Galinhas": [
+  "Porto de Galinhas beach",
+  "Spiaggia di Porto de Galinhas",
+  "Strand von Porto de Galinhas"
+ ],
+ "Alter do Chão": [
+  "Brazilian Caribe"
+ ],
+ "Lisboa": [
+  "Lisbon",
+  "Lisbona",
+  "Lisbonne",
+  "Lissabon",
+  "Lizbona",
+  "Lisabon",
+  "Lisszabon",
+  "Lisabona"
+ ],
+ "Porto": [
+  "Oporto"
+ ],
+ "Buenos Aires": [
+  "Ciudad Autonoma de Buenos Aires",
+  "Ciudad de Buenos Aires"
+ ],
+ "Santiago": [
+  "Santiago de Chile",
+  "Santiago del Cile",
+  "Santiago de Xile",
+  "Greater Santiago"
+ ],
+ "Bariloche": [
+  "San Carlos de Bariloche"
+ ],
+ "Montevidéu": [
+  "Montevideo"
+ ],
+ "Cusco": [
+  "Cuzco",
+  "World heritage city",
+  "Rome of America",
+  "Rome of the Americas",
+  "Cuzco World Heritage Site",
+  "Cusco World Heritage Site",
+  "Qusqu",
+  "Qosqo"
+ ],
+ "Cartagena": [
+  "Cartagena de Indias",
+  "Carthagène des Indes",
+  "Cartagena of the Indies"
+ ],
+ "Bogotá": [
+  "Santafé de Bogotá"
+ ],
+ "Cancún": [
+  "Cancoon"
+ ],
+ "Cidade do México": [
+  "Mexico City",
+  "Ciudad de México",
+  "Città del Messico",
+  "Mexico",
+  "Mexiko-Stadt",
+  "Mexico-Stad",
+  "Ciutat de Mèxic",
+  "Meksyk"
+ ],
+ "Orlando": [
+  "The Beautiful city",
+  "Theme Park Capital of the World"
+ ],
+ "Miami": [
+  "The Magic City"
+ ],
+ "Nova York": [
+  "NYC",
+  "New York City",
+  "Nueva York",
+  "New York",
+  "Nowy Jork",
+  "the five boroughs",
+  "NY City",
+  "Capital of the World"
+ ],
+ "Las Vegas": [
+  "Sin City",
+  "The Entertainment Capital of the World",
+  "The Gambling Capital of the World"
+ ],
+ "Los Angeles": [
+  "Pink City",
+  "La La Land",
+  "Tinsel Town",
+  "Double Dubuque"
+ ],
+ "Paris": [
+  "Parigi",
+  "Parijs",
+  "Paryż",
+  "Paříž",
+  "Párizs",
+  "Lutetia"
+ ],
+ "Londres": [
+  "London",
+  "Londra",
+  "Londen",
+  "Londyn",
+  "London UK",
+  "London U.K.",
+  "Londinium",
+  "Loñ"
+ ],
+ "Roma": [
+  "Rome",
+  "Rom",
+  "Rzym",
+  "Řím",
+  "The Eternal City",
+  "Eternal City",
+  "The Capital of the World",
+  "Capital of the World"
+ ],
+ "Florença": [
+  "Florence",
+  "Florencia",
+  "Firenze",
+  "Florenz",
+  "Florencja",
+  "Florencie",
+  "Florens",
+  "Florența"
+ ],
+ "Veneza": [
+  "Venice",
+  "Venecia",
+  "Venezia",
+  "Venise",
+  "Venedig",
+  "Venetië",
+  "Wenecja",
+  "Benátky"
+ ],
+ "Milão": [
+  "Milan",
+  "Milano",
+  "Mailand",
+  "Milaan",
+  "Milà",
+  "Mediolan"
+ ],
+ "Barcelona": [
+  "Barcellona",
+  "Barcelone",
+  "Barselona",
+  "B'na",
+  "Barcelona City"
+ ],
+ "Madri": [
+  "Madrid",
+  "Madryt"
+ ],
+ "Valência": [
+  "Valence",
+  "Walencja",
+  "Valencie",
+  "Valensiya"
+ ],
+ "Alicante": [
+  "Alacant"
+ ],
+ "Elche": [
+  "Elx"
+ ],
+ "Amsterdã": [
+  "Amsterdam",
+  "Amszterdam",
+  "Mokum",
+  "A'dam"
+ ],
+ "Praga": [
+  "Prague",
+  "Prag",
+  "Praag",
+  "Praha",
+  "Hlavní město Praha"
+ ],
+ "Viena": [
+  "Vienna",
+  "Vienne",
+  "Wien",
+  "Wenen",
+  "Wiedeń",
+  "Vídeň",
+  "Bécs",
+  "Viyana"
+ ],
+ "Berlim": [
+  "Berlin",
+  "Berlino",
+  "Berlijn",
+  "DE-BE"
+ ],
+ "Atenas": [
+  "Athens",
+  "Atene",
+  "Athènes",
+  "Athen",
+  "Athene",
+  "Atenes",
+  "Ateny",
+  "Athény"
+ ],
+ "Istambul": [
+  "Istanbul",
+  "Estambul",
+  "Stambuł",
+  "Isztambul"
+ ],
+ "Dubai": [
+  "Dubaj",
+  "Dubai city"
+ ],
+ "Cairo": [
+  "El Cairo",
+  "Il Cairo",
+  "Le Caire",
+  "Kairo",
+  "el Caire",
+  "Kair",
+  "Káhira",
+  "Kahire"
+ ],
+ "Marrakech": [
+  "Marrakesch",
+  "Marrakesh",
+  "Marràqueix",
+  "Marrakesz",
+  "Marrákeš",
+  "Merakeş"
+ ],
+ "Bangkok": [
+  "Krung Thep",
+  "Sia-Yut'hia"
+ ],
+ "Tóquio": [
+  "Tokyo",
+  "Tokio",
+  "Tokyo-to",
+  "Tokei",
+  "Edo",
+  "Jedo",
+  "Yedo"
+ ],
+ "Singapura": [
+  "Singapore",
+  "Singapur",
+  "Singapour",
+  "Szingapúr",
+  "Republic of Singapore",
+  "Singapore City",
+  "Lion City",
+  "Garden City"
+ ],
+ "Hong Kong": [
+  "Hongkong",
+  "HKSAR",
+  "Hong Kong SAR"
+ ],
+ "Sydney": [
+  "Sídney",
+  "Emerald City",
+  "Harbour City",
+  "Port Jackson",
+  "Greater Sydney",
+  "Gadi",
+  "Eora",
+  "Gadigal"
+ ],
+ "Macapá": [
+  "MCP",
+  "São José de Macapá",
+  "Sam Joze de Macapá"
+ ],
+ "Penha": [
+  "Peña",
+  "former São João Batista do Itapocorói"
+ ],
+ "Balneário Piçarras": [
+  "Piçarras"
+ ],
+ "São Francisco do Sul": [
+  "San Francisco del Sur"
+ ],
+ "Ilha do Mel": [
+  "Isla de Mel"
+ ],
+ "Holambra": [
+  "Hol",
+  "Bra"
+ ],
+ "Atibaia": [
+  "Estância de Atibaia"
+ ],
+ "Cabo Frio": [
+  "Cape Frio"
+ ],
+ "São Thomé das Letras": [
+  "São Tomé das Letras"
+ ],
+ "Arraial d'Ajuda": [
+  "Arraial da Ajuda"
+ ],
+ "Pipa": [
+  "Pipa Beach",
+  "praia de Pipa"
+ ],
+ "Canoa Quebrada": [
+  "Praia de Canoa Quebrada"
+ ],
+ "Sintra": [
+  "Cintra"
+ ],
+ "Sevilha": [
+  "Seville",
+  "Sevilla",
+  "Siviglia",
+  "Sewilla",
+  "Ishbiliya",
+  "Ixbiliya"
+ ],
+ "Granada": [
+  "Grenade",
+  "Grenada"
+ ],
+ "Palma de Maiorca": [
+  "Palma",
+  "Palma de Mallorca",
+  "Palma di Maiorca"
+ ],
+ "San Sebastián": [
+  "Saint-Sébastien",
+  "Donostia-San Sebastián",
+  "Sant Sebastià"
+ ],
+ "Bilbau": [
+  "Bilbao"
+ ],
+ "Nice": [
+  "Niza",
+  "Nizza",
+  "Niça",
+  "Nicea",
+  "Nisa",
+  "Nissa"
+ ],
+ "Lyon": [
+  "Lione",
+  "Lió",
+  "Commune-Affranchie"
+ ],
+ "Marselha": [
+  "Marseille",
+  "Marsella",
+  "Marsiglia",
+  "Marsylia",
+  "Marsilia",
+  "Marsilya",
+  "Massaliotes",
+  "Marsailles"
+ ],
+ "Edimburgo": [
+  "Edinburgh",
+  "Édimbourg",
+  "Edimburg",
+  "Edynburg",
+  "Edina",
+  "Modern Athens",
+  "Auld Reekie",
+  "Athens of the North"
+ ],
+ "Dublin": [
+  "Dublino",
+  "Dublin city"
+ ],
+ "Bruxelas": [
+  "Brussels",
+  "Bruxelles",
+  "Brussel",
+  "Bruselas",
+  "Brüksel Başkent Bölgesi",
+  "Brussels-Capital"
+ ],
+ "Bruges": [
+  "Brujas",
+  "Brügge",
+  "Brugia",
+  "Bruggy",
+  "Brygge"
+ ],
+ "Munique": [
+  "Munich",
+  "Monaco di Baviera",
+  "München",
+  "Múnic",
+  "Monachium",
+  "Mnichov",
+  "Münih",
+  "Muenchen"
+ ],
+ "Zurique": [
+  "Zurich",
+  "Zurigo",
+  "Zúric",
+  "Zurych",
+  "Curych",
+  "Zürih",
+  "Stadt Zürich"
+ ],
+ "Lucerna": [
+  "Lucerne",
+  "Luzern",
+  "Lucern",
+  "Lucerne LU",
+  "Stadt Luzern"
+ ],
+ "Salzburgo": [
+  "Salzburg",
+  "Salisburgo",
+  "Salzbourg",
+  "Salcburk"
+ ],
+ "Budapeste": [
+  "Budapest",
+  "Boedapest",
+  "Budapeszt",
+  "Budapesta",
+  "Buda Pest",
+  "Buda",
+  "Ofen",
+  "Budín"
+ ],
+ "Cracóvia": [
+  "Kraków",
+  "Cracovie",
+  "Krakau",
+  "Krakov",
+  "Krakkó",
+  "Kroke",
+  "Krakiv",
+  "Krakova"
+ ],
+ "Copenhague": [
+  "Copenhagen",
+  "Copenaghen",
+  "Kopenhagen",
+  "Copenhaguen",
+  "Kopenhaga",
+  "Kodaň",
+  "Koppenhága",
+  "Köpenhamn"
+ ],
+ "Estocolmo": [
+  "Stockholm",
+  "Stoccolma",
+  "Estocolm",
+  "Sztokholm",
+  "Sthlm"
+ ],
+ "Helsinque": [
+  "Helsinki",
+  "Helsinky",
+  "Helsingfors",
+  "Helsingia",
+  "Helsingin kaupunki",
+  "Stadi",
+  "Hesa"
+ ],
+ "Rovaniemi": [
+  "Roavvenjárga",
+  "Roavenjárga",
+  "Ruávinjargâ"
+ ],
+ "Reykjavík": [
+  "Reikiavik",
+  "Reykjavíkurborg"
+ ],
+ "Nápoles": [
+  "Naples",
+  "Napoli",
+  "Neapel",
+  "Napels",
+  "Nàpols",
+  "Neapol",
+  "Nápoly",
+  "Neapolis"
+ ],
+ "Santorini": [
+  "Santorin",
+  "Thera",
+  "Santorí",
+  "Santoryn",
+  "Szantorini",
+  "Thira",
+  "Santorini Greece"
+ ],
+ "Dubrovnik": [
+  "Ragusa",
+  "Dubrownik"
+ ],
+ "Split": [
+  "Spalato",
+  "İspelet",
+  "Spalatum"
+ ],
+ "San Francisco": [
+  "The City by the Bay",
+  "SFO",
+  "The Golden City",
+  "Paris of the West",
+  "Baghdad by the Bay",
+  "San Francisco County",
+  "San Fran",
+  "Frisco"
+ ],
+ "Washington": [
+  "Washington D. C.",
+  "Washington DC",
+  "Waszyngton",
+  "D.C. Washington",
+  "The District",
+  "District of Columbia",
+  "D.C."
+ ],
+ "Chicago": [
+  "Şikago",
+  "Chi-Town",
+  "City by the Lake",
+  "The Second City",
+  "Chi-Raq",
+  "Chitown",
+  "The Windy City",
+  "The Queen of the West"
+ ],
+ "Toronto": [
+  "The Six",
+  "T-O",
+  "The 416",
+  "Hogtown"
+ ],
+ "Mendoza": [
+  "ciudad de Mendoza",
+  "Mendoza City"
+ ],
+ "San Andrés": [
+  "Saint Andrew",
+  "Isla de San Andrés",
+  "San Andres Island"
+ ],
+ "Havana": [
+  "La Habana",
+  "L'Avana",
+  "La Havane",
+  "Havanna",
+  "l'Havana",
+  "Hawana",
+  "Habana"
+ ],
+ "Tulum": [
+  "Maya Ruins of Tulum"
+ ],
+ "Cidade do Panamá": [
+  "Panama City",
+  "Ciudad de Panamá",
+  "Panama",
+  "Panama-Stadt",
+  "Panama-Stad",
+  "Ciutat de Panamà",
+  "Panamaváros"
+ ],
+ "Cidade do Cabo": [
+  "Cape Town",
+  "Ciudad del Cabo",
+  "Città del Capo",
+  "Le Cap",
+  "Kapstadt",
+  "Kaapstad",
+  "Ciutat del Cap",
+  "Kapsztad"
+ ],
+ "Joanesburgo": [
+  "Johannesburg",
+  "Johannesburgo",
+  "Johannesbourg",
+  "Jo'burg",
+  "eGoli",
+  "ZAJNB",
+  "joburg"
+ ],
+ "Zanzibar": [
+  "Zanzibar City",
+  "Sansibar Stadt",
+  "Ciutat de Zanzíbar",
+  "Zanzibar Town"
+ ],
+ "Arusha": [
+  "Arusza"
+ ],
+ "Nairóbi": [
+  "Kenya's capital",
+  "Kenyan capital",
+  "Kenya capital city",
+  "Kenya capital"
+ ],
+ "Luxor": [
+  "Louxor",
+  "Luksor",
+  "Uksur"
+ ],
+ "Abu Dhabi": [
+  "Abou Dabi",
+  "Abu Zabi",
+  "Abu-Dzabi",
+  "Abu Dabi",
+  "Abudhabi"
+ ],
+ "Jerusalém": [
+  "Jerusalén",
+  "Gerusalemme",
+  "Jeruzalem",
+  "Jerozolima",
+  "Jeruzsálem",
+  "Ierusalim",
+  "Kudüs",
+  "J'lem"
+ ],
+ "Quioto": [
+  "Kyoto",
+  "Kioto",
+  "Kjóto",
+  "Kyoto City",
+  "Meacum",
+  "Meako"
+ ],
+ "Osaka": [
+  "Oszaka",
+  "Osaka City"
+ ],
+ "Seul": [
+  "Seoul",
+  "Seoel",
+  "Soul",
+  "Szöul",
+  "Seoul Special City",
+  "Sŏul T'ŭkpyŏlsi",
+  "Wiryeseong",
+  "Namgyeong"
+ ],
+ "Bali": [
+  "Ubud"
+ ],
+ "Phuket": [
+  "Phuket Town"
+ ],
+ "Chiang Mai": [
+  "Čiang Mai",
+  "Csiangmaj"
+ ],
+ "Kuala Lumpur": [
+  "Federal Territory of Kuala Lumpur",
+  "K.L."
+ ],
+ "Hanói": [
+  "Hanoj",
+  "Thang Long",
+  "Dong Do",
+  "Tonkin",
+  "Hà Nội",
+  "Đại La"
+ ],
+ "Pequim": [
+  "Beijing",
+  "Pekín",
+  "Pechino",
+  "Peking",
+  "Pequín",
+  "Beiping",
+  "Peiping",
+  "Yanjing"
+ ],
+ "Xangai": [
+  "Shanghai",
+  "Szanghaj",
+  "Šanghaj",
+  "Şanghay",
+  "Shang Hai",
+  "Shanghae",
+  "Zanghae",
+  "Shen"
+ ],
+ "Agra": [
+  "Agrah"
+ ],
+ "Malé": [
+  "Malé City"
+ ],
+ "Melbourne": [
+  "Greater Melbourne",
+  "Naarm",
+  "Narrm",
+  "Melbs"
+ ],
+ "Auckland": [
+  "Tāmaki Makaurau",
+  "Ākarana"
+ ],
+ "Queenstown": [
+  "Tāhuna"
+ ],
+ "Houston": [
+  "Space City",
+  "H-Town",
+  "USHOU",
+  "Houston TX",
+  "Petro metro"
+ ],
+ "Dallas": [
+  "Big D",
+  "D-Town",
+  "Dallas TX",
+  "DTX"
+ ],
+ "San Antonio": [
+  "Alamo City",
+  "River City",
+  "San Antón",
+  "San Antone"
+ ],
+ "Fort Worth": [
+  "Cowtown"
+ ],
+ "El Paso": [
+  "El Paso del Norte"
+ ],
+ "San Diego": [
+  "America's Finest City",
+  "Sandi",
+  "the birthplace of California"
+ ],
+ "Sacramento": [
+  "Sac-Town",
+  "Sac",
+  "The Indomitable City",
+  "The Big Tomato",
+  "The Capitol City",
+  "Camellia City",
+  "River City"
+ ],
+ "Palm Springs": [
+  "Palm City"
+ ],
+ "Monterey": [
+  "Monterrey"
+ ],
+ "Turim": [
+  "Turin",
+  "Torino",
+  "Turijn",
+  "Torí",
+  "Turyn"
+ ],
+ "Bolonha": [
+  "Bologna",
+  "Bolonia",
+  "Bologne",
+  "Bolonya"
+ ],
+ "Verona": [
+  "Vérone",
+  "Werona"
+ ],
+ "Pisa": [
+  "Pise",
+  "Piza"
+ ],
+ "Siena": [
+  "Sienne",
+  "Sienna"
+ ],
+ "Gênova": [
+  "Genoa",
+  "Gênes",
+  "Genua",
+  "Janov",
+  "Cenova",
+  "Zena"
+ ],
+ "Como": [
+  "Côme"
+ ],
+ "La Spezia": [
+  "Spèza",
+  "Spezia"
+ ],
+ "Palermo": [
+  "Palerme",
+  "Palerm"
+ ],
+ "Catânia": [
+  "Catane",
+  "Katania",
+  "Katánie",
+  "Katanya"
+ ],
+ "Taormina": [
+  "Taormine"
+ ],
+ "Bari": [
+  "Bare"
+ ],
+ "Toledo": [
+  "Tolède"
+ ],
+ "Segóvia": [
+  "Ségovie",
+  "Segowia"
+ ],
+ "Córdoba": [
+  "Cordova",
+  "Cordoue",
+  "Kordoba"
+ ],
+ "Cádis": [
+  "Cádiz",
+  "Cadice",
+  "Cadix",
+  "Kadyks"
+ ],
+ "Salamanca": [
+  "Salamanque",
+  "Salamanka"
+ ],
+ "Santiago de Compostela": [
+  "Santiago di Compostela",
+  "Saint-Jacques-de-Compostelle",
+  "Santiago de Compostella"
+ ],
+ "Saragoça": [
+  "Zaragoza",
+  "Saragozza",
+  "Saragosse",
+  "Saragossa"
+ ],
+ "Ibiza": [
+  "Eivissa",
+  "Ibiza City"
+ ],
+ "Santa Cruz de Tenerife": [
+  "Santa Cruz"
+ ],
+ "Bordeaux": [
+  "Burdeos",
+  "Bordeus",
+  "Bordèu",
+  "Bordele",
+  "Commune-Franklin",
+  "Burdigala"
+ ],
+ "Estrasburgo": [
+  "Strasbourg",
+  "Strasburgo",
+  "Straßburg",
+  "Straatsburg",
+  "Estrasburg",
+  "Strasburg",
+  "Štrasburk",
+  "Strazburg"
+ ],
+ "Toulouse": [
+  "Tolosa",
+  "Tolosa de Llenguadoc",
+  "Tuluza",
+  "Pink City"
+ ],
+ "Mont-Saint-Michel": [
+  "Le Mont Saint-Michel",
+  "Monte Saint-Michel",
+  "Mont-Michel",
+  "Mont-Libre",
+  "Mont St. Michel"
+ ],
+ "Avignon": [
+  "Aviñón",
+  "Avignone",
+  "Avinyó",
+  "Awinion",
+  "Avinhon",
+  "Avignoun"
+ ],
+ "Chamonix": [
+  "Chamonix-Mont-Blanc",
+  "Chamouni"
+ ],
+ "Reims": [
+  "Remeš"
+ ],
+ "Carcassonne": [
+  "Carcasona",
+  "Carcassona"
+ ],
+ "Colmar": [
+  "Kolmar"
+ ],
+ "Puerto Madryn": [
+  "Madryn"
+ ],
+ "Rosário": [
+  "Rosario de Santa Fe"
+ ],
+ "Colônia do Sacramento": [
+  "Colonia del Sacramento"
+ ],
+ "Busan": [
+  "Pusan",
+  "Puszan",
+  "Busan Metropolitan City",
+  "Pusan Metropolitan City",
+  "Fuzan"
+ ],
+ "Incheon": [
+  "Inchon",
+  "Inczon",
+  "Inčchon",
+  "Incshon",
+  "Inch'on",
+  "Chemulpo",
+  "Jemulpo"
+ ],
+ "Jeju": [
+  "Jeju-si",
+  "Czedżu",
+  "Čedžu",
+  "Csedzsu",
+  "Jeju City",
+  "Juju-si"
+ ],
+ "Seogwipo": [
+  "Sogüpcho",
+  "Szogüpho"
+ ],
+ "Gyeongju": [
+  "Kjongdžu",
+  "Kjongdzsu",
+  "Kyŏngju",
+  "Kyongiu"
+ ],
+ "Daegu": [
+  "Tegu",
+  "Taegu",
+  "Daegu Metropolitan City"
+ ],
+ "Jeonju": [
+  "Čondžu",
+  "Csondzsu"
+ ],
+ "Suwon": [
+  "Szuvon",
+  "Suwon-si"
+ ],
+ "Gangneung": [
+  "Kangnung"
+ ],
+ "Andong": [
+  "Andong-si",
+  "Andong City"
+ ],
+ "Yeosu": [
+  "Josu",
+  "Joszu",
+  "Yŏsu"
+ ],
+ "Daejeon": [
+  "Tedžon",
+  "Tedzson",
+  "Taejŏn"
+ ],
+ "Gwangju": [
+  "Kwangdžu",
+  "Kvangdzsu",
+  "Gwangju City"
+ ],
+ "Perca": [
+  "Percha"
+ ],
+ "Lago de Braies": [
+  "Lago di Braies",
+  "Pragser Wildsee",
+  "Braies",
+  "Prags"
+ ],
+ "Brunico": [
+  "Bruneck",
+  "Burnech"
+ ]
+}

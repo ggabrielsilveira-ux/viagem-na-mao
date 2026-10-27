@@ -3738,10 +3738,16 @@ function updateWizardNext() {
   button.innerHTML = last ? `${icon("check")} ${wizard.editingId ? "Salvar alterações" : "Criar viagem"}` : `Continuar ${icon("arrow-right")}`;
 }
 
-function cityOptionHtml(city, selected) {
+// Nome alternativo (Tokyo, Firenze...) que casou com a busca quando o nome em português não casou.
+function cityAliasMatch(city, query) {
+  if (!query || normalizeText(city.name).includes(query)) return "";
+  return (city.aliases || []).find((alias) => normalizeText(alias).includes(query)) || "";
+}
+
+function cityOptionHtml(city, selected, alias = "") {
   return `<button class="city-option${selected ? " is-selected" : ""}" type="button" data-city="${escapeHtml(city.name)}" data-country="${escapeHtml(city.country)}">
     <span class="city-icon">${icon(city.country === "Brasil" ? "map-pin" : "globe")}</span>
-    <span><strong>${escapeHtml(city.name)}</strong><small>${escapeHtml(city.country)}</small></span>
+    <span><strong>${escapeHtml(city.name)}</strong><small>${escapeHtml(city.country)}${alias ? ` · ${escapeHtml(alias)}` : ""}</small></span>
     <span class="check">${icon("check")}</span></button>`;
 }
 
@@ -3756,16 +3762,20 @@ function renderCitiesStep(body) {
     $("#selected-cities").innerHTML = data.cities.map((city, index) => `<span class="chip">${index + 1}. ${escapeHtml(city.name)}<button type="button" data-remove-city="${index}" aria-label="Remover ${escapeHtml(city.name)}">${icon("x")}</button></span>`).join("");
     const query = normalizeText(wizard.query);
     const all = [...cityData.cities].sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
-    const filtered = all.filter((city) => !query || normalizeText(city.name).includes(query) || normalizeText(city.country).includes(query));
+    const filtered = all.filter((city) => !query || normalizeText(city.name).includes(query) || normalizeText(city.country).includes(query) || cityAliasMatch(city, query));
     const isSelected = (name) => data.cities.some((city) => sameCity(city.name, name));
     const brazil = filtered.filter((city) => city.country === "Brasil");
     const abroad = filtered.filter((city) => city.country !== "Brasil");
-    const exact = all.some((city) => normalizeText(city.name) === query);
+    const exact = all.some((city) => [city.name, ...(city.aliases || [])].some((name) => normalizeText(name) === query));
     $("#city-list").innerHTML = !query
       ? `<p class="city-search-hint">${data.cities.length ? "Vai a mais alguma cidade? Digite o nome para adicionar." : "Digite o nome da cidade, por exemplo Roma, Gramado ou Nova York."}</p>`
-      : ((query && !exact ? `<button class="city-option" type="button" data-city="${escapeHtml(wizard.query.trim())}" data-country=""><span class="city-icon">${icon("plus")}</span><span><strong>Usar “${escapeHtml(wizard.query.trim())}”</strong><small>Cidade fora da lista: sem sugestões nem guia automático por enquanto</small></span><span class="check">${icon("check")}</span></button>` : "")
-      + (brazil.length ? `<p class="city-group-title">Brasil</p>${brazil.map((city) => cityOptionHtml(city, isSelected(city.name))).join("")}` : "")
-      + (abroad.length ? `<p class="city-group-title">Exterior</p>${abroad.map((city) => cityOptionHtml(city, isSelected(city.name))).join("")}` : ""));
+      // "Usar" (cidade fora da lista) vem depois das cidades encontradas.
+      : (() => {
+        const custom = !exact ? `<button class="city-option" type="button" data-city="${escapeHtml(wizard.query.trim())}" data-country=""><span class="city-icon">${icon("plus")}</span><span><strong>Usar “${escapeHtml(wizard.query.trim())}”</strong><small>Cidade fora da lista: sem sugestões nem guia automático por enquanto</small></span><span class="check">${icon("check")}</span></button>` : "";
+        const found = (brazil.length ? `<p class="city-group-title">Brasil</p>${brazil.map((city) => cityOptionHtml(city, isSelected(city.name), cityAliasMatch(city, query))).join("")}` : "")
+          + (abroad.length ? `<p class="city-group-title">Exterior</p>${abroad.map((city) => cityOptionHtml(city, isSelected(city.name), cityAliasMatch(city, query))).join("")}` : "");
+        return found + custom;
+      })();
     updateWizardNext();
   };
   paint();

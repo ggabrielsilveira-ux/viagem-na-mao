@@ -30,12 +30,16 @@ const osmData = load("osm-lugares.js", "OSM_DATA");
 // Capa de cada cidade (cartão-postal), gerada por gerar-capas.mjs.
 let covers = {};
 try { covers = JSON.parse(readFileSync(join(ROOT, "dados", "capas-cidades.json"), "utf8")); } catch {}
+// Nomes alternativos (Tokyo, Firenze...) para a busca do cadastro, gerados por gerar-nomes-cidades.mjs.
+let altNames = {};
+try { altNames = JSON.parse(readFileSync(join(ROOT, "ferramentas", "nomes-cidades.json"), "utf8")); } catch {}
+const indexCities = cityData.cities.map((city) => (altNames[city.name] ? { ...city, aliases: altNames[city.name] } : city));
 const belongs = (place, city) => sameCity(place.city, city) || (place.nearCities || []).some(([name]) => sameCity(name, city));
 
 writeFileSync(join(ROOT, "dados", "cidades.js"),
   `// Arquivo gerado por ferramentas/dividir-cidades.mjs. Não edite à mão.\n`
   + `// Índice das cidades do catálogo; os lugares de cada uma ficam em dados/cidades/<cidade>.js.\n`
-  + `window.CITY_DATA = ${JSON.stringify({ generatedAt: cityData.generatedAt, radiusKm: cityData.radiusKm, cities: cityData.cities, places: [] })};\n`);
+  + `window.CITY_DATA = ${JSON.stringify({ generatedAt: cityData.generatedAt, radiusKm: cityData.radiusKm, cities: indexCities, places: [] })};\n`);
 
 mkdirSync(OUT_DIR, { recursive: true });
 const wanted = new Set();
