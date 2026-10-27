@@ -1582,3 +1582,31 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 @media (max-width: 389px) { .memories-card.is-empty { background-image: url("imagens/bau/card-vazio.jpg"); background-size: auto 100%; background-position: right center; } }
 .memories-card.is-empty .memories-card-main strong { font-size: clamp(16px, 4.6vw, 18px); }
 .memories-card.is-empty .memories-card-main > span:nth-child(2) { max-width: min(56%, 215px); }
+
+/* Descobrir: refinamentos (cabeçalho, contexto, confirmação, jornada) */
+.screen-deck .app-bar-title h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.screen-deck .app-bar-kicker { font-size: 12.5px; }
+.radius-context { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; color: var(--ink-2); font-size: 13px; font-weight: 700; }
+.radius-context .icon { width: 15px; height: 15px; color: var(--brand-2); }
+.deck-radius .radius-context { margin-bottom: 4px; font-size: 12.5px; }
+.place-overlay { background: linear-gradient(180deg, rgba(10, 18, 14, 0) 0%, rgba(10, 18, 14, 0.55) 45%, rgba(10, 18, 14, 0.78) 100%); }
+.place-overlay h2, .place-overlay p { text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45); }
+.round-btn.is-pulse { animation: deck-pulse 360ms ease-out; }
+@keyframes deck-pulse { 0% { transform: scale(1); } 40% { transform: scale(1.16); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .round-btn.is-pulse { animation: none; } }
+.journey-kicker { margin-bottom: 2px; color: var(--brand-2); font-size: 12px; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; }
+.journey-line { margin-top: 8px; color: var(--ink-2); font-size: 14px; }
+.discover-done { display: grid; grid-template-columns: auto 1fr; gap: 12px; padding: 14px; border-radius: var(--radius-lg); background: var(--brand-soft); }
+.discover-done > span .icon { width: 26px; height: 26px; color: var(--brand-2); }
+.discover-done strong { display: block; font-size: 15px; }
+.discover-done p { margin: 4px 0 0; color: var(--ink-2); font-size: 13.5px; }
+.discover-done-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+/* Cabeçalho do deck numa linha só em celulares pequenos */
+.screen-deck .app-bar-title { min-width: 0; }
+.screen-deck .app-bar-kicker { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.screen-deck .select-chip { max-width: 34%; }
+@media (max-width: 380px) { .screen-deck .app-bar-kicker { font-size: 11.5px; } .screen-deck .select-chip select { font-size: 13px; } }
+.screen-deck .select-chip { flex: none; width: auto; max-width: 30%; padding: 0 8px; }
+.screen-deck .select-chip select { width: auto; max-width: 100%; padding-right: 2px; }
+.screen-deck .app-bar { gap: 8px; }
+@media (max-width: 380px) { .screen-deck .app-bar-kicker { font-size: 11px; letter-spacing: -0.1px; } .screen-deck .select-chip { max-width: 26%; } }

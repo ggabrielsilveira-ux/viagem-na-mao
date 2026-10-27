@@ -88,17 +88,26 @@ window.MESSAGES = {
   escolhaCurti: [
     "Boa escolha! 💚",
     "Esse vai pro roteiro!",
-    "Anotado com carinho!"
+    "Anotado com carinho!",
+    "Esse entrou para os seus planos!",
+    "Mais um lugar para viver uma boa história!",
+    "Esse merece entrar na lista!"
   ],
   escolhaTalvez: [
     "Deixa pra pensar!",
     "Fica guardado pra depois.",
-    "Sem pressa, decide depois."
+    "Sem pressa, decide depois.",
+    "Quem sabe essa não vira uma surpresa boa?",
+    "Vamos deixar essa possibilidade guardada!",
+    "Esse ainda pode te conquistar!"
   ],
   escolhaPassar: [
     "Próxima descoberta!",
     "Bora ver o próximo!",
-    "Tem mais coisa boa vindo."
+    "Tem mais coisa boa vindo.",
+    "Tudo bem! Tem muita coisa boa pela frente.",
+    "Partiu descobrir o próximo!",
+    "Nem todo lugar precisa entrar no roteiro."
   ],
   mudancaDePlanos: [
     "Mudança de planos! 🌧️ Às vezes as melhores histórias começam com um imprevisto.",

@@ -1625,7 +1625,12 @@ function renderDiscoverRadius(trip, target = "#discover-radius") {
   const { km, from } = trip.discoverRadius;
   const located = trip.destinations.some((destination) => (destination.lodgings || []).some((lodging) => lodging.coordinates));
   const compact = target !== "#discover-radius";
-  $(target).innerHTML = `<div class="radius-row"><span class="radius-label">${icon("map-pin")} Até</span>
+  const cities = [...new Set(tripCities(trip))];
+  const focus = deckCity !== "all" ? deckCity : cities.length === 1 ? cities[0] : "";
+  const context = focus
+    ? `Explorando ${focus}${km ? ` · até ${km} km ${from === "hospedagem" && located ? "da hospedagem" : "do centro"}` : " e arredores"}`
+    : `Explorando ${cities.length} cidades${km ? ` · até ${km} km de cada uma` : " e arredores"}`;
+  $(target).innerHTML = `<p class="radius-context">${icon("compass")} ${escapeHtml(context)}</p><div class="radius-row"><span class="radius-label">${icon("map-pin")} Até</span>
     <div class="radius-options" role="group" aria-label="Distância máxima dos lugares">${DISCOVER_RADII.map((value) => `<button type="button" class="radius-option${value === km ? " is-active" : ""}" data-discover-radius="${value || "tudo"}" aria-pressed="${value === km}">${value ? `${value} km` : "Tudo"}</button>`).join("")}</div></div>
     ${located ? `<label class="radius-from">a partir ${km ? "" : "(quando escolher a distância) "}<select data-discover-from><option value="centro"${from === "centro" ? " selected" : ""}>do centro da cidade</option><option value="hospedagem"${from === "hospedagem" ? " selected" : ""}>da hospedagem</option></select></label>`
       : compact ? "" : `<p class="radius-from">a partir do centro da cidade${km ? "" : " (cadastre a hospedagem para medir dela)"}</p>`}`;
@@ -1662,12 +1667,18 @@ function renderDiscoverTab() {
     </div>
     <div class="spot-body">
       <h3>${escapeHtml(place)}</h3>
-      <p>${stats.remaining ? `Próximo: ${escapeHtml(stats.next.name)}` : stats.total ? "Você já avaliou todos os lugares deste filtro. Reveja o que ficou em Talvez ou troque de cidade." : trip.discoverRadius.km ? `Nenhum lugar até ${trip.discoverRadius.km} km para os seus interesses. Aumente a distância acima.` : "Ainda não há lugares para os seus interesses aqui. Ajuste os interesses ao editar a viagem."}</p>
+      <p>${stats.remaining ? `Próximo: ${escapeHtml(stats.next.name)}` : stats.total ? "Reveja o que ficou em Talvez ou troque de cidade." : trip.discoverRadius.km ? `Nenhum lugar até ${trip.discoverRadius.km} km para os seus interesses. Aumente a distância acima.` : "Ainda não há lugares para os seus interesses aqui. Ajuste os interesses ao editar a viagem."}</p>
       ${action ? `<button class="btn btn-primary btn-block" type="button" data-open-deck>${escapeHtml(action)} ${icon("arrow-right")}</button>` : `<button class="btn btn-secondary btn-block" type="button" data-open-list="maybe-preview-list">${icon("bookmark")} Ver Talvez</button>`}
     </div>`;
-  $("#discover-progress").innerHTML = stats.total
-    ? `<p><strong>${stats.evaluated} de ${stats.total}</strong> lugares avaliados${deckCity === "all" ? "" : ` em ${escapeHtml(deckCity)}`}</p><div class="progress"><span style="width:${Math.round((stats.evaluated / stats.total) * 100)}%"></span></div>`
-    : "";
+  const liked = trip.saved.filter((item) => getActivity(item.id) && (deckCity === "all" || activityMatchesCity(getActivity(item.id), deckCity))).length;
+  const journey = liked
+    ? `Você já encontrou ${liked} ${liked === 1 ? "lugar que chamou" : "lugares que chamaram"} sua atenção!`
+    : stats.evaluated ? "Continue: os lugares que você curtir aparecem aqui." : "";
+  $("#discover-progress").innerHTML = !stats.total ? ""
+    : stats.remaining === 0
+      ? `<div class="discover-done"><span>${icon("sparkles")}</span><div><strong>Suas próximas histórias estão te esperando!</strong><p>${liked ? "Você encontrou lugares incríveis para conhecer nesta viagem." : "Você viu todos os lugares deste filtro."}</p>
+          <div class="discover-done-actions">${liked ? `<button class="btn btn-primary btn-sm" type="button" data-open-list="saved-preview-list">${icon("heart")} Ver curtidas</button><button class="btn btn-secondary btn-sm" type="button" data-tab="itinerary">${icon("route")} Montar roteiro</button>` : ""}</div></div></div>`
+      : `<p class="journey-kicker">Sua jornada de descobertas</p><p><strong>${stats.evaluated} de ${stats.total}</strong> lugares avaliados${deckCity === "all" ? "" : ` em ${escapeHtml(deckCity)}`}</p><div class="progress"><span style="width:${Math.round((stats.evaluated / stats.total) * 100)}%"></span></div>${journey ? `<p class="journey-line">${escapeHtml(journey)}</p>` : ""}`;
   $("#city-choices").innerHTML = cities.length > 1 ? `<h3 class="home-section-title">Descobrir por cidade</h3>
     <div class="city-chips">
       <button type="button" class="city-chip${deckCity === "all" ? " is-selected" : ""}" data-discover-city="all"><span class="city-thumb is-all">${icon("globe")}</span>Todas</button>
@@ -1719,21 +1730,35 @@ function nearestTripCity(activity, trip) {
   return (activity.nearCities || []).find(([name]) => trip.destinations.some((destination) => sameCity(destination.name, name)));
 }
 
+// Onde fica o lugar, sem afirmar município: o "city" do catálogo é a cidade de centro mais próximo,
+// que pode ser a vizinha (ex.: Praia dos Ingleses, em Florianópolis, fica mais perto do centro de
+// Governador Celso Ramos). Mostra a distância até a cidade da viagem, medida pelas coordenadas.
+function placeWhere(activity, trip) {
+  const coordinates = getOpenData(activity.id)?.coordinates;
+  const destination = trip.destinations.find((item) => sameCity(item.name, activity.city))
+    || trip.destinations.find((item) => activityMatchesCity(activity, item.name));
+  if (!destination) return `${activity.city} · ${activity.country || "Brasil"}`;
+  const origin = discoverOrigin(trip, destination);
+  const km = coordinates && origin ? distanceKm(origin, coordinates) : null;
+  const fromLodging = trip.discoverRadius?.from === "hospedagem" && origin !== getCityInfo(destination.name)?.coordinates;
+  if (km === null) return destination.name;
+  if (km < 1.5) return fromLodging ? "Pertinho da hospedagem" : `Centro de ${destination.name}`;
+  return `${km < 10 ? km.toFixed(1).replace(".", ",") : Math.round(km)} km ${fromLodging ? "da hospedagem" : `de ${destination.name}`}`;
+}
+
 function placeCardHtml(activity, trip, extraClass = "") {
   const photo = photoOf(activity);
-  const near = nearestTripCity(activity, trip);
   const country = activity.country || "Brasil";
   return `<article class="place-card ${extraClass}" data-activity-id="${escapeHtml(activity.id)}">
     <div class="place-photo">
       <img src="${escapeHtml(imageOf(activity))}" alt="${photo ? "Foto de" : "Imagem ilustrativa de"} ${escapeHtml(activity.name)}" draggable="false">
       <div class="place-tags"><span class="chip chip-glass">${icon(categoryIcon(activity.category))} ${escapeHtml(activity.category)}</span>${photo ? "" : '<span class="chip chip-glass">Imagem ilustrativa</span>'}</div>
       ${photo ? `<a class="photo-credit" href="${escapeHtml(safeUrl(photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(photo.author)} · ${escapeHtml(photo.license)}</a>` : ""}
-      <div class="place-overlay"><h2>${escapeHtml(activity.name)}</h2><p>${icon("map-pin")} ${escapeHtml(activity.city)} · ${escapeHtml(country)}</p></div>
+      <div class="place-overlay"><h2>${escapeHtml(activity.name)}</h2><p>${icon("map-pin")} ${escapeHtml(placeWhere(activity, trip))}</p></div>
     </div>
     <div class="place-info">
       <p class="place-desc">${escapeHtml(shortDescription(activity.description))}</p>
       <div class="place-meta">
-        ${near && near[1] >= 3 ? `<span class="chip">${icon("navigation")} ${escapeHtml(near[1])} km de ${escapeHtml(near[0])}</span>` : ""}
         ${activity.openingHours ? `<span class="chip">${icon("clock")} Horário informado</span>` : ""}
         <button class="btn btn-secondary btn-sm details-btn" type="button" data-place="${escapeHtml(activity.id)}">${icon("info")} Detalhes</button>
       </div>
@@ -1749,11 +1774,11 @@ function renderDeck() {
   currentActivityId = ideas[0]?.id || null;
   ["#skip-activity", "#maybe-activity", "#like-activity"].forEach((selector) => { $(selector).disabled = !currentActivityId; });
   const stats = discoveryStats(trip);
-  $("#discovery-position").innerHTML = stats.total
-    ? `${ideas.length ? `${ideas.length} ${ideas.length === 1 ? "lugar restante" : "lugares restantes"}` : "Tudo visto"} <b>${stats.evaluated} / ${stats.total}</b>`
+  $("#discovery-position").textContent = stats.total
+    ? `${ideas.length ? `${ideas.length} ${ideas.length === 1 ? "restante" : "restantes"}` : "Tudo visto"} · ${stats.evaluated} de ${stats.total} avaliados`
     : "Nenhum lugar neste filtro";
   $("#deck-progress-bar").style.width = stats.total ? `${Math.round((stats.evaluated / stats.total) * 100)}%` : "0%";
-  $("#deck-title").textContent = deckCity === "all" ? "Descobrir lugares" : deckCity;
+  $("#deck-title").textContent = "Descobrir";
   const stage = $("#activity-stage");
   if (!ideas.length) {
     stage.innerHTML = `<div class="deck-empty">${icon("compass")}<h2>Você viu todas as ideias${deckCity === "all" ? "" : ` de ${escapeHtml(deckCity)}`}.</h2><p>Troque de cidade ou reveja o que ficou em “Talvez depois”.</p><button class="btn btn-secondary" type="button" data-back>Ver minhas ideias</button></div>`;
@@ -1821,12 +1846,16 @@ let feedbackTimer = null;
 
 function showDeckFeedback(mode) {
   deckChoices += 1;
-  if (deckChoices !== 1 && deckChoices % 4 !== 0) return;
+  const button = $({ like: "#like-activity", maybe: "#maybe-activity", skip: "#skip-activity" }[mode]);
+  button?.classList.remove("is-pulse");
+  void button?.offsetWidth;
+  button?.classList.add("is-pulse");
+  if (deckChoices !== 1 && deckChoices % 2 !== 0) return;
   const element = $("#swipe-feedback");
   element.textContent = messageFor({ like: "escolhaCurti", maybe: "escolhaTalvez", skip: "escolhaPassar" }[mode], `deck|${deckChoices}`);
   element.className = `deck-feedback is-${mode} is-visible`;
   window.clearTimeout(feedbackTimer);
-  feedbackTimer = window.setTimeout(() => element.classList.remove("is-visible"), 1400);
+  feedbackTimer = window.setTimeout(() => element.classList.remove("is-visible"), 1600);
 }
 
 function triggerSwipe(mode) {
@@ -2056,7 +2085,6 @@ function openPlaceSheet(id) {
   const open = getOpenData(id) || {};
   const photo = photoOf(activity);
   const country = activity.country || "Brasil";
-  const near = nearestTripCity(activity, trip);
   const isSaved = trip.saved.some((item) => item.id === id);
   const isMaybe = trip.maybe.some((item) => item.id === id);
   const isDismissed = trip.dismissed.includes(id);
@@ -2091,7 +2119,7 @@ function openPlaceSheet(id) {
       ${photo ? `<a class="photo-credit" href="${escapeHtml(safeUrl(photo.page))}" target="_blank" rel="noopener noreferrer">Foto: ${escapeHtml(photo.author)} · ${escapeHtml(photo.license)} · Wikimedia Commons</a>` : '<span class="photo-credit">Imagem ilustrativa</span>'}
     </div>
     ${sheetTitle(activity.name)}
-    <div class="chips"><span class="chip">${icon(categoryIcon(activity.category))} ${escapeHtml(activity.category)}</span><span class="chip">${icon("map-pin")} ${escapeHtml(activity.city)} · ${escapeHtml(country)}</span>${near && near[1] >= 3 ? `<span class="chip">${icon("navigation")} ${escapeHtml(near[1])} km de ${escapeHtml(near[0])}</span>` : ""}</div>
+    <div class="chips"><span class="chip">${icon(categoryIcon(activity.category))} ${escapeHtml(activity.category)}</span><span class="chip">${icon("map-pin")} ${escapeHtml(placeWhere(activity, trip))}</span></div>
     <p class="sheet-text">${escapeHtml(activity.description)}</p>${credit}${extract}
     <div class="info-item"><span class="info-icon">${icon("clock")}</span><div><strong>Horário</strong><p>${escapeHtml(activity.schedule)}</p></div></div>
     <div class="info-item"><span class="info-icon">${icon("banknote")}</span><div><strong>Valor</strong><p>Consulte no local ou no site oficial. O app não mostra preços nem notas que não possam ser confirmados.</p></div></div>
