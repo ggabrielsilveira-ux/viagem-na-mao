@@ -1633,3 +1633,16 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .wizard-intro p .icon { width: 16px; height: 16px; vertical-align: -3px; }
 .stepper-list.is-reordering .stepper-row { transition: transform 160ms ease; }
 .stepper-row.is-dragging { position: relative; z-index: 5; transition: none !important; border-color: var(--brand-2); box-shadow: 0 16px 34px rgba(21, 32, 27, 0.22); }
+
+/* Lembrete do Baú (Home e Resumo): papel creme com as polaroides do card do Baú no canto, mais leve que a reflexão.
+   A imagem ocupa só o topo direito; as duas faixas em degradê dissolvem a borda esquerda e a de baixo no papel. */
+.invite-card { --invite-art: 118px; --invite-art-w: 297px; position: relative; overflow: hidden; padding: 14px 16px; border-color: #eadfcc; background-color: #f8ebd8; background-image: linear-gradient(90deg, #f8ebd8 0, rgba(248, 235, 216, 0) 100%), linear-gradient(180deg, rgba(248, 235, 216, 0) 0, #f8ebd8 100%), url("imagens/bau/card-vazio.jpg"); background-repeat: no-repeat; background-size: 90px var(--invite-art), 100% 44px, auto var(--invite-art); background-position: calc(100% - var(--invite-art-w) + 90px) top, left calc(var(--invite-art) - 43px), right top; box-shadow: none; }
+.invite-card p { padding-right: 108px; color: var(--brand); font-family: var(--font-serif); font-size: 16.5px; font-style: italic; font-weight: 500; line-height: 1.35; }
+.invite-actions .link-btn { min-height: 42px; padding: 0 6px; color: var(--ink-2); }
+.invite-actions .btn, .invite-actions .link-btn { white-space: nowrap; }
+/* No Resumo o card do Baú logo abaixo já traz as polaroides: aqui fica só o papel */
+#trip-invite .invite-card { background-image: none; }
+#trip-invite .invite-card p { padding-right: 0; }
+@media (max-width: 389px) { .invite-card { --invite-art: 92px; --invite-art-w: 232px; } .invite-card p { padding-right: 78px; font-size: 15.5px; } }
+/* Tela estreita: sem polaroides, o texto usa a largura toda */
+@media (max-width: 349px) { .invite-card { background-image: none; } .invite-card p { padding-right: 0; } .invite-actions { gap: 6px; } .invite-actions .btn { padding: 0 12px; font-size: 13.5px; } .invite-actions .link-btn { font-size: 13.5px; } }
