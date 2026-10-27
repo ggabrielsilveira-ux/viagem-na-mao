@@ -4851,9 +4851,11 @@ function memoryInvite(trip) {
 }
 
 function inviteHtml(trip, invite) {
+  // Primeira frase em destaque, o resto em peso normal.
+  const [, lead = invite.text, rest = ""] = invite.text.match(/^(.+?[.!?:])\s+(.+)$/) || [];
   return `<div class="invite-card">
       <span class="invite-icon">${icon("book-heart")}</span>
-      <p>${escapeHtml(invite.text)}</p>
+      <p><strong>${escapeHtml(lead)}</strong>${rest ? escapeHtml(rest) : ""}</p>
       <div class="invite-actions">
         <button class="btn btn-primary" type="button" data-invite-save="${escapeHtml(trip.id)}" data-invite-context="${invite.context}">${icon("image-plus")} Guardar momento</button>
         <button class="link-btn" type="button" data-invite-dismiss="${escapeHtml(trip.id)}">Agora não</button>
