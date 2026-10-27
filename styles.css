@@ -1429,3 +1429,5 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .bau-filled .bau-grid > :nth-child(odd) { transform: rotate(-0.8deg); }
 .bau-filled .bau-grid > :nth-child(even) { transform: rotate(0.8deg); }
 .bau-art img { -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent); mask-image: linear-gradient(to bottom, #000 88%, transparent); }
+/* O fundo fixo acompanha a largura do app (no computador o app fica centralizado em 520 px) */
+.bau-filled::before { right: 0; left: 0; width: 100%; max-width: 520px; margin: 0 auto; }
