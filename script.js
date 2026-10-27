@@ -4187,27 +4187,27 @@ function renderMemories() {
   const container = $("#memories-content");
   const backupOld = !window.contaLogada?.() && (!state.lastBackupAt || daysBetween(state.lastBackupAt.slice(0, 10), getBrasiliaDateKey()) > 14);
   if (!memories.length) {
-    // Estado A: convite para a primeira memória.
-    const [first, second] = BAU_EXAMPLE_PHOTOS;
-    const polaroid = (photo, cls) => `<span class="bau-ex ${cls}"><img src="${photo.src}" alt="" loading="lazy">${photo.caption ? `<span>${escapeHtml(photo.caption)}</span>` : ""}</span>`;
+    // Estado A: convite para a primeira memória, sobre a arte oficial do Baú (imagens/bau/bau-vazio.jpg).
+    container.classList.remove("bau-filled");
     container.innerHTML = `
-      <div class="bau-empty">
-        <h2>Meu Baú de Memórias</h2>
-        <p class="bau-lead">Sua viagem merece ser lembrada.</p>
-        <figure class="bau-album" aria-label="Exemplo de álbum com fotos ilustrativas de outras pessoas">
-          ${polaroid(first, "is-left")}${polaroid(second, "is-right")}
-          <svg class="bau-heart" viewBox="0 0 40 36" aria-hidden="true"><path d="M20 33 C9 25 3 18 4 11 C5 5 11 3 15 6 C17 7.5 19 10 20 12 C21 9.5 23.5 6 27.5 5 C33 4 37 8 36 13 C35 20 28 26 20 33 Z" fill="none" stroke="#FF8068" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span class="bau-ink">nossas histórias</span>
+      <div class="bau-empty bau-art-wrap">
+        <figure class="bau-art" aria-label="Exemplo de álbum com fotos ilustrativas">
+          <img src="imagens/bau/bau-vazio.jpg" alt="" width="940" height="1672" decoding="async">
           <figcaption>${icon("images")} Exemplo de álbum · fotos ilustrativas</figcaption>
         </figure>
-        <p class="bau-support">Uma foto, um sentimento, um instante. Comece por aquilo que te fez sorrir.</p>
-        <button class="btn btn-primary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar minha primeira memória</button>
-        <p class="bau-private">${icon("lock")}<span>Só seu, até você escolher compartilhar. ${escapeHtml(capitalize(memoriesPrivacyText().replace("Privado · ", "")))}.</span></p>
+        <div class="bau-art-text">
+          <h2>Meu Baú de Memórias</h2>
+          <p class="bau-lead">Sua viagem merece ser lembrada.</p>
+          <p class="bau-support">Uma foto, um sentimento, um instante. Comece por aquilo que te fez sorrir.</p>
+          <button class="btn btn-primary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar minha primeira memória</button>
+          <p class="bau-private">${icon("lock")}<span>Só seu, até você escolher compartilhar. ${escapeHtml(capitalize(memoriesPrivacyText().replace("Privado · ", "")))}.</span></p>
+        </div>
       </div>`;
     hydrateIcons(container);
     return;
   }
-  // Estado B: o álbum com as memórias reais, por dia.
+  // Estado B: o álbum com as memórias reais, por dia, sobre o fundo de álbum (imagens/bau/bau-album.jpg).
+  container.classList.add("bau-filled");
   const byDate = {};
   memories.forEach((memory) => { (byDate[memory.date || ""] ||= []).push(memory); });
   const lead = bauFirstVisitMessage || messageFor("reverMemorias", trip.id) || "Os dias passam. As histórias ficam.";
