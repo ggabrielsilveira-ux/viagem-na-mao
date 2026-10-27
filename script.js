@@ -9,8 +9,25 @@ const interests = [
   { id: "vida-noturna", label: "🌙 Vida noturna" },
   { id: "arte", label: "🎨 Arte & design" },
   { id: "familia", label: "☀️ Para a família" },
+  { id: "diversao", label: "🎡 Parques de diversão" },
   { id: "compras", label: "🛍️ Compras" }
 ];
+
+// O que cada interesse traz em Descobrir (aparece no cadastro da viagem).
+const INTEREST_HINTS = {
+  natureza: "Parques, trilhas e mirantes", gastronomia: "Restaurantes, cafés e mercados", cultura: "Museus, igrejas e centro histórico",
+  praia: "Praias e orla", aventura: "Picos, cachoeiras e reservas", "vida-noturna": "Bares e espetáculos", arte: "Galerias e teatros",
+  familia: "Programas para todas as idades", diversao: "Parques temáticos, zoológicos e aquários", compras: "Shoppings, outlets e feiras"
+};
+
+// Ajusta os interesses vindos do catálogo: "Diversão" ganha o interesse próprio e
+// praça/rua de passeio não conta como gastronomia (senão aparece para quem só quer comer).
+function catalogInterests(place) {
+  let list = [...(place.interests || [])];
+  if (place.category === "Diversão" && !list.includes("diversao")) list.unshift("diversao");
+  if (place.category === "Passeio urbano") list = list.filter((item) => item !== "gastronomia");
+  return list;
+}
 
 function slugify(value) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -805,7 +822,7 @@ function addCityPack(pack) {
     city: place.city,
     country: place.country,
     category: place.category,
-    interests: place.interests,
+    interests: catalogInterests(place),
     description: place.extract,
     descriptionSource: "wikipedia",
     schedule: "Horários e disponibilidade variam; confirme antes de ir.",
@@ -829,7 +846,7 @@ function addCityPack(pack) {
     city: place.city,
     country: place.country,
     category: place.category,
-    interests: place.interests,
+    interests: catalogInterests(place),
     description: `${place.kind}${place.details ? ` · ${place.details}` : ""}. Informações cadastradas no OpenStreetMap; confirme antes de ir.`,
     descriptionSource: "osm",
     schedule: place.openingHours ? `Horário no OpenStreetMap: ${place.openingHours}` : "Horários variam; confirme antes de ir.",
@@ -1475,8 +1492,8 @@ function renderHome() {
 // ---------------------------------------------------------------------------
 
 const TRANSPORT_ICONS = { "Avião": "plane", "Carro próprio": "car", "Carro alugado": "car", "Ônibus": "bus", "Trem": "train-front", "Navio / cruzeiro": "ship", "Outro": "route" };
-const INTEREST_ICONS = { natureza: "trees", gastronomia: "utensils", cultura: "landmark", praia: "waves", aventura: "mountain", "vida-noturna": "moon", arte: "palette", familia: "baby", compras: "shopping-bag" };
-const INTEREST_LABELS = { natureza: "Natureza", gastronomia: "Gastronomia", cultura: "Cultura", praia: "Praia", aventura: "Aventura", "vida-noturna": "Vida noturna", arte: "Arte & design", familia: "Para a família", compras: "Compras" };
+const INTEREST_ICONS = { natureza: "trees", gastronomia: "utensils", cultura: "landmark", praia: "waves", aventura: "mountain", "vida-noturna": "moon", arte: "palette", familia: "baby", diversao: "ferris-wheel", compras: "shopping-bag" };
+const INTEREST_LABELS = { natureza: "Natureza", gastronomia: "Gastronomia", cultura: "Cultura", praia: "Praia", aventura: "Aventura", "vida-noturna": "Vida noturna", arte: "Arte & design", familia: "Para a família", diversao: "Parques de diversão", compras: "Compras" };
 
 function renderTripHeader() {
   const trip = getCurrentTrip();
@@ -3554,7 +3571,7 @@ function startNewTrip() {
     month: today.slice(0, 7),
     focus: "start",
     query: "",
-    data: { cities: [], startDate: "", endDate: "", companions: "", children: false, seniors: false, transport: "", interests: ["natureza", "gastronomia", "cultura"], budget: "", currency: "BRL", rate: 1, name: "", nameEdited: false, departureTime: "" }
+    data: { cities: [], startDate: "", endDate: "", companions: "", children: false, seniors: false, transport: "", interests: [], budget: "", currency: "BRL", rate: 1, name: "", nameEdited: false, departureTime: "" }
   };
   navigate({ screen: "form" });
 }
@@ -3843,8 +3860,8 @@ function renderPeopleStep(body) {
 
 function renderInterestsStep(body) {
   const data = wizard.data;
-  body.innerHTML = `<div class="wizard-intro"><h2>O que você curte?</h2><p>Usamos isso para escolher os lugares que aparecem em Descobrir.</p></div>
-    <div class="option-grid" id="interest-options">${interests.map(({ id }) => `<button class="option-tile${data.interests.includes(id) ? " is-selected" : ""}" type="button" data-interest="${id}" aria-pressed="${data.interests.includes(id)}">${icon(INTEREST_ICONS[id] || "star")}${escapeHtml(INTEREST_LABELS[id] || id)}</button>`).join("")}</div>`;
+  body.innerHTML = `<div class="wizard-intro"><h2>O que você quer nessa viagem?</h2><p>Escolha um ou mais: em Descobrir aparecem só lugares desses tipos. Sem nenhum escolhido, mostramos de tudo.</p></div>
+    <div class="option-grid" id="interest-options">${interests.map(({ id }) => `<button class="option-tile interest-tile${data.interests.includes(id) ? " is-selected" : ""}" type="button" data-interest="${id}" aria-pressed="${data.interests.includes(id)}">${icon(INTEREST_ICONS[id] || "star")}<span>${escapeHtml(INTEREST_LABELS[id] || id)}<small>${escapeHtml(INTEREST_HINTS[id] || "")}</small></span></button>`).join("")}</div>`;
   body.querySelector("#interest-options").addEventListener("click", (event) => {
     const button = event.target.closest("[data-interest]");
     if (!button) return;

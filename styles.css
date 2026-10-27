@@ -1610,3 +1610,7 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .screen-deck .select-chip select { width: auto; max-width: 100%; padding-right: 2px; }
 .screen-deck .app-bar { gap: 8px; }
 @media (max-width: 380px) { .screen-deck .app-bar-kicker { font-size: 11px; letter-spacing: -0.1px; } .screen-deck .select-chip { max-width: 26%; } }
+
+/* Cadastro: interesses com descrição curta */
+.interest-tile span { display: grid; gap: 2px; }
+.interest-tile small { color: var(--ink-2); font-size: 12px; font-weight: 500; line-height: 1.3; }
