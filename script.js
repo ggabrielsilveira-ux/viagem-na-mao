@@ -4154,8 +4154,9 @@ function memoriesPrivacyText() {
 
 let bauDayFilter = "";
 
-function bauMemoryHtml(memory, { featured = false } = {}) {
+function bauMemoryHtml(memory, { featured = false, dateTag = "" } = {}) {
   const caption = memory.title || memory.text || memory.place || "";
+  if (dateTag) return bauMemoryHtml(memory, { featured }).replace(/^(<button[^>]*>)/, `$1<span class="bau-card-date">${escapeHtml(dateTag)}</span>`);
   if (featured) {
     // Destaque: foto inteira (sem corte), título e o texto da memória.
     return `<button class="${memory.photos?.length ? "bau-polaroid" : "bau-note"} is-featured" type="button" data-memory="${escapeHtml(memory.id)}">
@@ -4243,6 +4244,9 @@ function renderMemories() {
     }
     return `<section class="bau-day" id="bau-dia-${escapeHtml(date || "sem-data")}"><h3 class="bau-day-tag">${escapeHtml(bauDayTag(trip, date))}</h3>${body}</section>`;
   };
+  const fewHtml = layout === "few"
+    ? `<div class="bau-few count-${memories.length}">${memories.map((memory, index) => bauMemoryHtml(memory, { featured: memories.length === 3 && index === 0, dateTag: bauDayTag(trip, memory.date) })).join("")}</div>`
+    : "";
   container.innerHTML = `
     <div class="bau-head">
       <h2>Meu Baú de Memórias</h2>
@@ -4255,7 +4259,7 @@ function renderMemories() {
     </div>
     <p class="bau-summary">${escapeHtml(summary)}</p>
     ${dates.length > 2 ? `<div class="bau-days" role="group" aria-label="Escolher dia"><button type="button" class="chip${bauDayFilter ? "" : " is-active"}" data-bau-day="" aria-pressed="${!bauDayFilter}">Todos</button>${dates.map((date) => `<button type="button" class="chip${date === bauDayFilter ? " is-active" : ""}" data-bau-day="${escapeHtml(date)}" aria-pressed="${date === bauDayFilter}">${escapeHtml(date ? formatDate(date, { day: "numeric", month: "short" }).replace(" de ", " ").replace(".", "") : "Sem data")} <span>${byDate[date].length}</span></button>`).join("")}</div>` : ""}
-    <div class="bau-album-pages is-${layout}">${shownDates.map(daySection).join("")}</div>
+    <div class="bau-album-pages is-${layout}">${layout === "few" ? fewHtml : shownDates.map(daySection).join("")}</div>
     <p class="bau-private-pill">${icon("lock")} ${escapeHtml(memoriesPrivacyText())}. Compartilhar é sempre escolha sua.${backupOld ? ` <button class="link-btn" type="button" data-open-settings>Fazer backup</button>` : ""}</p>`;
   hydratePhotos(container);
 }

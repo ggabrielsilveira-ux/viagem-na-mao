@@ -1492,3 +1492,55 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .bau-polaroid.is-featured .bau-photo img { width: auto; max-width: 100%; height: auto; object-fit: initial; background: none; }
 .bau-polaroid.is-featured .bau-more { right: 10px; }
 .bau-featured { max-width: 340px; }
+
+/* Refinamento final do Baú — vazio: arte e textos como uma peça só */
+.bau-art-wrap { min-height: 0; }
+.bau-art-text { flex: none; margin-top: -26px; padding-bottom: 4px; }
+.bau-art-text .bau-lead { margin-top: 6px; }
+.bau-art-text .bau-support { margin: 14px 0 20px; }
+.bau-art-text .bau-private { margin-top: 12px; }
+
+/* Refinamento final do Baú — preenchido: cabeçalho compacto */
+.bau-head h2 { font-size: 26px; }
+.bau-head p { margin: 2px 0 10px; font-size: 14.5px; line-height: 1.4; }
+.bau-filled > .btn-primary { min-height: 50px; }
+.bau-tools { gap: 8px; margin: 10px 0 0; }
+.bau-tool { padding: 10px 12px; }
+.bau-tool strong { font-size: 13.5px; }
+.bau-tool small { font-size: 12px; }
+.bau-summary { margin: 12px 0 2px; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: 0.2px; }
+.bau-private-pill { margin: 22px 8px 4px; padding: 0; border-radius: 0; color: var(--muted); background: none; font-size: 11.5px; }
+.bau-private-pill .link-btn { font-size: 11.5px; }
+
+/* 2–3 memórias: composição equilibrada, com data em cada cartão */
+.bau-few { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; margin-top: 14px; }
+.bau-few.count-2 > :nth-child(1) { transform: rotate(-1.5deg); }
+.bau-few.count-2 > :nth-child(2) { margin-top: 34px; transform: rotate(1.5deg); }
+.bau-few.count-3 > :first-child { grid-column: 1 / -1; justify-self: center; width: min(100%, 320px); transform: rotate(-1deg); }
+.bau-few.count-3 > :nth-child(2) { transform: rotate(1.2deg); }
+.bau-few.count-3 > :nth-child(3) { margin-top: 22px; transform: rotate(-1.2deg); }
+.bau-few .bau-photo img { max-height: 260px; }
+.bau-card-date { position: absolute; z-index: 2; top: -8px; left: 10px; padding: 2px 8px; border-radius: 3px; color: #7a3426; background: #ffd9cf; font-size: 11px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase; box-shadow: 0 2px 6px rgba(21, 32, 27, 0.1); }
+.bau-few .bau-polaroid, .bau-few .bau-note { position: relative; }
+.bau-few .bau-polaroid.is-featured::before { left: 70%; }
+/* Vazio: a arte cresce um pouco em telas altas (sem cortar as polaroides) e o aviso não encosta no título */
+.bau-art { aspect-ratio: auto; height: clamp(290px, 41dvh, 390px); }
+.bau-art figcaption { bottom: 34px; }
+.bau-art-text { margin-top: -10px; }
+.bau-art-text .bau-support { margin: clamp(12px, 2.2dvh, 22px) 0 clamp(16px, 2.8dvh, 28px); }
+/* 3 memórias: destaque sem moldura alta demais */
+.bau-few .bau-polaroid.is-featured .bau-photo img { max-height: 250px; }
+/* Destaques: a moldura acompanha a foto (foto em pé não deixa faixas brancas) */
+.bau-few.count-3 > .is-featured, .bau-featured > .is-featured, .bau-album-pages.is-solo .bau-stack > .is-featured { width: fit-content; max-width: min(100%, 340px); margin-inline: auto; }
+.bau-polaroid.is-featured .bau-featured-title, .bau-polaroid.is-featured .bau-featured-text, .bau-polaroid.is-featured .bau-place { max-width: 320px; }
+.bau-few.count-3 > .is-featured .bau-photo img { max-height: 230px; }
+.bau-featured, .bau-few.count-3 > :first-child { justify-self: center; }
+.bau-featured { display: flex; justify-content: center; max-width: none; }
+.bau-featured > .bau-polaroid.is-featured { display: inline-block; width: auto; }
+.bau-featured > .bau-polaroid.is-featured .bau-photo { display: block; }
+.bau-featured > .bau-polaroid.is-featured .bau-photo img { width: auto; max-width: 100%; max-height: 320px; margin: 0 auto; }
+/* A legenda segue a largura da foto (a moldura não alarga por causa do texto) */
+.bau-polaroid.is-featured { display: inline-grid !important; grid-template-columns: min-content; width: auto !important; }
+.bau-polaroid.is-featured .bau-photo img { width: auto; max-width: calc(min(100vw, 520px) - 72px); }
+.bau-polaroid.is-featured .bau-featured-title, .bau-polaroid.is-featured .bau-featured-text, .bau-polaroid.is-featured .bau-place { min-width: 200px; max-width: none; }
+.bau-album-pages.is-solo .bau-stack, .bau-few.count-3, .bau-featured { justify-items: center; }
