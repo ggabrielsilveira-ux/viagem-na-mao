@@ -4130,6 +4130,9 @@ function renderMemoriesCard(trip) {
     ? `${memories.length} ${memories.length === 1 ? "memória guardada" : "memórias guardadas"} · só você vê`
     : tripPhase(trip) === "depois" ? messageFor("viagemEncerrada", trip.id) : "A viagem passa. As histórias ficam.";
   const card = $("#memories-card");
+  // Fundo do Baú (imagens/bau/card-vazio.jpg com polaroides; card-cheio.jpg só textura): textos e botão seguem reais.
+  card.classList.toggle("is-empty", !memories.length);
+  card.classList.toggle("is-filled", memories.length > 0);
   card.innerHTML = `<button class="memories-card-main" type="button" data-tab="memories">
       <span class="memories-card-icon">${icon("book-heart")}</span>
       <span><strong>Meu Baú de Memórias</strong><small>${escapeHtml(subtitle)}</small></span>${icon("chevron-right")}

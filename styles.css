@@ -1556,3 +1556,29 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .bau-featured { justify-self: stretch; width: auto; }
 .bau-few.count-3 > :first-child { justify-self: stretch; }
 .bau-album-pages.is-solo .bau-stack, .bau-few.count-3 { justify-items: stretch; }
+
+/* Card "Meu Baú de Memórias" no Resumo com os fundos do Baú (2x) */
+.memories-card.is-empty, .memories-card.is-filled { position: relative; overflow: hidden; border-color: #eadfcc; background-color: #f5ecdc; background-repeat: no-repeat; }
+.memories-card.is-empty { aspect-ratio: 358 / 142; min-height: 142px; align-content: space-between; background-image: url("imagens/bau/card-vazio.jpg"); background-size: cover; background-position: right center; }
+.memories-card.is-filled { background-image: url("imagens/bau/card-cheio.jpg"); background-size: cover; background-position: right top; }
+.memories-card.is-empty .memories-card-main, .memories-card.is-filled .memories-card-main { position: relative; }
+.memories-card.is-empty .memories-card-main > span:nth-child(2) { max-width: 52%; }
+.memories-card.is-empty .memories-card-main > .icon { display: none; }
+.memories-card.is-empty .memories-card-main strong, .memories-card.is-filled .memories-card-main strong { color: var(--brand); font-family: var(--font-serif); font-size: 17px; font-weight: 500; font-style: italic; }
+.memories-card.is-empty .memories-card-main small, .memories-card.is-filled .memories-card-main small { color: var(--ink-2); }
+.memories-card.is-empty .btn, .memories-card.is-filled .btn { background: rgba(255, 253, 248, 0.92); }
+.memories-card.is-filled .memories-thumbs img { border: 3px solid #fffdf8; border-radius: 6px; box-shadow: 0 4px 10px rgba(21, 32, 27, 0.12); }
+@media (max-width: 350px) { .memories-card.is-empty .memories-card-icon { display: none; } .memories-card.is-empty .memories-card-main > span:nth-child(2) { max-width: 58%; } }
+/* Vazio cabe nos 142 px: fundo pela altura (polaroides nunca cortadas), sem ícone, título numa linha, botão compacto */
+.memories-card.is-empty { aspect-ratio: auto; height: 142px; min-height: 0; gap: 0; padding: 14px 16px; background-size: auto 100%; background-position: right center; }
+.memories-card.is-empty .memories-card-icon { display: none; }
+.memories-card.is-empty .memories-card-main > span:nth-child(2) { max-width: min(60%, 215px); gap: 1px; }
+.memories-card.is-empty .memories-card-main strong { font-size: 18px; white-space: nowrap; }
+.memories-card.is-empty .memories-card-main small { font-size: 12.5px; line-height: 1.35; }
+.memories-card.is-empty .btn { min-height: 38px; font-size: 14px; }
+.memories-card.is-filled .memories-card-main > .icon { color: var(--ink-2); }
+/* Sem emenda em telas largas: a cor de fundo é a do papel da imagem e a borda esquerda da imagem se dissolve nela */
+.memories-card.is-empty { background-color: #f8ebd8; background-image: linear-gradient(90deg, #f8ebd8 0, rgba(248, 235, 216, 0) 60px), url("imagens/bau/card-vazio.jpg"); background-size: auto 100%, auto 100%; background-position: calc(100% - 358px + 1px) center, right center; }
+@media (max-width: 389px) { .memories-card.is-empty { background-image: url("imagens/bau/card-vazio.jpg"); background-size: auto 100%; background-position: right center; } }
+.memories-card.is-empty .memories-card-main strong { font-size: clamp(16px, 4.6vw, 18px); }
+.memories-card.is-empty .memories-card-main > span:nth-child(2) { max-width: min(56%, 215px); }
