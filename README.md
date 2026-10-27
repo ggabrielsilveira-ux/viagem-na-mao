@@ -83,6 +83,32 @@ A pasta `marca/` traz o kit do manual de identidade visual (versão 1.0, propost
 
 Os ícones são do [Lucide](https://lucide.dev/) (licença ISC), copiados para `icones.js` para funcionar sem internet. As imagens ilustrativas ficam em `imagens/` (fotos do [Unsplash](https://unsplash.com/license), que permite uso e hospedagem). Fotos de lugares vêm do Wikimedia Commons, com autor e licença exibidos.
 
+Lugares do OpenStreetMap sem foto própria usam uma imagem ilustrativa pelo tipo do lugar (e pela cozinha, nos restaurantes), em `imagens/tipos/`: fotos do Wikimedia Commons em domínio público ou CC0, reduzidas para 720 px. Sem logos de marca nem pontos turísticos reconhecíveis. O cartão continua marcado como "Imagem ilustrativa".
+
+- `aquario.jpg`: [Main fish tank at Enoshima Aquarium.jpg](https://commons.wikimedia.org/wiki/File:Main_fish_tank_at_Enoshima_Aquarium.jpg) (CC0)
+- `asiatica.jpg`: [Ramen and Chahan 003.jpg](https://commons.wikimedia.org/wiki/File:Ramen_and_Chahan_003.jpg) (CC0)
+- `bar.jpg`: [Brennender Cocktail im Friedrichs in Tübingen.jpg](https://commons.wikimedia.org/wiki/File:Brennender_Cocktail_im_Friedrichs_in_T%C3%BCbingen.jpg) (CC0)
+- `cafe.jpg`: [Coffee and Snail Pastry.jpg](https://commons.wikimedia.org/wiki/File:Coffee_and_Snail_Pastry.jpg) (CC0)
+- `carnes.jpg`: [La Vaca Loca 300 Bife de Chorizo Sirloin Steak.jpg](https://commons.wikimedia.org/wiki/File:La_Vaca_Loca_300_Bife_de_Chorizo_Sirloin_Steak.jpg) (CC0)
+- `frutos-do-mar.jpg`: [Restaurant, dish, meal, food, seafood,.jpg](https://commons.wikimedia.org/wiki/File:Restaurant%2C_dish%2C_meal%2C_food%2C_seafood%2C.jpg) (CC0)
+- `galeria.jpg`: [Interior - Corcoran Gallery of Art - DSC01197.JPG](https://commons.wikimedia.org/wiki/File:Interior_-_Corcoran_Gallery_of_Art_-_DSC01197.JPG) (CC0)
+- `hamburguer.jpg`: [Gourmet Hamburger (Unsplash).jpg](https://commons.wikimedia.org/wiki/File:Gourmet_Hamburger_(Unsplash).jpg) (CC0)
+- `italiana.jpg`: [The temptress (Unsplash).jpg](https://commons.wikimedia.org/wiki/File:The_temptress_(Unsplash).jpg) (CC0)
+- `japonesa.jpg`: [Sashimi y sushi en el Mercado Municipal de Sao Paulo.jpg](https://commons.wikimedia.org/wiki/File:Sashimi_y_sushi_en_el_Mercado_Municipal_de_Sao_Paulo.jpg) (CC0)
+- `mercado.jpg`: [Inside Kapani Market.jpg](https://commons.wikimedia.org/wiki/File:Inside_Kapani_Market.jpg) (CC0)
+- `mexicana.jpg`: [Tacos in a soft tortilla 5.jpg](https://commons.wikimedia.org/wiki/File:Tacos_in_a_soft_tortilla_5.jpg) (CC0)
+- `mirante.jpg`: [První z vyhlídek v západní části Liliensteinu.jpg](https://commons.wikimedia.org/wiki/File:Prvn%C3%AD_z_vyhl%C3%ADdek_v_z%C3%A1padn%C3%AD_%C4%8D%C3%A1sti_Liliensteinu.jpg) (CC0)
+- `museu.jpg`: [Kelvingrove Art Gallery And Museum (48957789083).jpg](https://commons.wikimedia.org/wiki/File:Kelvingrove_Art_Gallery_And_Museum_(48957789083).jpg) (CC0)
+- `parque.jpg`: [A photo of parks in Amsterdam city, free download; an Autumn view of the pond and fountain in the Westerpark with yellowing trees by Fall. Fons Heijnsbroek, street photography of The Netherlands 2018 in high resolution; free image CC0.jpg](https://commons.wikimedia.org/wiki/File:A_photo_of_parks_in_Amsterdam_city%2C_free_download%3B_an_Autumn_view_of_the_pond_and_fountain_in_the_Westerpark_with_yellowing_trees_by_Fall._Fons_Heijnsbroek%2C_street_photography_of_The_Netherlands_2018_in_high_resolution%3B_free_image_CC0.jpg) (CC0)
+- `parque-tematico.jpg`: [Baishamen Park - amusement park - roller coaster, adult - 01.jpg](https://commons.wikimedia.org/wiki/File:Baishamen_Park_-_amusement_park_-_roller_coaster%2C_adult_-_01.jpg) (CC0)
+- `pico.jpg`: [Hiker on Dome Mountain looking at Electric Peak (47995555663).jpg](https://commons.wikimedia.org/wiki/File:Hiker_on_Dome_Mountain_looking_at_Electric_Peak_(47995555663).jpg) (Public domain)
+- `pizza.jpg`: [Pizza in Harajuku.jpg](https://commons.wikimedia.org/wiki/File:Pizza_in_Harajuku.jpg) (CC0)
+- `reserva.jpg`: [South Fork Skokomish River Trail, Olympic National Forest (32481758156).jpg](https://commons.wikimedia.org/wiki/File:South_Fork_Skokomish_River_Trail%2C_Olympic_National_Forest_(32481758156).jpg) (Public domain)
+- `restaurante.jpg`: [Geberts Weinstuben, Mainz, Matjes salad.jpg](https://commons.wikimedia.org/wiki/File:Geberts_Weinstuben%2C_Mainz%2C_Matjes_salad.jpg) (CC0)
+- `shopping.jpg`: [Atrio shopping mall in Villach, Austria.JPG](https://commons.wikimedia.org/wiki/File:Atrio_shopping_mall_in_Villach%2C_Austria.JPG) (CC0)
+- `sorveteria.jpg`: [Gelato - Coimbra, Portugal - DSC00320.jpg](https://commons.wikimedia.org/wiki/File:Gelato_-_Coimbra%2C_Portugal_-_DSC00320.jpg) (CC0)
+- `zoologico.jpg`: [Giraffe Auckland Zoo. (9413151566).jpg](https://commons.wikimedia.org/wiki/File:Giraffe_Auckland_Zoo._(9413151566).jpg) (CC0)
+
 ### Tempos de deslocamento (OSRM)
 
 O roteiro consulta `routing.openstreetmap.de` (perfis `routed-car` e `routed-foot`) direto do navegador, uma requisição por vez com intervalo de 1,1 s, e guarda os resultados na chave `viagem-na-mao-rotas-v1` do `localStorage` (separada dos dados das viagens). O servidor é gratuito para **uso não comercial** e sem garantia de disponibilidade ([termos](https://routing.openstreetmap.de/about.html)); antes de cobrar assinatura, troque por uma instância própria do OSRM, por um serviço pago ou pela Routes API via backend. Os tempos não consideram trânsito.

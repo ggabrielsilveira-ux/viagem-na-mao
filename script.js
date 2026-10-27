@@ -803,6 +803,24 @@ activities.forEach((activity) => { categoryImages[activity.category] ||= activit
 const editorialNames = new Set(activities.map((activity) => `${slugify(activity.city)}|${slugify(activity.name)}`));
 const commonsPage = (file) => `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(file.replace(/ /g, "_"))}`;
 
+// Imagem ilustrativa pelo tipo do lugar do OpenStreetMap (e pela cozinha, nos restaurantes), em vez de
+// uma só por categoria. Fotos em domínio público/CC0 do Wikimedia Commons, em imagens/tipos/ (ver README).
+const KIND_IMAGES = { "Café": "cafe", Bar: "bar", Sorveteria: "sorveteria", Mercado: "mercado", Museu: "museu", "Galeria de arte": "galeria", Parque: "parque", Shopping: "shopping", Mirante: "mirante", Pico: "pico", "Reserva natural": "reserva", "Parque temático": "parque-tematico", "Zoológico": "zoologico", "Aquário": "aquario" };
+const CUISINE_IMAGES = [
+  [/pizza/, "pizza"], [/hamb[uú]rguer|burger/, "hamburguer"], [/sushi|japonesa/, "japonesa"],
+  [/l[aá]men|chinesa|tailandesa|vietnamita|coreana|indiana|asi[aá]tica|oriental/, "asiatica"],
+  [/frutos do mar|peixe/, "frutos-do-mar"], [/carne|churrasco|argentina|steak/, "carnes"],
+  [/mexicana|taco/, "mexicana"], [/italiana|massa/, "italiana"], [/sorvete/, "sorveteria"], [/caf[eé]/, "cafe"]
+];
+function kindImage(place) {
+  let type = KIND_IMAGES[place.kind];
+  if (place.kind === "Restaurante") {
+    const cuisine = (place.details || "").toLowerCase();
+    type = CUISINE_IMAGES.find(([pattern]) => pattern.test(cuisine))?.[1] || "restaurante";
+  }
+  return type ? `imagens/tipos/${type}.jpg` : "";
+}
+
 // Lugares já recebidos (o mesmo lugar vem no pacote da cidade e no das vizinhas).
 const knownPlaceIds = new Set(activities.map((activity) => activity.id));
 
@@ -852,7 +870,7 @@ function addCityPack(pack) {
     schedule: place.openingHours ? `Horário no OpenStreetMap: ${place.openingHours}` : "Horários variam; confirme antes de ir.",
     openingHours: place.openingHours || "",
     cost: null,
-    image: place.photo?.url || categoryImages[place.category] || categoryImages.Cultura,
+    image: place.photo?.url || kindImage(place) || categoryImages[place.category] || categoryImages.Cultura,
     nearCities: place.nearCities
   });
   openData[place.id] = {
