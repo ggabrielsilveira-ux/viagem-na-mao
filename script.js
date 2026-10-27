@@ -2345,10 +2345,11 @@ function openEventForm(eventId = null) {
     ${existing ? directionsButton(trip, { coordinates: existing.coordinates, address: existing.address, name: existing.title, date: existing.date }) : ""}
     <label class="field">Lugar ou compromisso<input id="event-title" maxlength="100" value="${escapeHtml(draft.title)}" placeholder="Ex.: Jantar no Cervejaria Ramiro"></label>
     <div class="cat-chips" id="event-categories">${Object.entries(EXPENSE_CATEGORIES).map(([key, [label, iconName]]) => `<button type="button" class="cat-chip${key === draft.category ? " is-selected" : ""}" data-category="${key}">${icon(iconName)}${escapeHtml(label)}</button>`).join("")}</div>
-    <label class="field">Endereço<input id="event-address" maxlength="180" value="${escapeHtml(draft.address || "")}" placeholder="Rua, número ou nome do lugar"></label>
+    <label class="field">Endereço<input id="event-address" maxlength="2000" value="${escapeHtml(draft.address || "")}" placeholder="Endereço, nome do lugar ou link do mapa"></label>
     <button class="btn btn-secondary btn-block" type="button" id="event-locate">${icon("map-pin")} Localizar no mapa</button>
     <div class="geo-results" id="event-geo-results"></div>
     <p class="geo-status" id="event-geo-status"></p>
+    <p class="footnote">Endereços localizados com o <a href="https://nominatim.org/" target="_blank" rel="noopener noreferrer">Nominatim</a>, dados © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">colaboradores do OpenStreetMap</a>.</p>
     <div class="field-row"><label class="field">Dia<select id="event-day">${dayOptions(trip, draft.date)}</select></label><label class="field">Horário<input id="event-time" type="time" value="${escapeHtml(draft.time || "09:00")}"></label></div>
     <p class="form-status" id="event-status" role="status" aria-live="polite"></p>
     ${existing ? `<button class="btn btn-secondary btn-block" type="button" id="stop-memory">${icon("book-heart")} Guardar momento no Baú</button>` : ""}
@@ -2391,20 +2392,20 @@ function openEventForm(eventId = null) {
       button.disabled = true;
       geoStatus.textContent = "Procurando…";
       try {
-        const found = await geocodeAddress(text, destination);
+        const found = await geocodeAddress(text, destination, (step) => { geoStatus.textContent = step; });
         const choose = (item) => {
           draft.coordinates = item.coordinates;
           draft.label = item.label;
-          if (!address.value.trim()) address.value = item.label.split(",").slice(0, 3).join(",");
+          if (!address.value.trim() || /https?:\/\//.test(address.value)) address.value = item.label.split(",").slice(0, 3).join(",");
           locatedFor = address.value.trim();
           results.innerHTML = "";
           paintGeo();
         };
-        if (!found.length) geoStatus.textContent = "Não encontrei. Confira o endereço ou tente o nome do lugar.";
-        else if (found.length === 1) choose(found[0]);
+        if (!found.length) geoStatus.textContent = "Não encontrei. Tente o nome como aparece no Google Maps, ou cole aqui o link do lugar no Google Maps.";
+        else if (geoAutoPick(found, destination)) choose(found[0]);
         else {
-          geoStatus.textContent = "Qual destes é o lugar certo?";
-          results.innerHTML = found.map((item, position) => `<button type="button" class="geo-option" data-geo="${position}">${icon("map-pin")}<span>${escapeHtml(item.label)}</span></button>`).join("");
+          geoStatus.textContent = found.length === 1 ? "Achei só este, longe da cidade. É ele?" : "Qual destes é o lugar certo?";
+          results.innerHTML = geoOptionsHtml(found, destination);
           results.onclick = (clickEvent) => {
             const option = clickEvent.target.closest("[data-geo]");
             if (option) choose(found[Number(option.dataset.geo)]);
@@ -3411,11 +3412,100 @@ function destinationIndexForDate(trip, date) {
   return index >= 0 ? index : trip.destinations.findIndex((destination) => destination.endDate === date);
 }
 
-async function geocodeAddress(address, destination) {
-  const city = getCityInfo(destination.name);
-  const query = normalizeText(address).includes(normalizeText(destination.name)) ? address : `${address}, ${destination.name}${city?.country ? `, ${city.country}` : ""}`;
-  const key = normalizeText(query);
-  if (geocodeCache[key]) return geocodeCache[key];
+// Palavras que a pessoa escreve em português e o mapa só conhece na língua do país
+// (Rua de Rivoli → Rue de Rivoli, Praça Navona → Piazza Navona).
+const PLACE_WORDS = {
+  rua: { fr: "Rue", it: "Via", es: "Calle" },
+  avenida: { fr: "Avenue", it: "Viale", es: "Avenida" },
+  praca: { fr: "Place", it: "Piazza", es: "Plaza" },
+  largo: { fr: "Place", it: "Largo", es: "Plaza" },
+  mercado: { fr: "Marché", it: "Mercato", es: "Mercado" },
+  estacao: { fr: "Gare", it: "Stazione", es: "Estación" },
+  museu: { fr: "Musée", it: "Museo", es: "Museo" },
+  igreja: { fr: "Église", it: "Chiesa", es: "Iglesia" },
+  catedral: { fr: "Cathédrale", it: "Duomo", es: "Catedral" },
+  ponte: { fr: "Pont", it: "Ponte", es: "Puente" },
+  palacio: { fr: "Palais", it: "Palazzo", es: "Palacio" },
+  castelo: { fr: "Château", it: "Castello", es: "Castillo" },
+  parque: { fr: "Parc", it: "Parco", es: "Parque" },
+  aeroporto: { fr: "Aéroport", it: "Aeroporto", es: "Aeropuerto" },
+  torre: { fr: "Tour", it: "Torre", es: "Torre" }
+};
+const PLACE_LINKS = { fr: "de", it: "di", es: "de" };
+const COUNTRY_LANGUAGE = {
+  "França": "fr", "Bélgica": "fr", "Mônaco": "fr", "Itália": "it", "Vaticano": "it", "San Marino": "it",
+  "Espanha": "es", "Argentina": "es", "Chile": "es", "Uruguai": "es", "Paraguai": "es", "Peru": "es", "Colômbia": "es", "México": "es",
+  "Bolívia": "es", "Equador": "es", "Cuba": "es", "Costa Rica": "es", "Panamá": "es", "República Dominicana": "es", "Venezuela": "es", "Guatemala": "es"
+};
+// Palavras genéricas que atrapalham quando o lugar tem outro nome no mapa (Mercado de Myeongdong → Myeongdong).
+const GENERIC_PLACE_WORDS = new Set([...Object.keys(PLACE_WORDS), "restaurante", "hotel", "pousada", "hostel", "bar", "cafe", "cafeteria", "loja", "shopping", "bairro", "templo", "santuario", "jardim", "mirante", "miradouro", "praia", "monumento", "basilica", "capela", "teatro", "galeria", "feira", "centro", "cidade"]);
+const PLACE_CONNECTORS = new Set(["de", "do", "da", "dos", "das", "e", "o", "a", "os", "as"]);
+
+function translatePlaceWords(text, language) {
+  if (!language) return "";
+  const words = text.split(/\s+/);
+  let changed = false;
+  const out = words.map((word, index) => {
+    const key = normalizeText(word).replace(/[^a-z]/g, "");
+    if (PLACE_WORDS[key]?.[language]) { changed = true; return PLACE_WORDS[key][language]; }
+    // "do/da" logo depois da palavra traduzida também muda (Mercado da Boqueria → Mercado de Boqueria).
+    if (index > 0 && ["do", "da", "dos", "das"].includes(key) && PLACE_WORDS[normalizeText(words[index - 1]).replace(/[^a-z]/g, "")]) { changed = true; return PLACE_LINKS[language]; }
+    return word;
+  });
+  return changed ? out.join(" ") : "";
+}
+
+function stripGenericWords(text) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const kept = words.filter((word) => !GENERIC_PLACE_WORDS.has(normalizeText(word).replace(/[^a-z]/g, "")));
+  while (kept.length && PLACE_CONNECTORS.has(normalizeText(kept[0]))) kept.shift();
+  const result = kept.join(" ");
+  return result.length >= 3 && kept.length < words.length ? result : "";
+}
+
+// Link do Google Maps, Apple Maps ou coordenadas coladas ("-22.97, -43.18"): o ponto já vem pronto, sem consultar nada.
+function coordinatesFromText(text) {
+  const patterns = [/!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)/, /@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/, /[?&](?:q|ll|query|destination|daddr|sll)=(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)/, /^\s*(-?\d{1,2}\.\d{3,})\s*,\s*(-?\d{1,3}\.\d{3,})\s*$/];
+  for (const pattern of patterns) {
+    const match = String(text).match(pattern);
+    if (!match) continue;
+    const coordinates = [Number(match[1]), Number(match[2])];
+    if (Math.abs(coordinates[0]) <= 90 && Math.abs(coordinates[1]) <= 180) return coordinates;
+  }
+  return null;
+}
+
+// Lugares do catálogo da cidade com esse nome: achados no aparelho, sem esperar o mapa.
+function catalogMatches(text, destination) {
+  const query = normalizeText(text);
+  if (query.length < 4) return [];
+  const coordsOf = (activity) => getOpenData(activity.id)?.coordinates || activity.coordinates || null;
+  return activities
+    .filter((activity) => coordsOf(activity) && (!destination.name || activityMatchesCity(activity, destination.name)))
+    .filter((activity) => {
+      const name = normalizeText(activity.name);
+      return name === query || (query.length >= 6 && name.includes(query)) || (name.length >= 6 && query.includes(name));
+    })
+    .slice(0, 3)
+    .map((activity) => ({ coordinates: coordsOf(activity), label: `${activity.name}, ${activity.city}${activity.country ? `, ${activity.country}` : ""}` }));
+}
+
+// Nome legível do ponto colado; sem internet ou sem resposta, fica só "Ponto do mapa".
+async function reverseLabel([lat, lon]) {
+  const fallback = `Ponto do mapa (${lat.toFixed(5)}, ${lon.toFixed(5)})`;
+  try {
+    const pause = 1100 - (Date.now() - lastGeocodeAt);
+    if (pause > 0) await wait(pause);
+    lastGeocodeAt = Date.now();
+    const params = new URLSearchParams({ format: "jsonv2", zoom: "18", "accept-language": "pt-BR", lat: String(lat), lon: String(lon) });
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?${params}`);
+    return (response.ok && (await response.json()).display_name) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+async function nominatimSearch(query, city, bounded) {
   const pause = 1100 - (Date.now() - lastGeocodeAt);
   if (pause > 0) await wait(pause);
   lastGeocodeAt = Date.now();
@@ -3423,10 +3513,72 @@ async function geocodeAddress(address, destination) {
   if (city?.coordinates) {
     const [lat, lon] = city.coordinates;
     params.set("viewbox", `${lon - 0.6},${lat + 0.6},${lon + 0.6},${lat - 0.6}`);
+    if (bounded) params.set("bounded", "1");
   }
   const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
   if (!response.ok) throw new Error(`Nominatim respondeu ${response.status}`);
-  const results = (await response.json()).map((item) => ({ coordinates: [Number(item.lat), Number(item.lon)], label: item.display_name }));
+  return (await response.json()).map((item) => ({ coordinates: [Number(item.lat), Number(item.lon)], label: item.display_name, street: item.category === "highway" }));
+}
+
+// Procura em etapas, parando na primeira que achar: catálogo da cidade; o texto como foi digitado, só na região da cidade
+// (assim o nome da cidade em português não atrapalha); com Rua/Praça na língua do país; em qualquer lugar
+// (para passeios fora da cidade, como um castelo a 100 km); só o nome principal; e com o nome da cidade.
+const GEOCODE_NEAR_KM = 300;
+
+// Opções de endereço com a distância até o centro da cidade, para a pessoa reconhecer o lugar certo.
+function geoOptionsHtml(found, destination) {
+  const center = getCityInfo(destination.name)?.coordinates;
+  return found.map((item, position) => {
+    const km = center ? distanceKm(center, item.coordinates) : null;
+    const where = km === null ? "" : `<small>${km < 1 ? "no centro" : `a ${Math.round(km).toLocaleString("pt-BR")} km do centro`} de ${escapeHtml(destination.name)}</small>`;
+    return `<button type="button" class="geo-option" data-geo="${position}">${icon("map-pin")}<span>${escapeHtml(item.label)}${where}</span></button>`;
+  }).join("");
+}
+
+// Um resultado só é escolhido sozinho se estiver perto da cidade (ou se veio de um link colado).
+function geoAutoPick(found, destination) {
+  if (found.length !== 1) return null;
+  const center = getCityInfo(destination.name)?.coordinates;
+  return found[0].pasted || !center || distanceKm(center, found[0].coordinates) <= GEOCODE_NEAR_KM ? found[0] : null;
+}
+
+async function geocodeAddress(address, destination, onStep = () => {}) {
+  const pasted = coordinatesFromText(address);
+  if (pasted) return [{ coordinates: pasted, label: await reverseLabel(pasted), pasted: true }];
+  // Lugar compartilhado do Google Maps vem com nome, endereço e um link curto: usa o texto e ignora o link.
+  const text = address.replace(/https?:\/\/\S+/g, " ").replace(/\s*\n\s*/g, ", ").replace(/\s+/g, " ").replace(/^[,\s]+|[,\s]+$/g, "").trim();
+  if (text.length < 3) return [];
+  const city = getCityInfo(destination.name);
+  const key = `v2|${normalizeText(destination.name)}|${normalizeText(text)}`;
+  if (geocodeCache[key]) return geocodeCache[key];
+  const fromCatalog = catalogMatches(text, destination);
+  if (fromCatalog.length) return fromCatalog;
+  const language = COUNTRY_LANGUAGE[city?.country];
+  const withCity = normalizeText(text).includes(normalizeText(destination.name)) || !destination.name ? text : `${text}, ${destination.name}${city?.country ? `, ${city.country}` : ""}`;
+  const attempts = city?.coordinates
+    ? [[text, true], [translatePlaceWords(text, language), true], [text, false], [stripGenericWords(text), true, true], [withCity, false]]
+    : [[withCity, false], [stripGenericWords(text), false, true]];
+  const tried = new Set();
+  const near = (item) => !city?.coordinates || distanceKm(city.coordinates, item.coordinates) <= GEOCODE_NEAR_KM;
+  let results = [];
+  let far = [];
+  // Só o nome principal acha também ruas batizadas com ele (Neuschwansteinstraße): nessa etapa, rua não vale.
+  for (const [query, bounded, noStreets] of attempts) {
+    const id = `${normalizeText(query)}|${bounded}`;
+    if (!query || tried.has(id)) continue;
+    if (tried.size) onStep("Procurando de outro jeito…");
+    tried.add(id);
+    results = await nominatimSearch(query, city, bounded);
+    if (noStreets) results = results.filter((item) => !item.street);
+    // Fora da região da cidade, o mais perto dela vem primeiro (o castelo da Baviera, não a réplica em Gramado).
+    if (!bounded && city?.coordinates) results.sort((a, b) => distanceKm(city.coordinates, a.coordinates) - distanceKm(city.coordinates, b.coordinates));
+    if (results.some(near)) break;
+    if (!far.length) far = results;
+    results = [];
+  }
+  if (!results.length) results = far;
+  // O mapa às vezes devolve o mesmo lugar duas vezes (a praça e o contorno dela): fica um só.
+  results = results.filter((item, index) => results.findIndex((other) => distanceKm(other.coordinates, item.coordinates) < 0.3) === index).map(({ street, ...item }) => item);
   geocodeCache[key] = results;
   try {
     const keys = Object.keys(geocodeCache);
@@ -3453,12 +3605,11 @@ function openLodgingSheet(index, lodgingId = null) {
   while (free.includes(defaultOut)) defaultOut = addDays(defaultOut, 1);
   const draft = existing ? { ...existing } : { id: `hosp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, name: "", address: "", checkIn: free[0] || nights[0], checkOut: defaultOut, coordinates: null, label: "" };
   let locatedFor = existing?.coordinates ? existing.address : null;
-  const city = getCityInfo(destination.name);
   const option = (date, selected) => `<option value="${date}"${date === selected ? " selected" : ""}>${escapeHtml(formatDate(date, { weekday: "short", day: "numeric", month: "short" }))}</option>`;
   openSheet(`${sheetTitle(existing ? "Editar hospedagem" : "Nova hospedagem")}
     <p class="muted">${escapeHtml(destination.name)} · ${escapeHtml(formatRange(destination.startDate, destination.endDate, false))} · ${nightsLabel(nights.length)}</p>
     <label class="field">Nome (opcional)<input id="lodging-name" maxlength="100" value="${escapeHtml(draft.name)}" placeholder="Ex.: Pousada do Centro"></label>
-    <label class="field">Endereço<input id="lodging-address" maxlength="180" value="${escapeHtml(draft.address)}" placeholder="Rua, número, bairro"></label>
+    <label class="field">Endereço<input id="lodging-address" maxlength="2000" value="${escapeHtml(draft.address)}" placeholder="Endereço, nome do hotel ou link do mapa"></label>
     <button class="btn btn-secondary btn-block" type="button" id="lodging-locate">${icon("map-pin")} Localizar no mapa</button>
     <div class="geo-results" id="geo-results"></div>
     <p class="geo-status" id="geo-status"></p>
@@ -3492,6 +3643,8 @@ function openLodgingSheet(index, lodgingId = null) {
     const choose = (item) => {
       draft.coordinates = item.coordinates;
       draft.label = item.label;
+      // Link colado: no campo fica o endereço, não o link.
+      if (/https?:\/\//.test(address.value)) address.value = item.label.split(",").slice(0, 3).join(",");
       locatedFor = address.value.trim();
       results.innerHTML = "";
       paintGeo();
@@ -3506,17 +3659,14 @@ function openLodgingSheet(index, lodgingId = null) {
       button.disabled = true;
       geoStatus.textContent = "Procurando o endereço…";
       try {
-        const found = await geocodeAddress(text, destination);
+        const found = await geocodeAddress(text, destination, (step) => { geoStatus.textContent = step; });
         if (!found.length) {
           results.innerHTML = "";
-          geoStatus.textContent = "Não encontrei esse endereço. Confira a rua e o número, ou tente só o nome do hotel.";
-        } else if (found.length === 1) choose(found[0]);
+          geoStatus.textContent = "Não encontrei esse endereço. Tente só o nome do hotel, ou cole aqui o link dele no Google Maps.";
+        } else if (geoAutoPick(found, destination)) choose(found[0]);
         else {
-          geoStatus.textContent = "Qual destes é o endereço certo?";
-          results.innerHTML = found.map((item, position) => {
-            const km = city?.coordinates ? distanceKm(city.coordinates, item.coordinates) : null;
-            return `<button type="button" class="geo-option" data-geo="${position}">${icon("map-pin")}<span>${escapeHtml(item.label)}${km !== null ? `<small>${km < 1 ? "no centro" : `a ${Math.round(km)} km do centro`} de ${escapeHtml(destination.name)}</small>` : ""}</span></button>`;
-          }).join("");
+          geoStatus.textContent = found.length === 1 ? "Achei só este, longe da cidade. É ele?" : "Qual destes é o endereço certo?";
+          results.innerHTML = geoOptionsHtml(found, destination);
           results.onclick = (clickEvent) => {
             const option = clickEvent.target.closest("[data-geo]");
             if (option) choose(found[Number(option.dataset.geo)]);
