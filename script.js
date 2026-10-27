@@ -3697,8 +3697,9 @@ function cityOptionHtml(city, selected) {
 
 function renderCitiesStep(body) {
   const data = wizard.data;
-  body.innerHTML = `<div class="wizard-intro"><h2>Para onde você vai?</h2><p>Escolha uma ou mais cidades, na ordem da viagem.</p></div>
-    <div class="search-box">${icon("search")}<input id="city-search" type="search" placeholder="Buscar cidade" value="${escapeHtml(wizard.query)}" autocomplete="off" aria-label="Buscar cidade"></div>
+  body.innerHTML = `<div class="wizard-intro"><h2>Para onde você vai?</h2><p>Adicione <strong>todas as cidades</strong> que vai visitar, na ordem da viagem.</p></div>
+    <p class="cities-note">${icon("info")} Descobrir, Roteiro e Guia só mostram as cidades cadastradas aqui. Vai passar por mais de uma? Busque e adicione cada uma.</p>
+    <div class="search-box">${icon("search")}<input id="city-search" type="search" placeholder="Digite o nome da cidade" value="${escapeHtml(wizard.query)}" autocomplete="off" aria-label="Buscar cidade"></div>
     <div class="selected-cities" id="selected-cities"></div>
     <div class="city-list" id="city-list"></div>`;
   const paint = () => {
@@ -3710,9 +3711,11 @@ function renderCitiesStep(body) {
     const brazil = filtered.filter((city) => city.country === "Brasil");
     const abroad = filtered.filter((city) => city.country !== "Brasil");
     const exact = all.some((city) => normalizeText(city.name) === query);
-    $("#city-list").innerHTML = (query && !exact ? `<button class="city-option" type="button" data-city="${escapeHtml(wizard.query.trim())}" data-country=""><span class="city-icon">${icon("plus")}</span><span><strong>Usar “${escapeHtml(wizard.query.trim())}”</strong><small>Cidade fora da lista: sem sugestões nem guia automático por enquanto</small></span><span class="check">${icon("check")}</span></button>` : "")
+    $("#city-list").innerHTML = !query
+      ? `<p class="city-search-hint">${data.cities.length ? "Vai a mais alguma cidade? Digite o nome para adicionar." : "Digite o nome da cidade, por exemplo Roma, Gramado ou Nova York."}</p>`
+      : ((query && !exact ? `<button class="city-option" type="button" data-city="${escapeHtml(wizard.query.trim())}" data-country=""><span class="city-icon">${icon("plus")}</span><span><strong>Usar “${escapeHtml(wizard.query.trim())}”</strong><small>Cidade fora da lista: sem sugestões nem guia automático por enquanto</small></span><span class="check">${icon("check")}</span></button>` : "")
       + (brazil.length ? `<p class="city-group-title">Brasil</p>${brazil.map((city) => cityOptionHtml(city, isSelected(city.name))).join("")}` : "")
-      + (abroad.length ? `<p class="city-group-title">Exterior</p>${abroad.map((city) => cityOptionHtml(city, isSelected(city.name))).join("")}` : "");
+      + (abroad.length ? `<p class="city-group-title">Exterior</p>${abroad.map((city) => cityOptionHtml(city, isSelected(city.name))).join("")}` : ""));
     updateWizardNext();
   };
   paint();
@@ -3735,10 +3738,8 @@ function renderCitiesStep(body) {
     if (index >= 0) data.cities.splice(index, 1);
     else {
       data.cities.push({ name, country: option.dataset.country, nights: 0 });
-      if (!getCityInfo(name)) {
-        wizard.query = "";
-        $("#city-search").value = "";
-      }
+      wizard.query = "";
+      $("#city-search").value = "";
     }
     distributeNights();
     paint();
