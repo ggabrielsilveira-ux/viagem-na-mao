@@ -57,7 +57,7 @@ O arquivo `dados/fontes-abertas.js` é gerado por `node ferramentas/gerar-fontes
 
 Essas fontes não têm notas, preços nem horários, então o app continua sem esses dados.
 
-### Atrações de 326 cidades
+### Atrações de 330 cidades
 
 `dados/atracoes-cidades.js` é gerado por `node ferramentas/gerar-atracoes-cidades.mjs` (leva vários minutos; resultados por cidade ficam em `ferramentas/.cache/`, fora do Git, para retomar se parar). Para cada cidade da lista no início do script, consulta no Wikidata lugares de tipos turísticos (museu, praia, parque, igreja, mirante, mercado etc.) num raio de 50 km, ordenados pelo número de Wikipedias em que aparecem, e guarda até 25 com artigo na Wikipedia em português. Em cidades com dados demais (Paris, Londres, Tóquio...) a consulta de 50 km estoura o tempo do Wikidata e o script usa raio menor (8 a 10 km). Descarta obras de acervo (P195) e lugares que deixaram de existir (P576).
 
@@ -128,7 +128,7 @@ As viagens, despesas e memórias ficam neste navegador e não são sincronizadas
 - `ferramentas/supabase-metricas.sql` e `painel.html`: estatística de uso do teste (no máximo uma vez por dia por aparelho, só contagens: viagens, cidades, memórias, gastos, app instalado; nunca conteúdo) e o painel dos testadores em /painel.html, que só responde para e-mails da tabela `administradores`.
 - `ferramentas/supabase-perfis.sql` e `ferramentas/supabase-opinioes.sql`: cadastro do testador (nome, WhatsApp, aniversário dia/mês, aceite de novidades) e as opiniões do botão "Enviar opinião" (fila no aparelho quando está sem internet); ambos aparecem no painel.
 - `sw.js`: service worker que guarda o app, o índice, os pacotes e os pontos úteis das cidades da viagem e as fotos já vistas (até 400) para usar sem internet. Clima, rotas, endereços e conta sempre pela rede.
-- `dados/atracoes-cidades.js`: atrações de 326 cidades (gerado, não editar à mão; o app não carrega este arquivo, ele alimenta `dividir-cidades.mjs`).
+- `dados/atracoes-cidades.js`: atrações de 330 cidades (gerado, não editar à mão; o app não carrega este arquivo, ele alimenta `dividir-cidades.mjs`).
 - `ferramentas/gerar-atracoes-cidades.mjs`: script que gera o arquivo acima e define a lista de cidades.
 - `dados/osm-lugares.js` e `ferramentas/gerar-osm.mjs`: lugares do OpenStreetMap (gerado, não editar à mão).
 - `ferramentas/extrair-pbf.mjs`: monta o cache do OSM a partir dos extratos do Geofabrik, sem Overpass.

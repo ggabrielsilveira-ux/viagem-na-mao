@@ -1583,15 +1583,6 @@
   "pagina": "https://commons.wikimedia.org/wiki/File:Ravello_September_2007.jpg",
   "proporcao": 1.33
  },
- "Cortina d'Ampezzo": {
-  "lugar": "Lavaredo",
-  "arquivo": "Lavaredo.jpg",
-  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Lavaredo.jpg/1280px-Lavaredo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-  "autor": "sambuco",
-  "licenca": "CC BY-SA 3.0",
-  "pagina": "https://commons.wikimedia.org/wiki/File:Lavaredo.jpg",
-  "proporcao": 1.5
- },
  "Dubrovnik": {
   "lugar": "Muralhas de Dubrovnik",
   "arquivo": "Porporela 2011.jpg",
@@ -2653,5 +2644,50 @@
   "licenca": "CC BY-SA 4.0",
   "pagina": "https://commons.wikimedia.org/wiki/File:%EB%AC%B4%EC%A7%84%EA%B3%A0%EC%84%B1%EC%A7%80%EC%97%90%EC%84%9C_%EB%82%B4%EB%A0%A4%EB%8B%A4%EB%B3%B8_%EA%B4%91%EC%A3%BC%EA%B4%91%EC%97%AD%EC%8B%9C_%EC%8B%9C%EA%B0%80%EC%A7%80.jpg",
   "proporcao": 2.14
+ },
+ "Lienz": {
+  "lugar": "Lienz",
+  "arquivo": "Lienz gesamt.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Lienz_gesamt.jpg/1280px-Lienz_gesamt.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Autor no Wikimedia Commons",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Lienz_gesamt.jpg",
+  "proporcao": 2.1
+ },
+ "Perca": {
+  "lugar": "Perca",
+  "arquivo": "Percha.jpg",
+  "url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Percha.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "autor": "Lumay99",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Percha.jpg",
+  "proporcao": 1.51
+ },
+ "Lago de Braies": {
+  "lugar": "Lago de Braies",
+  "arquivo": "Prags (Schmieden, Ferrara).jpg",
+  "url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Prags_%28Schmieden%2C_Ferrara%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "autor": "High Contrast",
+  "licenca": "CC BY-SA 2.0 de",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Prags_(Schmieden,_Ferrara).jpg",
+  "proporcao": 1.33
+ },
+ "Brunico": {
+  "lugar": "Brunico",
+  "arquivo": "Panorama Brunico.JPG",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Panorama_Brunico.JPG/1280px-Panorama_Brunico.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Bbruno",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Panorama_Brunico.JPG",
+  "proporcao": 1.33
+ },
+ "Cortina d'Ampezzo": {
+  "lugar": "Lavaredo",
+  "arquivo": "Lavaredo.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Lavaredo.jpg/1280px-Lavaredo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "sambuco",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Lavaredo.jpg",
+  "proporcao": 1.5
  }
 }
