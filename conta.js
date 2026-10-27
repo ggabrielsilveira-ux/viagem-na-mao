@@ -265,11 +265,12 @@ function paintAccount() {
   accountRoot.querySelector("#account-send")?.addEventListener("click", async (event) => {
     const email = accountRoot.querySelector("#account-email").value.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { status.textContent = "Confira o e-mail digitado."; return; }
-    event.currentTarget.disabled = true;
+    const button = event.currentTarget;
+    button.disabled = true;
     status.textContent = "Enviando…";
     const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
     if (error) {
-      event.currentTarget.disabled = false;
+      button.disabled = false;
       status.textContent = /rate|seconds/i.test(error.message) ? "Espere um pouco antes de pedir outro código." : "Não consegui enviar agora. Tente de novo em instantes.";
       return;
     }
@@ -281,11 +282,12 @@ function paintAccount() {
   accountRoot.querySelector("#account-verify")?.addEventListener("click", async (event) => {
     const token = accountRoot.querySelector("#account-code").value.replace(/\D/g, "");
     if (token.length < 6) { status.textContent = "Digite o código que chegou no e-mail."; return; }
-    event.currentTarget.disabled = true;
+    const button = event.currentTarget;
+    button.disabled = true;
     status.textContent = "Entrando…";
     const { error } = await supabaseClient.auth.verifyOtp({ email: pendingEmail, token, type: "email" });
     if (error) {
-      event.currentTarget.disabled = false;
+      button.disabled = false;
       status.textContent = "Código inválido ou vencido. Confira ou peça outro.";
       return;
     }
