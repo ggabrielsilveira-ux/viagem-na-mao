@@ -1318,3 +1318,5 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .spotlight-home .spotlight-text { max-width: 70%; }
 #home-account:empty { display: none; }
 #home-account .account-invite { margin-bottom: 0; }
+
+.stop-go { margin-bottom: 14px; text-decoration: none; }

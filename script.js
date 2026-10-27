@@ -1160,8 +1160,18 @@ function navigate(next, { replace = false } = {}) {
   render({ scroll: previousScreen !== route.screen || !replace });
 }
 
+// Sair do Resumo para outra aba cria um passo no histórico: o voltar (setinha ou do celular) volta ao
+// Resumo, e só do Resumo volta para o início. Trocar entre as outras abas não empilha passos.
+function goToTab(tab) {
+  if (route.screen !== "trip" || tab === route.tab) return;
+  if (tab === "about" && route.tabFromAbout) { window.history.back(); return; }
+  if ((route.tab || "about") === "about" && tab !== "about") navigate({ tab, tabFromAbout: true });
+  else navigate({ tab, tabFromAbout: tab !== "about" && Boolean(route.tabFromAbout) }, { replace: true });
+}
+
 function goBack() {
   if (sheet.open && !closeSheet()) return;
+  if (route.screen === "trip" && route.tab && route.tab !== "about") { goToTab("about"); return; }
   if ((window.history.state?.depth || 0) > 0) window.history.back();
   else navigate({ screen: "home" }, { replace: true });
 }
@@ -2184,6 +2194,16 @@ function dayOptions(trip, selected) {
   return getTripDays(trip).map((date) => `<option value="${date}"${date === selected ? " selected" : ""}>${escapeHtml(formatDate(date, { weekday: "short", day: "numeric", month: "short" }))}</option>`).join("");
 }
 
+// Botão "Ir": abre a rota no Google Maps (coordenada do lugar; sem ela, o endereço; sem endereço, o nome e a cidade).
+function directionsButton(trip, { coordinates, address, name, date }) {
+  const city = trip.destinations.find((destination) => date && destination.startDate <= date && date <= destination.endDate)?.name || trip.destinations[0]?.name || "";
+  const target = Array.isArray(coordinates) && coordinates.length === 2
+    ? `${coordinates[0]},${coordinates[1]}`
+    : [address || name, city].filter(Boolean).join(", ");
+  if (!target) return "";
+  return `<a class="btn btn-primary btn-block stop-go" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(target)}" target="_blank" rel="noopener noreferrer">${icon("navigation")} Ir: abrir a rota no mapa</a>`;
+}
+
 function openStopSheet(id, type) {
   if (type === "manual") {
     openEventForm(id);
@@ -2194,7 +2214,9 @@ function openStopSheet(id, type) {
   const item = collection.find((entry) => entry.id === id);
   if (!item) return;
   const title = type === "activity" ? getActivity(id)?.name : item.title;
+  const go = directionsButton(trip, { coordinates: type === "activity" ? getOpenData(id)?.coordinates : item.coordinates, address: item.address, name: title, date: item.date });
   openSheet(`${sheetTitle(title || "Parada")}
+    ${go}
     <div class="field-row">
       <label class="field">Dia<select id="stop-day">${dayOptions(trip, item.date)}</select></label>
       <label class="field">Horário<input id="stop-time" type="time" value="${escapeHtml(item.time || "09:00")}"></label>
@@ -2253,6 +2275,7 @@ function openEventForm(eventId = null) {
   if (!EXPENSE_CATEGORIES[draft.category]) draft.category = "outros";
   let locatedFor = draft.coordinates ? draft.address : null;
   openSheet(`${sheetTitle(existing ? "Editar compromisso" : "Novo compromisso")}
+    ${existing ? directionsButton(trip, { coordinates: existing.coordinates, address: existing.address, name: existing.title, date: existing.date }) : ""}
     <label class="field">Lugar ou compromisso<input id="event-title" maxlength="100" value="${escapeHtml(draft.title)}" placeholder="Ex.: Jantar no Cervejaria Ramiro"></label>
     <div class="cat-chips" id="event-categories">${Object.entries(EXPENSE_CATEGORIES).map(([key, [label, iconName]]) => `<button type="button" class="cat-chip${key === draft.category ? " is-selected" : ""}" data-category="${key}">${icon(iconName)}${escapeHtml(label)}</button>`).join("")}</div>
     <label class="field">Endereço<input id="event-address" maxlength="180" value="${escapeHtml(draft.address || "")}" placeholder="Rua, número ou nome do lugar"></label>
@@ -3071,7 +3094,7 @@ function openAperto(cityName, kind) {
   view.kind = kind;
   view.limit = 5;
   apertoView.set(cityName, view);
-  navigate({ tab: "before" }, { replace: true });
+  goToTab("before");
   const card = $$("[data-aperto]").find((item) => item.dataset.aperto === cityName);
   if (!card) return;
   let last = null;
@@ -5907,7 +5930,7 @@ document.addEventListener("click", (event) => {
   }
   const tabButton = event.target.closest("[data-tab]");
   if (tabButton && route.screen === "trip") {
-    navigate({ tab: tabButton.dataset.tab }, { replace: true });
+    goToTab(tabButton.dataset.tab);
     return;
   }
   const openList = event.target.closest("[data-open-list]");
