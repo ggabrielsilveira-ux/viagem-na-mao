@@ -1399,3 +1399,14 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .bau-empty .bau-private .icon { flex: none; }
 .bau-empty .bau-private { align-items: flex-start; text-align: left; }
 .bau-empty .bau-private .icon { margin-top: 2px; }
+
+/* Baú vazio: acabamento final (2 polaroides, coração e anotação) */
+.bau-album { height: 196px; margin: 18px auto 6px; }
+.bau-ex.is-left { top: 6px; left: 2%; width: 54%; height: 156px; transform: rotate(-4deg); }
+.bau-ex.is-right { top: 22px; right: 2%; z-index: 1; width: 54%; height: 156px; transform: rotate(3deg); }
+.bau-ex.is-left::before { left: 38%; }
+.bau-heart { position: absolute; z-index: 2; top: -6px; right: 4%; width: 30px; height: 27px; transform: rotate(10deg); }
+.bau-ink { position: absolute; z-index: 2; bottom: -2px; left: 5%; color: var(--accent); font-family: var(--font-serif); font-size: 13px; font-style: italic; transform: rotate(-4deg); }
+.bau-album figcaption { bottom: -22px; font-size: 10.5px; }
+.bau-empty .bau-support { margin: 32px 0 16px; }
+.bau-empty .bau-private { margin-top: 10px; font-size: 11.5px; color: var(--muted); }
