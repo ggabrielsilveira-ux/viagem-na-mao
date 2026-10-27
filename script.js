@@ -4139,11 +4139,12 @@ function renderMemoriesCard(trip) {
   hydratePhotos(card);
 }
 
-// Fotos ilustrativas do Baú vazio (CC0, as mesmas do site): exemplo de álbum, nunca memórias da pessoa.
+// Fotos ilustrativas do Baú vazio (CC0, StockSnap): pessoas vivendo e registrando viagens.
+// São exemplo de álbum, nunca memórias da pessoa nem fotos do destino.
 const BAU_EXAMPLE_PHOTOS = [
-  { src: "imagens/bau/exemplo-1.jpg", caption: "Vistas que ficam" },
-  { src: "imagens/bau/exemplo-2.jpg", caption: "Boa companhia" },
-  { src: "imagens/bau/exemplo-3.jpg", caption: "Esse dia foi especial" }
+  { src: "imagens/bau/amigas.jpg", caption: "Boa companhia", credit: "Katie Treadway" },
+  { src: "imagens/bau/selfie.jpg", caption: "Esse dia foi especial", credit: "Duri from Mocup" },
+  { src: "imagens/bau/celular.jpg", caption: "", credit: "Matt Bango" }
 ];
 
 // Onde as memórias ficam guardadas, sem prometer o que não existe.
@@ -4187,21 +4188,19 @@ function renderMemories() {
   const backupOld = !window.contaLogada?.() && (!state.lastBackupAt || daysBetween(state.lastBackupAt.slice(0, 10), getBrasiliaDateKey()) > 14);
   if (!memories.length) {
     // Estado A: convite para a primeira memória.
-    const nudge = bauFirstVisitMessage || messageFor("bauVazio", trip.id);
+    const [first, second, detail] = BAU_EXAMPLE_PHOTOS;
+    const polaroid = (photo, cls) => `<span class="bau-ex ${cls}"><img src="${photo.src}" alt="" loading="lazy">${photo.caption ? `<span>${escapeHtml(photo.caption)}</span>` : ""}</span>`;
     container.innerHTML = `
       <div class="bau-empty">
-        <figure class="bau-collage" aria-label="Exemplo de álbum com fotos ilustrativas">
-          ${BAU_EXAMPLE_PHOTOS.map((photo, index) => `<span class="bau-collage-photo p${index + 1}"><img src="${photo.src}" alt="" loading="lazy"><span>${escapeHtml(photo.caption)}</span></span>`).join("")}
-          <span class="bau-collage-note">${escapeHtml(trip.destinations[0]?.name || trip.name || "Minha viagem")} ${icon("heart")}</span>
-          <figcaption>Exemplo de álbum · fotos ilustrativas (CC0)</figcaption>
-        </figure>
         <h2>Meu Baú de Memórias</h2>
         <p class="bau-lead">Sua viagem merece ser lembrada.</p>
+        <figure class="bau-album" aria-label="Exemplo de álbum com fotos ilustrativas de outras pessoas">
+          ${polaroid(first, "is-left")}${polaroid(second, "is-right")}${polaroid(detail, "is-detail")}
+          <figcaption>${icon("images")} Exemplo de álbum · fotos ilustrativas</figcaption>
+        </figure>
         <p class="bau-support">Uma foto, um sentimento, um instante. Comece por aquilo que te fez sorrir.</p>
         <button class="btn btn-primary btn-block" type="button" data-new-memory>${icon("image-plus")} Guardar minha primeira memória</button>
-        <p class="bau-private">${icon("lock")} Só seu, até você escolher compartilhar.</p>
-        ${nudge ? `<p class="bau-nudge">${icon("sparkles")} ${escapeHtml(nudge)}</p>` : ""}
-        <p class="bau-where">${escapeHtml(memoriesPrivacyText())}. Dá para registrar depois também: escolha a data em que aconteceu.</p>
+        <p class="bau-private">${icon("lock")}<span>Só seu, até você escolher compartilhar. ${escapeHtml(capitalize(memoriesPrivacyText().replace("Privado · ", "")))}.</span></p>
       </div>`;
     hydrateIcons(container);
     return;
