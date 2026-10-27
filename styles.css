@@ -1410,3 +1410,4 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .bau-album figcaption { bottom: -22px; font-size: 10.5px; }
 .bau-empty .bau-support { margin: 32px 0 16px; }
 .bau-empty .bau-private { margin-top: 10px; font-size: 11.5px; color: var(--muted); }
+.track-list { max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; }

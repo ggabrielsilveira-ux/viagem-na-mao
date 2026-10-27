@@ -5357,21 +5357,44 @@ function openAlbumSheet() {
 
 // ---------------------------------------------------------------------------
 // Vídeo da retrospectiva (experimental): vertical, 15 a 30 segundos, gravado no
-// aparelho a partir de um canvas animado, com música livre (Kevin MacLeod, CC BY)
+// aparelho a partir de um canvas animado, com música livre (CC BY ou domínio público)
 // ou sem música para escolher uma faixa licenciada no Instagram ou TikTok.
 // ---------------------------------------------------------------------------
 
 const VIDEO_SIZE = { width: 720, height: 1280, fps: 30 };
 const VIDEO_FADE = 0.45;
+// Músicas do vídeo (ferramentas/baixar-musicas.mjs). Licenças conferidas nas páginas oficiais em 27/10/2026:
+// Jason Shaw/Audionautix e Scott Buckley em CC BY 4.0 (crédito no fim do vídeo e na legenda); Satie/Musopen em domínio público.
 const VIDEO_TRACKS = [
-  { id: "carefree", title: "Carefree", mood: "Alegre", page: "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Carefree.ogg" },
-  { id: "parisian", title: "Parisian", mood: "Charme europeu", page: "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Parisian.ogg" },
-  { id: "early-riser", title: "Early Riser", mood: "Leve, de manhã", page: "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Early_Riser.ogg" },
-  { id: "clean-soul", title: "Clean Soul", mood: "Calma", page: "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Clean_Soul.ogg" },
-  { id: "call-to-adventure", title: "Call to Adventure", mood: "Aventura", page: "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Call_to_Adventure.ogg" }
+  { id: "solo-acoustic-5", title: "Solo Acoustic #5", mood: "Violão pensativo", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Solo Acoustic #5”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "paper-wings", title: "Paper Wings", mood: "Delicado", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Paper Wings”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "with-these-hands", title: "With These Hands", mood: "Nostálgico", author: "Scott Buckley", page: "https://www.scottbuckley.com.au/library/with-these-hands/", credit: "Música: “With These Hands”, Scott Buckley (scottbuckley.com.au) · CC BY 4.0" },
+  { id: "gymnopedie-1", title: "Gymnopédie nº 1", mood: "Piano nostálgico", author: "Erik Satie · gravação Musopen", page: "https://commons.wikimedia.org/wiki/File:Erik_Satie_-_gymnopedies_-_la_1_ere._lent_et_douloureux.ogg", credit: "Música: “Gymnopédie nº 1” (Erik Satie), gravação de Robin Alciatore · Musopen · domínio público" },
+  { id: "one-fine-day", title: "One Fine Day", mood: "Dia bonito", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “One Fine Day”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "travel-light", title: "Travel Light", mood: "Viagem leve", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Travel Light”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "open-road", title: "Open Road", mood: "Estrada", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Open Road”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "autumn-sunset", title: "Autumn Sunset", mood: "Pôr do sol", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Autumn Sunset”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "acoustic-guitar-1", title: "Acoustic Guitar #1", mood: "Calmo", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Acoustic Guitar #1”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "acoustic-shuffle", title: "Acoustic Shuffle", mood: "Gingado leve", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Acoustic Shuffle”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "cold-morning", title: "Cold Morning", mood: "Manhã fria", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Cold Morning”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "cool-steel-breeze", title: "Cool Steel Breeze", mood: "Brisa", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Cool Steel Breeze”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "folk-bed", title: "Folk Bed", mood: "Folk animado", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Folk Bed”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "green-leaves", title: "Green Leaves", mood: "Natureza", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Green Leaves”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "happy-strummin", title: "Happy Strummin'", mood: "Alegre", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Happy Strummin'”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "landras-dream", title: "Landra's Dream", mood: "Sonhador", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Landra's Dream”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "pennywhistle", title: "Pennywhistle", mood: "Divertido", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Pennywhistle”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "redwood-trail", title: "Redwood Trail", mood: "Trilha", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Redwood Trail”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "river-meditation", title: "River Meditation", mood: "Leve e animado", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “River Meditation”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "running-waters", title: "Running Waters", mood: "Águas correndo", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Running Waters”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "second-nature", title: "Second Nature", mood: "Tranquilo", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Second Nature”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "serenity", title: "Serenity", mood: "Sereno", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Serenity”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "solo-acoustic-3", title: "Solo Acoustic #3", mood: "Violão calmo", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Solo Acoustic #3”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "walk-in-the-park", title: "Walk In The Park", mood: "Passeio", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Walk In The Park”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "walk-in-the-park-full", title: "Walk In The Park (completa)", mood: "Passeio animado", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Walk In The Park (completa)”, Jason Shaw (audionautix.com) · CC BY 4.0" },
+  { id: "words", title: "Words", mood: "Inspirador", author: "Jason Shaw (Audionautix)", page: "https://audionautix.com/free-music/acoustic", credit: "Música: “Words”, Jason Shaw (audionautix.com) · CC BY 4.0" }
 ];
 
-const trackCredit = (track) => `Música: “${track.title}”, Kevin MacLeod (incompetech.com) · CC BY 3.0`;
+const trackCredit = (track) => track.credit;
 
 function videoMimeType() {
   if (!window.MediaRecorder) return "";
@@ -5618,7 +5641,7 @@ function openVideoSheet() {
     <div class="segmented" id="video-duration">${[15, 20, 30].map((seconds) => `<button type="button" data-duration="${seconds}" class="${seconds === options.duration ? "is-selected" : ""}">${seconds} s</button>`).join("")}</div>
     <h3 class="video-label">Música</h3>
     <div class="track-list" id="track-list">
-      ${VIDEO_TRACKS.map((track) => `<div class="track${track === options.track ? " is-selected" : ""}" data-track="${track.id}"><button type="button" class="track-play" data-play="${track.id}" aria-label="Ouvir ${escapeHtml(track.title)}">${icon("music")}</button><button type="button" class="track-pick" data-pick="${track.id}"><strong>${escapeHtml(track.title)}</strong><small>${escapeHtml(track.mood)} · Kevin MacLeod</small></button></div>`).join("")}
+      ${VIDEO_TRACKS.map((track) => `<div class="track${track === options.track ? " is-selected" : ""}" data-track="${track.id}"><button type="button" class="track-play" data-play="${track.id}" aria-label="Ouvir ${escapeHtml(track.title)}">${icon("music")}</button><button type="button" class="track-pick" data-pick="${track.id}"><strong>${escapeHtml(track.title)}</strong><small>${escapeHtml(track.mood)} · ${escapeHtml(track.author)}</small></button></div>`).join("")}
       <div class="track" data-track=""><span class="track-play">${icon("x")}</span><button type="button" class="track-pick" data-pick=""><strong>Sem música</strong><small>Para escolher uma música em alta no Instagram ou TikTok</small></button></div>
     </div>
     <p class="footnote" id="track-credit"></p>

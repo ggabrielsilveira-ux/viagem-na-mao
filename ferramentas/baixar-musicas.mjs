@@ -1,20 +1,16 @@
-// Baixa as músicas livres do vídeo (Kevin MacLeod, CC BY 3.0, via Wikimedia Commons)
-// e guarda só os primeiros 36 segundos de cada uma, cortando o MP3 quadro a quadro.
+// Baixa as músicas livres do vídeo da retrospectiva e guarda só os primeiros 36 segundos de cada uma,
+// cortando o MP3 quadro a quadro. A lista (título, clima, autor, licença, crédito) fica em dados/musicas.js.
+// Fontes: Jason Shaw/Audionautix (CC BY 4.0), Scott Buckley (CC BY 4.0) e Musopen/Robin Alciatore
+// (domínio público), conferidas nas páginas oficiais em 27/10/2026.
 // Uso: node ferramentas/baixar-musicas.mjs
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const UA = "ViagemNaMao/0.1 (https://github.com/ggabrielsilveira-ux/viagem-na-mao)";
 const SECONDS = 36;
-const TRACKS = {
-  carefree: "Kevin_MacLeod_-_Carefree.ogg",
-  parisian: "Kevin_MacLeod_-_Parisian.ogg",
-  "early-riser": "Kevin_MacLeod_-_Early_Riser.ogg",
-  "clean-soul": "Kevin_MacLeod_-_Clean_Soul.ogg",
-  "call-to-adventure": "Kevin_MacLeod_-_Call_to_Adventure.ogg"
-};
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Tabelas do cabeçalho MP3 (MPEG-1 e MPEG-2/2.5, camada III).
@@ -49,14 +45,43 @@ async function fetchRetry(url) {
   throw new Error(`Não consegui baixar ${url}`);
 }
 
+const AUDIONAUTIX = "https://audionautix.com/Music/";
+// [id, título, clima, arquivo de origem]
+const TRACKS = [
+  ["acoustic-guitar-1", "Acoustic Guitar #1", "Calmo", AUDIONAUTIX + "AcousticGuitar1.mp3"],
+  ["acoustic-shuffle", "Acoustic Shuffle", "Gingado leve", AUDIONAUTIX + "AcousticShuffle.mp3"],
+  ["autumn-sunset", "Autumn Sunset", "Pôr do sol", AUDIONAUTIX + "AutumnSunset.mp3"],
+  ["cold-morning", "Cold Morning", "Manhã fria", AUDIONAUTIX + "ColdMorning.mp3"],
+  ["cool-steel-breeze", "Cool Steel Breeze", "Brisa", AUDIONAUTIX + "CoolSteelBreeze.mp3"],
+  ["folk-bed", "Folk Bed", "Folk animado", AUDIONAUTIX + "Folk%20Bed.mp3"],
+  ["green-leaves", "Green Leaves", "Natureza", AUDIONAUTIX + "GreenLeaves.mp3"],
+  ["happy-strummin", "Happy Strummin'", "Alegre", AUDIONAUTIX + "HappyStrummin.mp3"],
+  ["landras-dream", "Landra's Dream", "Sonhador", AUDIONAUTIX + "LandrasDream.mp3"],
+  ["one-fine-day", "One Fine Day", "Dia bonito", AUDIONAUTIX + "OneFineDay.mp3"],
+  ["open-road", "Open Road", "Estrada", AUDIONAUTIX + "OpenRoad.mp3"],
+  ["paper-wings", "Paper Wings", "Delicado", AUDIONAUTIX + "PaperWings.mp3"],
+  ["pennywhistle", "Pennywhistle", "Divertido", AUDIONAUTIX + "PennyWhistle.mp3"],
+  ["redwood-trail", "Redwood Trail", "Trilha", AUDIONAUTIX + "RedwoodTrail.mp3"],
+  ["river-meditation", "River Meditation", "Leve e animado", AUDIONAUTIX + "RiverMeditation.mp3"],
+  ["running-waters", "Running Waters", "Águas correndo", AUDIONAUTIX + "RunningWatersFull.mp3"],
+  ["second-nature", "Second Nature", "Tranquilo", AUDIONAUTIX + "SecondNature.mp3"],
+  ["serenity", "Serenity", "Sereno", AUDIONAUTIX + "Serenity.mp3"],
+  ["solo-acoustic-3", "Solo Acoustic #3", "Violão calmo", AUDIONAUTIX + "SoloAcoustic3.mp3"],
+  ["solo-acoustic-5", "Solo Acoustic #5", "Violão pensativo", AUDIONAUTIX + "SoloAcoustic5.mp3"],
+  ["travel-light", "Travel Light", "Viagem leve", AUDIONAUTIX + "TravelLight.mp3"],
+  ["walk-in-the-park", "Walk In The Park", "Passeio", AUDIONAUTIX + "WalkInThePark.mp3"],
+  ["walk-in-the-park-full", "Walk In The Park (versão completa)", "Passeio animado", AUDIONAUTIX + "WalkInTheParkFull.mp3"],
+  ["words", "Words", "Inspirador", AUDIONAUTIX + "Words.mp3"],
+  ["with-these-hands", "With These Hands", "Nostálgico", "https://www.scottbuckley.com.au/library/wp-content/uploads/2026/06/WithTheseHands.mp3"],
+  ["gymnopedie-1", "Gymnopédie nº 1 (Satie)", "Piano nostálgico", "https://upload.wikimedia.org/wikipedia/commons/transcoded/9/90/Erik_Satie_-_gymnopedies_-_la_1_ere._lent_et_douloureux.ogg/Erik_Satie_-_gymnopedies_-_la_1_ere._lent_et_douloureux.ogg.mp3"]
+];
+
 mkdirSync(join(ROOT, "musicas"), { recursive: true });
-for (const [id, file] of Object.entries(TRACKS)) {
-  const params = new URLSearchParams({ action: "query", format: "json", formatversion: "2", titles: `File:${file}`, prop: "videoinfo", viprop: "derivatives|extmetadata", viextmetadatafilter: "LicenseShortName" });
-  const info = await (await fetch(`https://commons.wikimedia.org/w/api.php?${params}`, { headers: { "User-Agent": UA } })).json();
-  const video = info.query.pages[0].videoinfo[0];
-  const mp3 = video.derivatives.find((item) => item.type.includes("mpeg"));
-  const { data, seconds } = cutMp3(await fetchRetry(mp3.src), SECONDS);
-  writeFileSync(join(ROOT, "musicas", `${id}.mp3`), data);
-  console.log(`${id}: ${seconds.toFixed(1)} s · ${Math.round(data.length / 1024)} KB · ${video.extmetadata.LicenseShortName.value}`);
-  await sleep(6000);
+for (const [id, title, , url] of TRACKS) {
+  const file = join(ROOT, "musicas", `${id}.mp3`);
+  if (existsSync(file) && !process.argv.includes("--refazer")) { console.log(`${id}: já existe`); continue; }
+  const { data, seconds } = cutMp3(await fetchRetry(url), SECONDS);
+  writeFileSync(file, data);
+  console.log(`${id}: ${title} · ${seconds.toFixed(1)} s · ${Math.round(data.length / 1024)} KB`);
+  await sleep(3000);
 }
