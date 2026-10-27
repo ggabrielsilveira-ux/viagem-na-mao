@@ -314,6 +314,78 @@ function openPerfilSheet({ first = false } = {}) {
 }
 window.openPerfilSheet = openPerfilSheet;
 
+
+// ---------------------------------------------------------------------------
+// Opinião dos testadores (tabela opinioes, ferramentas/supabase-opinioes.sql).
+// Sem internet, a opinião fica guardada e vai quando a conexão voltar.
+// ---------------------------------------------------------------------------
+
+const FEEDBACK_QUEUE_KEY = "viagem-na-mao-opinioes-v1";
+const FEEDBACK_TYPES = [["ideia", "sparkles", "Ideia"], ["problema", "info", "Problema"], ["elogio", "heart", "Elogio"], ["outro", "pencil", "Outro"]];
+
+function readFeedbackQueue() {
+  try { return JSON.parse(window.localStorage.getItem(FEEDBACK_QUEUE_KEY) || "[]"); } catch { return []; }
+}
+
+function writeFeedbackQueue(items) {
+  try { window.localStorage.setItem(FEEDBACK_QUEUE_KEY, JSON.stringify(items.slice(-20))); } catch { /* segue */ }
+}
+
+async function sendFeedback(item) {
+  const { error } = await supabaseClient.from("opinioes").insert({ ...item, user_id: conta.user?.id || null, aparelho: readUsage().aparelho || null });
+  return !error;
+}
+
+async function flushFeedbackQueue() {
+  if (!supabaseClient || !navigator.onLine) return;
+  const queue = readFeedbackQueue();
+  if (!queue.length) return;
+  const left = [];
+  for (const item of queue) if (!(await sendFeedback(item))) left.push(item);
+  writeFeedbackQueue(left);
+}
+window.addEventListener("online", () => flushFeedbackQueue().catch(() => {}));
+
+function openFeedbackSheet() {
+  let type = "ideia";
+  const screen = route.screen === "trip" ? route.tab || "trip" : route.screen;
+  openSheet(`${sheetTitle("Enviar opinião")}
+    <p class="feedback-lead">Sua opinião ajuda no desenvolvimento do Viagem na Mão: conte o que travou, o que faltou ou o que você gostou.</p>
+    <p class="feedback-prize">${icon("star")}<span>As 10 pessoas que mais contribuírem ganham <strong>acesso vitalício</strong> enquanto o app estiver no ar. <a href="https://viagemnamao.com/termos#vitalicio" target="_blank" rel="noopener noreferrer">Veja as regras</a>.</span></p>
+    <div class="chips feedback-types" role="group" aria-label="Tipo de opinião">${FEEDBACK_TYPES.map(([id, iconName, label]) => `<button type="button" class="chip${id === type ? " is-active" : ""}" data-feedback-type="${id}" aria-pressed="${id === type}">${icon(iconName)} ${label}</button>`).join("")}</div>
+    <label class="field">Sua opinião<textarea id="feedback-text" rows="5" maxlength="2000" placeholder="Ex.: senti falta de… / não consegui… / adorei…"></textarea></label>
+    ${conta.user ? "" : `<p class="account-terms">${icon("info")} Você está sem conta: a opinião chega sem o seu nome e não conta para o acesso vitalício. Para contar, entre na sua conta em Ajustes.</p>`}
+    <p class="form-status" id="feedback-status" role="status" aria-live="polite"></p>
+    <button class="btn btn-primary btn-block" type="button" id="feedback-send">${icon("check")} Enviar opinião</button>`, (root) => {
+    const status = root.querySelector("#feedback-status");
+    root.querySelector(".feedback-types").addEventListener("click", (event) => {
+      const chip = event.target.closest("[data-feedback-type]");
+      if (!chip) return;
+      type = chip.dataset.feedbackType;
+      root.querySelectorAll("[data-feedback-type]").forEach((item) => {
+        const active = item === chip;
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
+    });
+    root.querySelector("#feedback-send").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      const texto = root.querySelector("#feedback-text").value.trim();
+      if (texto.length < 3) { status.textContent = "Escreva sua opinião antes de enviar."; return; }
+      const item = { tipo: type, texto: texto.slice(0, 2000), tela: String(screen).slice(0, 40), versao: (document.querySelector('script[src^="script.js"]')?.getAttribute("src") || "").split("v=")[1] || "" };
+      button.disabled = true;
+      status.textContent = "Enviando…";
+      const sent = navigator.onLine && (await sendFeedback(item).catch(() => false));
+      if (!sent) writeFeedbackQueue([...readFeedbackQueue(), item]);
+      closeSheet({ force: true });
+      toast(sent ? "Obrigado! Sua opinião foi enviada." : "Sem conexão agora: sua opinião vai assim que a internet voltar.");
+    });
+  });
+}
+window.openFeedbackSheet = openFeedbackSheet;
+window.contaFeedback = () => Boolean(supabaseClient);
+window.renderHomeFeedback?.();
+
 // ---------------------------------------------------------------------------
 // Seção "Sua conta" nos Ajustes
 // ---------------------------------------------------------------------------
@@ -390,6 +462,12 @@ function paintAccount() {
 }
 
 window.contaUI = (root) => {
+  // "Ajude no desenvolvimento": opinião para a equipe (logo depois da conta).
+  if (supabaseClient) {
+    window.setTimeout(() => {
+      root.querySelector("#account-section")?.insertAdjacentHTML("afterend", `<section class="settings-section"><h3>${icon("sparkles")} Ajude no desenvolvimento</h3><p class="muted">Conte o que travou, o que faltou ou o que você gostou. As 10 pessoas que mais contribuírem ganham acesso vitalício enquanto o app estiver no ar.</p><button class="btn btn-secondary btn-block" type="button" data-feedback-open>${icon("pencil")} Enviar opinião</button></section>`);
+    }, 0);
+  }
   // Logo abaixo do título "Ajustes".
   const title = root.querySelector(".sheet-title");
   if (title) title.insertAdjacentHTML("afterend", '<section class="settings-section" id="account-section"></section>');
@@ -426,4 +504,4 @@ if (supabaseClient) {
 }
 
 // Sem conta, o aparelho também conta no teste (só os números). Com conta, conta junto com o e-mail.
-if (supabaseClient) window.setTimeout(() => registrarUso().catch(() => {}), 4000);
+if (supabaseClient) window.setTimeout(() => { registrarUso().catch(() => {}); flushFeedbackQueue().catch(() => {}); }, 4000);

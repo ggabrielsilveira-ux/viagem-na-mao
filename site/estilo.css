@@ -301,3 +301,8 @@ main { overflow-x: clip; }
 .cartao-sub { margin-bottom: 6px; color: var(--coral-forte) !important; font-size: 13px !important; font-weight: 700; }
 .em-estudo-cta { margin-top: 22px; color: var(--tinta-2); text-align: center; }
 @media (max-width: 520px) { .em-estudo { padding: 26px 16px; } }
+
+/* Links dentro do convite verde */
+.convite-texto a { color: var(--menta); font-weight: 700; }
+/* Cartões centralizados quando sobram menos que uma linha cheia */
+@media (min-width: 861px) { .em-breve { grid-template-columns: repeat(auto-fit, minmax(260px, 340px)); justify-content: center; } }

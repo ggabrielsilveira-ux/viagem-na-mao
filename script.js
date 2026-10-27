@@ -1383,9 +1383,20 @@ function renderHomeAccount() {
 }
 window.renderHomeAccount = renderHomeAccount;
 
+// Cartão "Ajude a construir" (conta.js chama de novo quando termina de carregar).
+function renderHomeFeedback() {
+  const panel = $("#home-feedback");
+  if (!panel) return;
+  panel.innerHTML = window.contaFeedback?.()
+    ? `<button type="button" class="feedback-card" data-feedback-open><span class="feedback-card-icon">${icon("sparkles")}</span><span><strong>Ajude a construir o Viagem na Mão</strong><small>Envie sua opinião. As 10 pessoas que mais contribuírem ganham acesso vitalício.</small></span>${icon("chevron-right")}</button>`
+    : "";
+}
+window.renderHomeFeedback = renderHomeFeedback;
+
 function renderHome() {
   setAmountToggle($("#toggle-home-amounts"));
   renderHomeAccount();
+  renderHomeFeedback();
   const name = (state.profile?.name || "").trim();
   $("#home-greeting").textContent = greetingText();
   $("#avatar-initial").innerHTML = name ? escapeHtml(name[0].toUpperCase()) : icon("user");
@@ -5853,6 +5864,10 @@ document.addEventListener("click", (event) => {
     trip.discoverRadius.km = value === "tudo" ? null : Number(value);
     saveState();
     refreshDiscovery();
+    return;
+  }
+  if (event.target.closest("[data-feedback-open]")) {
+    window.openFeedbackSheet?.();
     return;
   }
   if (event.target.closest("[data-account-create]")) {
