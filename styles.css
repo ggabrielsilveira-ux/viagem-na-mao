@@ -907,6 +907,19 @@ img.is-missing { visibility: hidden; }
 .geo-option { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; color: var(--ink); background: var(--surface); font-size: 13px; line-height: 1.4; text-align: left; }
 .geo-option > .icon { width: 16px; height: 16px; flex: none; margin-top: 2px; color: var(--brand-2); }
 .geo-option small { display: block; margin-top: 2px; color: var(--muted); }
+/* Localizar ou marcar no mapa à mão */
+.geo-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.geo-actions .btn { min-width: 0; padding-left: 10px; padding-right: 10px; }
+.pin-box { display: grid; gap: 10px; }
+.pin-box[hidden] { display: none; }
+.pin-map { height: 300px; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: #e9e5dc; touch-action: none; }
+.pin-error { display: grid; height: 100%; place-items: center; padding: 20px; color: var(--muted); font-size: 14px; text-align: center; }
+.pin-help { display: flex; align-items: flex-start; gap: 6px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.pin-help > .icon { flex: none; width: 15px; height: 15px; margin-top: 2px; }
+.pin-marker { border: 0; background: none; }
+.pin-marker .icon { width: 36px; height: 36px; color: #fff; fill: var(--accent); stroke: var(--brand-deep); stroke-width: 1.6; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35)); }
+.pin-map .leaflet-control-attribution { font-size: 10px; }
+
 /* Sugestões do catálogo no nome do compromisso */
 .place-suggest { display: grid; gap: 6px; margin-top: -4px; }
 .place-suggest:empty { display: none; }

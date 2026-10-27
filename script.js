@@ -2062,7 +2062,7 @@ sheet.addEventListener("close", () => {
 // Arrastar para baixo fecha: pela barrinha ou pelo conteúdo quando ele está no topo.
 (() => {
   let drag = null;
-  const ignore = (target) => target.closest("input, textarea, select, .h-scroll, .photo-picker, .album-preview, .memory-gallery, .share-photos, .retro-edit-photos");
+  const ignore = (target) => target.closest("input, textarea, select, .h-scroll, .photo-picker, .album-preview, .memory-gallery, .share-photos, .retro-edit-photos, .pin-map");
   sheet.addEventListener("touchstart", (event) => {
     if (event.touches.length !== 1 || event.target === sheet || ignore(event.target)) return;
     const fromHandle = Boolean(event.target.closest(".sheet-handle"));
@@ -2363,7 +2363,8 @@ function openEventForm(eventId = null) {
     ${existing ? "" : `<div class="place-suggest" id="event-suggest"></div>`}
     <div class="cat-chips" id="event-categories">${Object.entries(EXPENSE_CATEGORIES).map(([key, [label, iconName]]) => `<button type="button" class="cat-chip${key === draft.category ? " is-selected" : ""}" data-category="${key}">${icon(iconName)}${escapeHtml(label)}</button>`).join("")}</div>
     <label class="field">Endereço<input id="event-address" maxlength="2000" value="${escapeHtml(draft.address || "")}" placeholder="Endereço, nome do lugar ou link do mapa"></label>
-    <button class="btn btn-secondary btn-block" type="button" id="event-locate">${icon("map-pin")} Localizar no mapa</button>
+    <div class="geo-actions"><button class="btn btn-secondary" type="button" id="event-locate">${icon("map-pin")} Localizar</button><button class="btn btn-secondary" type="button" id="event-pin">${icon("map")} Marcar no mapa</button></div>
+    <div class="pin-box" id="event-pin-box" hidden></div>
     <div class="geo-results" id="event-geo-results"></div>
     <p class="geo-status" id="event-geo-status"></p>
     <p class="footnote">Endereços localizados com o <a href="https://nominatim.org/" target="_blank" rel="noopener noreferrer">Nominatim</a>, dados © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">colaboradores do OpenStreetMap</a>.</p>
@@ -2431,6 +2432,23 @@ function openEventForm(eventId = null) {
         locatedFor = null;
         paintGeo();
       }
+    });
+    // Mapa: abre no ponto já localizado, na hospedagem do dia ou na cidade do dia.
+    root.querySelector("#event-pin").addEventListener("click", () => {
+      const date = root.querySelector("#event-day").value;
+      const destination = trip.destinations[Math.max(0, destinationIndexForDate(trip, date))] || { name: "" };
+      results.innerHTML = "";
+      openPinPicker(root.querySelector("#event-pin-box"), {
+        center: draft.coordinates || lodgingForDate(trip, date)?.coordinates || getCityInfo(destination.name)?.coordinates,
+        precise: Boolean(draft.coordinates),
+        onPick: (item) => {
+          draft.coordinates = item.coordinates;
+          draft.label = item.label;
+          if (!address.value.trim() || /https?:\/\//.test(address.value)) address.value = item.label.split(",").slice(0, 3).join(",");
+          locatedFor = address.value.trim();
+          paintGeo();
+        }
+      });
     });
     root.querySelector("#event-locate").addEventListener("click", async (event) => {
       const button = event.currentTarget;
@@ -3592,6 +3610,70 @@ async function nominatimSearch(query, city, bounded) {
 // Procura em etapas, parando na primeira que achar: catálogo da cidade; o texto como foi digitado, só na região da cidade
 // (assim o nome da cidade em português não atrapalha); com Rua/Praça na língua do país; em qualquer lugar
 // (para passeios fora da cidade, como um castelo a 100 km); só o nome principal; e com o nome da cidade.
+// Marcar o ponto à mão: mapa do OpenStreetMap com a biblioteca Leaflet, baixados só quando a pessoa abre o mapa.
+// Os pedaços do mapa vêm sempre da rede (o service worker não guarda), com o crédito exigido pelo OpenStreetMap.
+const LEAFLET = {
+  script: "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js",
+  scriptHash: "sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH",
+  css: "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css",
+  cssHash: "sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+};
+let leafletLoad = null;
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  if (!leafletLoad) {
+    leafletLoad = new Promise((resolve, reject) => {
+      const css = Object.assign(document.createElement("link"), { rel: "stylesheet", href: LEAFLET.css, integrity: LEAFLET.cssHash, crossOrigin: "anonymous" });
+      const script = Object.assign(document.createElement("script"), { src: LEAFLET.script, integrity: LEAFLET.scriptHash, crossOrigin: "anonymous" });
+      script.onload = () => resolve(window.L);
+      script.onerror = () => { leafletLoad = null; css.remove(); script.remove(); reject(new Error("Não consegui carregar o mapa.")); };
+      document.head.append(css, script);
+    });
+  }
+  return leafletLoad;
+}
+
+// Abre o mapa dentro do formulário. A pessoa toca no mapa ou arrasta o marcador e confirma em "Usar este ponto".
+async function openPinPicker(box, { center, precise, onPick }) {
+  let map = null;
+  const close = () => { map?.remove(); map = null; box.innerHTML = ""; box.hidden = true; };
+  box.hidden = false;
+  box.innerHTML = `<div class="pin-map" role="application" aria-label="Mapa para marcar o lugar"></div>
+    <p class="pin-help">${icon("info")} Toque no mapa ou arraste o marcador até o lugar certo.</p>
+    <div class="row-actions"><button class="btn btn-secondary" type="button" data-pin-cancel>Cancelar</button><button class="btn btn-primary" type="button" data-pin-ok>${icon("check")} Usar este ponto</button></div>`;
+  box.querySelector("[data-pin-cancel]").addEventListener("click", close);
+  box.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  let L;
+  try {
+    L = await loadLeaflet();
+  } catch {
+    box.querySelector(".pin-map").innerHTML = `<p class="pin-error">Não consegui abrir o mapa agora. Confira a internet e tente de novo.</p>`;
+    box.querySelector("[data-pin-ok]").disabled = true;
+    return;
+  }
+  if (!box.isConnected || box.hidden) return;
+  const start = center || [-15.78, -47.93];
+  map = L.map(box.querySelector(".pin-map")).setView(start, center ? (precise ? 17 : 14) : 4);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">colaboradores do OpenStreetMap</a>'
+  }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  const pin = L.marker(start, { draggable: true, icon: L.divIcon({ className: "pin-marker", html: icon("map-pin"), iconSize: [36, 36], iconAnchor: [18, 34] }) }).addTo(map);
+  map.on("click", (event) => pin.setLatLng(event.latlng));
+  // A janela abre com animação: recalcula o tamanho depois que ela assenta.
+  setTimeout(() => map?.invalidateSize(), 300);
+  box.querySelector("[data-pin-ok]").addEventListener("click", async (event) => {
+    const { lat, lng } = pin.getLatLng();
+    event.currentTarget.disabled = true;
+    const coordinates = [Number(lat.toFixed(6)), Number(lng.toFixed(6))];
+    const label = await reverseLabel(coordinates);
+    close();
+    onPick({ coordinates, label, pasted: true });
+  });
+}
+
 const GEOCODE_NEAR_KM = 300;
 
 // Opções de endereço com a distância até o centro da cidade, para a pessoa reconhecer o lugar certo.
@@ -3679,7 +3761,8 @@ function openLodgingSheet(index, lodgingId = null) {
     <p class="muted">${escapeHtml(destination.name)} · ${escapeHtml(formatRange(destination.startDate, destination.endDate, false))} · ${nightsLabel(nights.length)}</p>
     <label class="field">Nome (opcional)<input id="lodging-name" maxlength="100" value="${escapeHtml(draft.name)}" placeholder="Ex.: Pousada do Centro"></label>
     <label class="field">Endereço<input id="lodging-address" maxlength="2000" value="${escapeHtml(draft.address)}" placeholder="Endereço, nome do hotel ou link do mapa"></label>
-    <button class="btn btn-secondary btn-block" type="button" id="lodging-locate">${icon("map-pin")} Localizar no mapa</button>
+    <div class="geo-actions"><button class="btn btn-secondary" type="button" id="lodging-locate">${icon("map-pin")} Localizar</button><button class="btn btn-secondary" type="button" id="lodging-pin">${icon("map")} Marcar no mapa</button></div>
+    <div class="pin-box" id="lodging-pin-box" hidden></div>
     <div class="geo-results" id="geo-results"></div>
     <p class="geo-status" id="geo-status"></p>
     <div class="field-row">
@@ -3718,6 +3801,18 @@ function openLodgingSheet(index, lodgingId = null) {
       results.innerHTML = "";
       paintGeo();
     };
+    // Mapa: abre no ponto já localizado ou no centro da cidade.
+    root.querySelector("#lodging-pin").addEventListener("click", () => {
+      results.innerHTML = "";
+      openPinPicker(root.querySelector("#lodging-pin-box"), {
+        center: draft.coordinates || getCityInfo(destination.name)?.coordinates,
+        precise: Boolean(draft.coordinates),
+        onPick: (item) => {
+          if (!address.value.trim() || /https?:\/\//.test(address.value)) address.value = item.label.split(",").slice(0, 3).join(",");
+          choose(item);
+        }
+      });
+    });
     root.querySelector("#lodging-locate").addEventListener("click", async (event) => {
       const button = event.currentTarget;
       const text = address.value.trim();
