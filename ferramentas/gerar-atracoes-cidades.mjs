@@ -104,7 +104,28 @@ const CITIES = [
   ["Bali", "Ubud", "Indonésia"], ["Phuket", "Phuket (cidade)", "Tailândia"], ["Chiang Mai", "Chiang Mai", "Tailândia"],
   ["Kuala Lumpur", "Kuala Lumpur", "Malásia"], ["Hanói", "Hanói", "Vietnã"], ["Pequim", "Pequim", "China"],
   ["Xangai", "Xangai", "China"], ["Agra", "Agra", "Índia"], ["Malé", "Malé", "Maldivas"],
-  ["Melbourne", "Melbourne", "Austrália"], ["Auckland", "Auckland", "Nova Zelândia"], ["Queenstown", "Queenstown", "Nova Zelândia"]
+  ["Melbourne", "Melbourne", "Austrália"], ["Auckland", "Auckland", "Nova Zelândia"], ["Queenstown", "Queenstown", "Nova Zelândia"],
+  ["Houston", "Houston", "Estados Unidos"], ["Dallas", "Dallas", "Estados Unidos"], ["Austin", "Austin", "Estados Unidos"],
+  ["San Antonio", "San Antonio (Texas)", "Estados Unidos"], ["Fort Worth", "Fort Worth", "Estados Unidos"], ["Galveston", "Galveston (Texas)", "Estados Unidos"],
+  ["El Paso", "El Paso (Texas)", "Estados Unidos"], ["San Diego", "San Diego", "Estados Unidos"], ["Santa Bárbara", "Santa Bárbara (Califórnia)", "Estados Unidos"],
+  ["Napa", "Napa (Califórnia)", "Estados Unidos"], ["Sacramento", "Sacramento (Califórnia)", "Estados Unidos"], ["Palm Springs", "Palm Springs", "Estados Unidos"],
+  ["Monterey", "Monterey (Califórnia)", "Estados Unidos"], ["Turim", "Turim", "Itália"], ["Bolonha", "Bolonha", "Itália"],
+  ["Verona", "Verona", "Itália"], ["Pisa", "Pisa", "Itália"], ["Siena", "Siena", "Itália"],
+  ["Gênova", "Génova", "Itália"], ["Como", "Como", "Itália"], ["La Spezia", "La Spezia", "Itália"],
+  ["Palermo", "Palermo", "Itália"], ["Catânia", "Catânia", "Itália"], ["Taormina", "Taormina", "Itália"],
+  ["Bari", "Bari", "Itália"], ["Matera", "Matera", "Itália"], ["Toledo", "Toledo (Espanha)", "Espanha"],
+  ["Segóvia", "Segóvia", "Espanha"], ["Córdoba", "Córdova (Espanha)", "Espanha"], ["Cádis", "Cádis", "Espanha"],
+  ["Salamanca", "Salamanca", "Espanha"], ["Santiago de Compostela", "Santiago de Compostela", "Espanha"], ["Saragoça", "Saragoça", "Espanha"],
+  ["Ibiza", "Ibiza (cidade)", "Espanha"], ["Santa Cruz de Tenerife", "Santa Cruz de Tenerife", "Espanha"], ["Évora", "Évora", "Portugal"],
+  ["Óbidos", "Óbidos (Portugal)", "Portugal"], ["Braga", "Braga", "Portugal"], ["Aveiro", "Aveiro", "Portugal"],
+  ["Nazaré", "Nazaré (Portugal)", "Portugal"], ["Fátima", "Fátima (Portugal)", "Portugal"], ["Bordeaux", "Bordéus", "França"],
+  ["Estrasburgo", "Estrasburgo", "França"], ["Toulouse", "Toulouse", "França"], ["Mont-Saint-Michel", "Monte Saint-Michel", "França"],
+  ["Avignon", "Avinhão", "França"], ["Annecy", "Annecy", "França"], ["Chamonix", "Chamonix-Mont-Blanc", "França"],
+  ["Reims", "Reims", "França"], ["Carcassonne", "Carcassona", "França"], ["Colmar", "Colmar", "França"],
+  ["Valparaíso", "Valparaíso (Chile)", "Chile"], ["Pucón", "Pucón", "Chile"], ["Puerto Varas", "Puerto Varas", "Chile"],
+  ["Puerto Natales", "Puerto Natales", "Chile"], ["La Serena", "La Serena", "Chile"], ["Salta", "Salta (Argentina)", "Argentina", [-24.7829, -65.4232]],
+  ["Puerto Madryn", "Puerto Madryn", "Argentina"], ["El Chaltén", "El Chaltén", "Argentina"], ["Mar del Plata", "Mar del Plata", "Argentina"],
+  ["Rosário", "Rosário (Argentina)", "Argentina"], ["Colônia do Sacramento", "Colonia del Sacramento", "Uruguai"], ["Punta del Diablo", "Punta del Diablo", "Uruguai"]
 ];
 
 // Tipo do Wikidata (P31) → categoria exibida e interesses do app.
@@ -232,7 +253,8 @@ async function getCityCenters() {
   // Coordenadas corrigidas à mão (4º item da lista) quando a página da Wikipedia está errada.
   for (const [name, , , fixed] of CITIES) if (fixed) centers[name] = fixed;
   for (const name of Object.keys(needWikidata)) if (!centers[name]) missing.push(`${name} (sem P625 no Wikidata)`);
-  if (missing.length) throw new Error(`Sem coordenadas para: ${missing.join(", ")}`);
+  const stillMissing = missing.filter((item) => !centers[item.split(" (")[0]]);
+  if (stillMissing.length) throw new Error(`Sem coordenadas para: ${stillMissing.join(", ")}`);
   return centers;
 }
 

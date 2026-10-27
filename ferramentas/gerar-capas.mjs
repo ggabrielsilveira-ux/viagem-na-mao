@@ -20,7 +20,17 @@ const BAD_FILE = /montage|montagem|collage|colagem|mosaic|mosaico|collection|ban
 const POSTAIS = JSON.parse(readFileSync(join(ROOT, "ferramentas", "cartoes-postais.json"), "utf8"));
 // Cidade → arquivo do Commons escolhido à mão (quando a busca automática não acerta).
 const CAPA_FIXA = {
-  "Santorini": "1000 Three domes of Oia in Santorini Photo by Giles Laurent.jpg"
+  "Santorini": "1000 Three domes of Oia in Santorini Photo by Giles Laurent.jpg",
+  "San Diego": "San Diego skyline at dusk from Coronado 2015.jpg",
+  "Rosário": "Rosario National Flag Memorial-20110510-RM-143010.jpg",
+  "Ibiza": "Eivissa - Dalt Vila from Airplane.jpg",
+  "Colônia do Sacramento": "Barrio Histórico, Col Del Sacramento, Colonia, Uruguay - panoramio (1).jpg",
+  "Punta del Diablo": "Playa, Punta del Diablo, Rocha, Uruguay - panoramio.jpg",
+  "Mar del Plata": "La Rambla Marplatense - panoramio.jpg",
+  "Puerto Madryn": "Playa en Puerto Madryn, Argentina.jpg",
+  "La Serena": "Faro Monumental de La Serena. 08.12.2022.jpg",
+  "El Paso": "El Paso skyline.jpg",
+  "Palm Springs": "Palm Springs Tramway Mountain Top View March 1996 01.jpg"
 };
 // Cidades em que a imagem oficial não serve de capa (detalhe, noturna, ângulo estranho): busca foto de destaque/qualidade.
 const CAPA_BUSCA = new Set(["Toronto", "Vancouver", "Melbourne", "Ubatuba"]);

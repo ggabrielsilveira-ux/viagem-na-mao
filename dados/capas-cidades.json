@@ -1996,5 +1996,563 @@
   "licenca": "CC BY-SA 3.0",
   "pagina": "https://commons.wikimedia.org/wiki/File:Male-total.jpg",
   "proporcao": 1.5
+ },
+ "Houston": {
+  "lugar": "Centro Espacial Lyndon B. Johnson",
+  "arquivo": "Aerial View of the Johnson Space Center - GPN-2000-001112.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Aerial_View_of_the_Johnson_Space_Center_-_GPN-2000-001112.jpg/1280px-Aerial_View_of_the_Johnson_Space_Center_-_GPN-2000-001112.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "NASA",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Aerial_View_of_the_Johnson_Space_Center_-_GPN-2000-001112.jpg",
+  "proporcao": 1
+ },
+ "Dallas": {
+  "lugar": "Reunion Tower",
+  "arquivo": "Reunion-Tower-0262.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Reunion-Tower-0262.jpg/1280px-Reunion-Tower-0262.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Loadmaster (David R. Tribble) This image was made by Loadmaster (David R. Tribbl",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Reunion-Tower-0262.jpg",
+  "proporcao": 0.75
+ },
+ "Austin": {
+  "lugar": "Austin",
+  "arquivo": "Skyline of Austin, Texas (cropped).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Skyline_of_Austin%2C_Texas_%28cropped%29.jpg/1280px-Skyline_of_Austin%2C_Texas_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Quintin Soloviev",
+  "licenca": "CC BY 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Skyline_of_Austin,_Texas_(cropped).jpg",
+  "proporcao": 1.82
+ },
+ "San Antonio": {
+  "lugar": "Missão Álamo",
+  "arquivo": "Alamo Mission, San Antonio, Texas, USA.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Alamo_Mission%2C_San_Antonio%2C_Texas%2C_USA.jpg/1280px-Alamo_Mission%2C_San_Antonio%2C_Texas%2C_USA.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Zygmunt Put Zetpe0202",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Alamo_Mission,_San_Antonio,_Texas,_USA.jpg",
+  "proporcao": 1.94
+ },
+ "Fort Worth": {
+  "lugar": "Fort Worth",
+  "arquivo": "Downtown Fort Worth Skyline.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Downtown_Fort_Worth_Skyline.jpg/1280px-Downtown_Fort_Worth_Skyline.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "DerekAyala27",
+  "licenca": "CC BY 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Downtown_Fort_Worth_Skyline.jpg",
+  "proporcao": 2.36
+ },
+ "Galveston": {
+  "lugar": "Galveston",
+  "arquivo": "Galveston Texas Skyline From The Carnival Ecstasy.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Galveston_Texas_Skyline_From_The_Carnival_Ecstasy.jpg/1280px-Galveston_Texas_Skyline_From_The_Carnival_Ecstasy.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "TheAustinMan",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Galveston_Texas_Skyline_From_The_Carnival_Ecstasy.jpg",
+  "proporcao": 1.33
+ },
+ "Santa Bárbara": {
+  "lugar": "Mission Santa Barbara",
+  "arquivo": "Mission Santa Barbara01.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Mission_Santa_Barbara01.jpg/1280px-Mission_Santa_Barbara01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Bernard Gagnon",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Mission_Santa_Barbara01.jpg",
+  "proporcao": 1.3
+ },
+ "Napa": {
+  "lugar": "Vale de Napa",
+  "arquivo": "Schramsberg Vineyards, July 2019-7579+7580.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Schramsberg_Vineyards%2C_July_2019-7579%2B7580.jpg/1280px-Schramsberg_Vineyards%2C_July_2019-7579%2B7580.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Frank Schulenburg",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Schramsberg_Vineyards,_July_2019-7579%2B7580.jpg",
+  "proporcao": 1.6
+ },
+ "Sacramento": {
+  "lugar": "Capitólio Estadual da Califórnia",
+  "arquivo": "Sacramento,-California---State-Capitol.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/Sacramento%2C-California---State-Capitol.jpg/1280px-Sacramento%2C-California---State-Capitol.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Andre m",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Sacramento,-California---State-Capitol.jpg",
+  "proporcao": 1.45
+ },
+ "Monterey": {
+  "lugar": "Aquário da baía de Monterey",
+  "arquivo": "MontereyBayAquariumBackview.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/MontereyBayAquariumBackview.jpg/1280px-MontereyBayAquariumBackview.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Meij.kobayashi",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:MontereyBayAquariumBackview.jpg",
+  "proporcao": 1.78
+ },
+ "Turim": {
+  "lugar": "Mole Antonelliana",
+  "arquivo": "Mole Antonelliana in Turin.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Mole_Antonelliana_in_Turin.jpg/1280px-Mole_Antonelliana_in_Turin.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Wikibusters",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Mole_Antonelliana_in_Turin.jpg",
+  "proporcao": 0.85
+ },
+ "Bolonha": {
+  "lugar": "Torre dos Asinelli",
+  "arquivo": "Bologna Panorama.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Bologna_Panorama.jpg/1280px-Bologna_Panorama.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Ввласенко",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Bologna_Panorama.jpg",
+  "proporcao": 1.96
+ },
+ "Verona": {
+  "lugar": "Arena de Verona",
+  "arquivo": "Arena-XE3F2406a.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Arena-XE3F2406a.jpg/1280px-Arena-XE3F2406a.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Claconvr",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Arena-XE3F2406a.jpg",
+  "proporcao": 1.78
+ },
+ "Pisa": {
+  "lugar": "Torre de Pisa",
+  "arquivo": "The Duomo and Tower of Pisa at sunrise.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/The_Duomo_and_Tower_of_Pisa_at_sunrise.jpg/1280px-The_Duomo_and_Tower_of_Pisa_at_sunrise.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "MHoser",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:The_Duomo_and_Tower_of_Pisa_at_sunrise.jpg",
+  "proporcao": 1.6
+ },
+ "Siena": {
+  "lugar": "Piazza del Campo",
+  "arquivo": "Il campo view from torre.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/aa/Il_campo_view_from_torre.jpg/1280px-Il_campo_view_from_torre.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Mark Sehnert",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Il_campo_view_from_torre.jpg",
+  "proporcao": 1.33
+ },
+ "Gênova": {
+  "lugar": "Lanterna de Gênova",
+  "arquivo": "La Lanterna di Genova al Tramonto.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/La_Lanterna_di_Genova_al_Tramonto.jpg/1280px-La_Lanterna_di_Genova_al_Tramonto.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Tassiano Daniele",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:La_Lanterna_di_Genova_al_Tramonto.jpg",
+  "proporcao": 0.75
+ },
+ "Como": {
+  "lugar": "Lago de Como",
+  "arquivo": "Panoramic view of Como Lake (Lago di Como), seen from the mountain Monte Grona - Plesio (Como) 2015-10-25.JPG",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Panoramic_view_of_Como_Lake_%28Lago_di_Como%29%2C_seen_from_the_mountain_Monte_Grona_-_Plesio_%28Como%29_2015-10-25.JPG/1280px-Panoramic_view_of_Como_Lake_%28Lago_di_Como%29%2C_seen_from_the_mountain_Monte_Grona_-_Plesio_%28Como%29_2015-10-25.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Mænsard vokser",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Panoramic_view_of_Como_Lake_(Lago_di_Como),_seen_from_the_mountain_Monte_Grona_-_Plesio_(Como)_2015-10-25.JPG",
+  "proporcao": 1.8
+ },
+ "La Spezia": {
+  "lugar": "Cinque Terre",
+  "arquivo": "Manarola NW Cemetery Corniglia Monterosso Cinque Terre Sep23 A7C 06872.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Manarola_NW_Cemetery_Corniglia_Monterosso_Cinque_Terre_Sep23_A7C_06872.jpg/1280px-Manarola_NW_Cemetery_Corniglia_Monterosso_Cinque_Terre_Sep23_A7C_06872.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "This Photo was taken by Timothy A. Gonsalves. Feel free to use my photos, but pl",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Manarola_NW_Cemetery_Corniglia_Monterosso_Cinque_Terre_Sep23_A7C_06872.jpg",
+  "proporcao": 1.5
+ },
+ "Palermo": {
+  "lugar": "Catedral de Palermo",
+  "arquivo": "Palermo Cathedral BW 2025-04-29 11-57-44.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Palermo_Cathedral_BW_2025-04-29_11-57-44.jpg/1280px-Palermo_Cathedral_BW_2025-04-29_11-57-44.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Berthold Werner",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Palermo_Cathedral_BW_2025-04-29_11-57-44.jpg",
+  "proporcao": 2.1
+ },
+ "Catânia": {
+  "lugar": "Etna",
+  "arquivo": "View of Mount Etna from Reggio Calabria - Italy - 10 Feb. 2017 - (1).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/View_of_Mount_Etna_from_Reggio_Calabria_-_Italy_-_10_Feb._2017_-_%281%29.jpg/1280px-View_of_Mount_Etna_from_Reggio_Calabria_-_Italy_-_10_Feb._2017_-_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Jacopo Werther",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:View_of_Mount_Etna_from_Reggio_Calabria_-_Italy_-_10_Feb._2017_-_(1).jpg",
+  "proporcao": 1.33
+ },
+ "Taormina": {
+  "lugar": "Taormina",
+  "arquivo": "Mt Etna and Taormina as seen from the Ancient Theatre of Taormina (22290641726).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Mt_Etna_and_Taormina_as_seen_from_the_Ancient_Theatre_of_Taormina_%2822290641726%29.jpg/1280px-Mt_Etna_and_Taormina_as_seen_from_the_Ancient_Theatre_of_Taormina_%2822290641726%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "John Menard from Phoenix, USA",
+  "licenca": "CC BY-SA 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Mt_Etna_and_Taormina_as_seen_from_the_Ancient_Theatre_of_Taormina_(22290641726).jpg",
+  "proporcao": 1.77
+ },
+ "Bari": {
+  "lugar": "Bari",
+  "arquivo": "Puglia bari old-town.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Puglia_bari_old-town.jpg/1280px-Puglia_bari_old-town.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Francesco Di Stefano 08",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Puglia_bari_old-town.jpg",
+  "proporcao": 1.6
+ },
+ "Matera": {
+  "lugar": "Sassi di Matera",
+  "arquivo": "Matera boenisch nov 2005.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Matera_boenisch_nov_2005.jpg/1280px-Matera_boenisch_nov_2005.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Bönisch",
+  "licenca": "CC BY-SA 2.0 de",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Matera_boenisch_nov_2005.jpg",
+  "proporcao": 1.33
+ },
+ "Toledo": {
+  "lugar": "Alcázar de Toledo",
+  "arquivo": "Alcázar de Toledo - 01.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Alc%C3%A1zar_de_Toledo_-_01.jpg/1280px-Alc%C3%A1zar_de_Toledo_-_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Carlos Delgado",
+  "licenca": "CC BY-SA 3.0 es",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Alc%C3%A1zar_de_Toledo_-_01.jpg",
+  "proporcao": 1.5
+ },
+ "Segóvia": {
+  "lugar": "Aqueduto de Segóvia",
+  "arquivo": "Aqueduct of Segovia 08.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Aqueduct_of_Segovia_08.jpg/1280px-Aqueduct_of_Segovia_08.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Bernard Gagnon",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Aqueduct_of_Segovia_08.jpg",
+  "proporcao": 1.33
+ },
+ "Córdoba": {
+  "lugar": "Mesquita-Catedral de Córdova",
+  "arquivo": "Mezquita de Córdoba desde el aire (Córdoba, España).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6c/Mezquita_de_C%C3%B3rdoba_desde_el_aire_%28C%C3%B3rdoba%2C_Espa%C3%B1a%29.jpg/1280px-Mezquita_de_C%C3%B3rdoba_desde_el_aire_%28C%C3%B3rdoba%2C_Espa%C3%B1a%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Toni Castillo Quero",
+  "licenca": "CC BY-SA 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Mezquita_de_C%C3%B3rdoba_desde_el_aire_(C%C3%B3rdoba,_Espa%C3%B1a).jpg",
+  "proporcao": 1.51
+ },
+ "Cádis": {
+  "lugar": "Cádis",
+  "arquivo": "Vista de Cádiz, España, 2015-12-08, DD 78.JPG",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Vista_de_C%C3%A1diz%2C_Espa%C3%B1a%2C_2015-12-08%2C_DD_78.JPG/1280px-Vista_de_C%C3%A1diz%2C_Espa%C3%B1a%2C_2015-12-08%2C_DD_78.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Diego Delso",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Vista_de_C%C3%A1diz,_Espa%C3%B1a,_2015-12-08,_DD_78.JPG",
+  "proporcao": 1.91
+ },
+ "Salamanca": {
+  "lugar": "Salamanca",
+  "arquivo": "Reflejos de la Catedrales de Salamanca.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Reflejos_de_la_Catedrales_de_Salamanca.jpg/1280px-Reflejos_de_la_Catedrales_de_Salamanca.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Santiagova",
+  "licenca": "CC BY-SA 3.0 es",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Reflejos_de_la_Catedrales_de_Salamanca.jpg",
+  "proporcao": 1.49
+ },
+ "Santiago de Compostela": {
+  "lugar": "Catedral de Santiago de Compostela",
+  "arquivo": "Santiago cathedral 2021.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Santiago_cathedral_2021.jpg/1280px-Santiago_cathedral_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Fernando",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Santiago_cathedral_2021.jpg",
+  "proporcao": 0.8
+ },
+ "Saragoça": {
+  "lugar": "Catedral-Basílica de Nossa Senhora do Pilar",
+  "arquivo": "Zaragoza - Basilica de Nuestra Señora del Pilar 01.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Zaragoza_-_Basilica_de_Nuestra_Se%C3%B1ora_del_Pilar_01.jpg/1280px-Zaragoza_-_Basilica_de_Nuestra_Se%C3%B1ora_del_Pilar_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Rab Lawrence",
+  "licenca": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Zaragoza_-_Basilica_de_Nuestra_Se%C3%B1ora_del_Pilar_01.jpg",
+  "proporcao": 1.49
+ },
+ "Santa Cruz de Tenerife": {
+  "lugar": "Auditório de Tenerife",
+  "arquivo": "Auditorio de Tenerife 2015 (50MP).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Auditorio_de_Tenerife_2015_%2850MP%29.jpg/1280px-Auditorio_de_Tenerife_2015_%2850MP%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Thomas Wolf, www.foto-tw.de",
+  "licenca": "CC BY-SA 3.0 de",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Auditorio_de_Tenerife_2015_(50MP).jpg",
+  "proporcao": 1.45
+ },
+ "Évora": {
+  "lugar": "Templo romano de Évora",
+  "arquivo": "Evora-RomanTemple.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Evora-RomanTemple.jpg/1280px-Evora-RomanTemple.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "ho visto nina volare from Italy",
+  "licenca": "CC BY-SA 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Evora-RomanTemple.jpg",
+  "proporcao": 1.33
+ },
+ "Óbidos": {
+  "lugar": "Castelo de Óbidos",
+  "arquivo": "Castillo de Óbidos, Óbidos, Portugal, 2021-09-09, DD 32.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Castillo_de_%C3%93bidos%2C_%C3%93bidos%2C_Portugal%2C_2021-09-09%2C_DD_32.jpg/1280px-Castillo_de_%C3%93bidos%2C_%C3%93bidos%2C_Portugal%2C_2021-09-09%2C_DD_32.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Diego Delso",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Castillo_de_%C3%93bidos,_%C3%93bidos,_Portugal,_2021-09-09,_DD_32.jpg",
+  "proporcao": 1.59
+ },
+ "Braga": {
+  "lugar": "Santuário do Bom Jesus do Monte",
+  "arquivo": "Treppenaufgang Bom Jesus do Monte.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Treppenaufgang_Bom_Jesus_do_Monte.jpg/1280px-Treppenaufgang_Bom_Jesus_do_Monte.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Botafogo",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Treppenaufgang_Bom_Jesus_do_Monte.jpg",
+  "proporcao": 0.75
+ },
+ "Aveiro": {
+  "lugar": "Ria de Aveiro",
+  "arquivo": "Ria de Aveiro - Portugal 🇵🇹 (55118312473).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Ria_de_Aveiro_-_Portugal_%F0%9F%87%B5%F0%9F%87%B9_%2855118312473%29.jpg/1280px-Ria_de_Aveiro_-_Portugal_%F0%9F%87%B5%F0%9F%87%B9_%2855118312473%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Vitor Oliveira from Torres Vedras, PORTUGAL",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Ria_de_Aveiro_-_Portugal_%F0%9F%87%B5%F0%9F%87%B9_(55118312473).jpg",
+  "proporcao": 1.33
+ },
+ "Nazaré": {
+  "lugar": "Nazaré",
+  "arquivo": "La grande plage de Nazaré - panoramio (20).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/La_grande_plage_de_Nazar%C3%A9_-_panoramio_%2820%29.jpg/1280px-La_grande_plage_de_Nazar%C3%A9_-_panoramio_%2820%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Mister No",
+  "licenca": "CC BY 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:La_grande_plage_de_Nazar%C3%A9_-_panoramio_(20).jpg",
+  "proporcao": 1.33
+ },
+ "Fátima": {
+  "lugar": "Santuário de Fátima",
+  "arquivo": "Faithway (2850562202) (cropped).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Faithway_%282850562202%29_%28cropped%29.jpg/1280px-Faithway_%282850562202%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "dynamosquito from France",
+  "licenca": "CC BY-SA 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Faithway_(2850562202)_(cropped).jpg",
+  "proporcao": 0.87
+ },
+ "Bordeaux": {
+  "lugar": "Bordeaux",
+  "arquivo": "138 - Place de la Bourse et le miroir d'eau - Bordeaux.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/138_-_Place_de_la_Bourse_et_le_miroir_d%27eau_-_Bordeaux.jpg/1280px-138_-_Place_de_la_Bourse_et_le_miroir_d%27eau_-_Bordeaux.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Patrick Despoix",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:138_-_Place_de_la_Bourse_et_le_miroir_d%27eau_-_Bordeaux.jpg",
+  "proporcao": 1.5
+ },
+ "Estrasburgo": {
+  "lugar": "Catedral de Estrasburgo",
+  "arquivo": "Strasbourg Cathedral Exterior - Diliff.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Strasbourg_Cathedral_Exterior_-_Diliff.jpg/1280px-Strasbourg_Cathedral_Exterior_-_Diliff.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Diliff",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Strasbourg_Cathedral_Exterior_-_Diliff.jpg",
+  "proporcao": 0.78
+ },
+ "Toulouse": {
+  "lugar": "Toulouse",
+  "arquivo": "Toulouse - View on Saint Sernin.jpg",
+  "url": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Toulouse_-_View_on_Saint_Sernin.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "autor": "Tonio94 (talk · contribs)",
+  "licenca": "CC BY-SA 2.5",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Toulouse_-_View_on_Saint_Sernin.jpg",
+  "proporcao": 1.33
+ },
+ "Mont-Saint-Michel": {
+  "lugar": "Mont-Saint-Michel",
+  "arquivo": "Mont St Michel 3, Brittany, France - July 2011.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Mont_St_Michel_3%2C_Brittany%2C_France_-_July_2011.jpg/1280px-Mont_St_Michel_3%2C_Brittany%2C_France_-_July_2011.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Diliff",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Mont_St_Michel_3,_Brittany,_France_-_July_2011.jpg",
+  "proporcao": 1.41
+ },
+ "Avignon": {
+  "lugar": "Avignon",
+  "arquivo": "Avignon, Palais des Papes depuis Tour Philippe le Bel by JM Rosier.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/Avignon%2C_Palais_des_Papes_depuis_Tour_Philippe_le_Bel_by_JM_Rosier.jpg/1280px-Avignon%2C_Palais_des_Papes_depuis_Tour_Philippe_le_Bel_by_JM_Rosier.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Jean-Marc Rosier (de/from http://www.cjrosier.com + http://www.gordes-immobilier",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Avignon,_Palais_des_Papes_depuis_Tour_Philippe_le_Bel_by_JM_Rosier.jpg",
+  "proporcao": 1.67
+ },
+ "Annecy": {
+  "lugar": "Lago de Annecy",
+  "arquivo": "Aerial image of Lake Annecy (view from the south).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Aerial_image_of_Lake_Annecy_%28view_from_the_south%29.jpg/1280px-Aerial_image_of_Lake_Annecy_%28view_from_the_south%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Carsten Steger",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Aerial_image_of_Lake_Annecy_(view_from_the_south).jpg",
+  "proporcao": 1.62
+ },
+ "Chamonix": {
+  "lugar": "Monte Branco",
+  "arquivo": "Mont Blanc from Les Arcs 1950.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/Mont_Blanc_from_Les_Arcs_1950.jpg/1280px-Mont_Blanc_from_Les_Arcs_1950.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Dmitry A. Mottl",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Mont_Blanc_from_Les_Arcs_1950.jpg",
+  "proporcao": 1.78
+ },
+ "Reims": {
+  "lugar": "Catedral de Reims",
+  "arquivo": "Reims Cathedral 016 8341.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Reims_Cathedral_016_8341.jpg/1280px-Reims_Cathedral_016_8341.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Ludvig14",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Reims_Cathedral_016_8341.jpg",
+  "proporcao": 0.75
+ },
+ "Carcassonne": {
+  "lugar": "Carcassonne",
+  "arquivo": "1 carcassonne aerial 2016.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/1_carcassonne_aerial_2016.jpg/1280px-1_carcassonne_aerial_2016.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Chensiyuan",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:1_carcassonne_aerial_2016.jpg",
+  "proporcao": 1.69
+ },
+ "Colmar": {
+  "lugar": "Colmar",
+  "arquivo": "View of Église Saint-Martin (43833049001).jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/View_of_%C3%89glise_Saint-Martin_%2843833049001%29.jpg/1280px-View_of_%C3%89glise_Saint-Martin_%2843833049001%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "--sinava-- from Berlin",
+  "licenca": "CC BY 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:View_of_%C3%89glise_Saint-Martin_(43833049001).jpg",
+  "proporcao": 1.4
+ },
+ "Valparaíso": {
+  "lugar": "Valparaíso",
+  "arquivo": "Valparaíso 9451.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Valpara%C3%ADso_9451.jpg/1280px-Valpara%C3%ADso_9451.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Draceane",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Valpara%C3%ADso_9451.jpg",
+  "proporcao": 1.5
+ },
+ "Pucón": {
+  "lugar": "Villarrica (vulcão)",
+  "arquivo": "Pucon-y-su-Volcan.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Pucon-y-su-Volcan.jpg/1280px-Pucon-y-su-Volcan.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Unknown authorUnknown author",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Pucon-y-su-Volcan.jpg",
+  "proporcao": 0.75
+ },
+ "Puerto Varas": {
+  "lugar": "Puerto Varas",
+  "arquivo": "Panoramica Puerto Varas 2023.jpg",
+  "url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Panoramica_Puerto_Varas_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "autor": "Alexmrz",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Panoramica_Puerto_Varas_2023.jpg",
+  "proporcao": 1.33
+ },
+ "Puerto Natales": {
+  "lugar": "Parque Nacional Torres del Paine",
+  "arquivo": "Torres del Paine, Laguna Azul 09.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Torres_del_Paine%2C_Laguna_Azul_09.jpg/1280px-Torres_del_Paine%2C_Laguna_Azul_09.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "LBM1948",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Torres_del_Paine,_Laguna_Azul_09.jpg",
+  "proporcao": 1.51
+ },
+ "El Chaltén": {
+  "lugar": "Monte Fitz Roy",
+  "arquivo": "Fitz Roy 2.jpg",
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Fitz_Roy_2.jpg/1280px-Fitz_Roy_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Prissantenbär",
+  "licenca": "Public domain",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Fitz_Roy_2.jpg",
+  "proporcao": 1.33
+ },
+ "El Paso": {
+  "lugar": "El Paso",
+  "arquivo": "El Paso skyline.jpg",
+  "proporcao": 1.5,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/El_Paso_skyline.jpg/1280px-El_Paso_skyline.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Quintin Soloviev",
+  "licenca": "CC BY 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:El_Paso_skyline.jpg"
+ },
+ "San Diego": {
+  "lugar": "San Diego",
+  "arquivo": "San Diego skyline at dusk from Coronado 2015.jpg",
+  "proporcao": 1.5,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/San_Diego_skyline_at_dusk_from_Coronado_2015.jpg/1280px-San_Diego_skyline_at_dusk_from_Coronado_2015.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "russellstreet",
+  "licenca": "CC BY-SA 2.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:San_Diego_skyline_at_dusk_from_Coronado_2015.jpg"
+ },
+ "Palm Springs": {
+  "lugar": "Palm Springs",
+  "arquivo": "Palm Springs Tramway Mountain Top View March 1996 01.jpg",
+  "proporcao": 1.48,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Palm_Springs_Tramway_Mountain_Top_View_March_1996_01.jpg/1280px-Palm_Springs_Tramway_Mountain_Top_View_March_1996_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Infrogmation",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Palm_Springs_Tramway_Mountain_Top_View_March_1996_01.jpg"
+ },
+ "Ibiza": {
+  "lugar": "Ibiza",
+  "arquivo": "Eivissa - Dalt Vila from Airplane.jpg",
+  "proporcao": 1.78,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Eivissa_-_Dalt_Vila_from_Airplane.jpg/1280px-Eivissa_-_Dalt_Vila_from_Airplane.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "UnFUG-Fabi",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Eivissa_-_Dalt_Vila_from_Airplane.jpg"
+ },
+ "La Serena": {
+  "lugar": "La Serena",
+  "arquivo": "Faro Monumental de La Serena. 08.12.2022.jpg",
+  "proporcao": 1.5,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Faro_Monumental_de_La_Serena._08.12.2022.jpg/1280px-Faro_Monumental_de_La_Serena._08.12.2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Rjcastillo",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Faro_Monumental_de_La_Serena._08.12.2022.jpg"
+ },
+ "Puerto Madryn": {
+  "lugar": "Puerto Madryn",
+  "arquivo": "Playa en Puerto Madryn, Argentina.jpg",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Playa_en_Puerto_Madryn%2C_Argentina.jpg/1280px-Playa_en_Puerto_Madryn%2C_Argentina.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Banfield",
+  "licenca": "CC BY-SA 2.5 ar",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Playa_en_Puerto_Madryn,_Argentina.jpg"
+ },
+ "Mar del Plata": {
+  "lugar": "Mar del Plata",
+  "arquivo": "La Rambla Marplatense - panoramio.jpg",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/La_Rambla_Marplatense_-_panoramio.jpg/1280px-La_Rambla_Marplatense_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Angelmdq23",
+  "licenca": "CC BY 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:La_Rambla_Marplatense_-_panoramio.jpg"
+ },
+ "Rosário": {
+  "lugar": "Rosário",
+  "arquivo": "Rosario National Flag Memorial-20110510-RM-143010.jpg",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/Rosario_National_Flag_Memorial-20110510-RM-143010.jpg/1280px-Rosario_National_Flag_Memorial-20110510-RM-143010.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "Reinhold Möller Ermell",
+  "licenca": "CC BY-SA 4.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Rosario_National_Flag_Memorial-20110510-RM-143010.jpg"
+ },
+ "Colônia do Sacramento": {
+  "lugar": "Colônia do Sacramento",
+  "arquivo": "Barrio Histórico, Col Del Sacramento, Colonia, Uruguay - panoramio (1).jpg",
+  "proporcao": 1.33,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Barrio_Hist%C3%B3rico%2C_Col_Del_Sacramento%2C_Colonia%2C_Uruguay_-_panoramio_%281%29.jpg/1280px-Barrio_Hist%C3%B3rico%2C_Col_Del_Sacramento%2C_Colonia%2C_Uruguay_-_panoramio_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "ogwen",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Barrio_Hist%C3%B3rico,_Col_Del_Sacramento,_Colonia,_Uruguay_-_panoramio_(1).jpg"
+ },
+ "Punta del Diablo": {
+  "lugar": "Punta del Diablo",
+  "arquivo": "Playa, Punta del Diablo, Rocha, Uruguay - panoramio.jpg",
+  "proporcao": 1.61,
+  "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Playa%2C_Punta_del_Diablo%2C_Rocha%2C_Uruguay_-_panoramio.jpg/1280px-Playa%2C_Punta_del_Diablo%2C_Rocha%2C_Uruguay_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "autor": "rodoluca",
+  "licenca": "CC BY-SA 3.0",
+  "pagina": "https://commons.wikimedia.org/wiki/File:Playa,_Punta_del_Diablo,_Rocha,_Uruguay_-_panoramio.jpg"
  }
 }

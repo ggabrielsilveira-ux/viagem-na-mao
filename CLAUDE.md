@@ -13,7 +13,7 @@ App de planejamento de viagens para o público brasileiro. Interface e documenta
 - App estático (HTML, CSS e JavaScript nativos, sem framework) em https://app.viagemnamao.com; site de divulgação em https://viagemnamao.com (pasta `site/`, lista de espera via função da Vercel). Ambos publicados pela Vercel a cada push na `main`.
 - Dados no `localStorage` (chave `viagem-na-mao-v1`) e fotos no IndexedDB; contas opcionais com Supabase (`conta.js`, login por código no e-mail, teste fechado) sincronizam o estado e as fotos. Esquema em `ferramentas/supabase-contas.sql`. Cadastro aberto para testadores; estatística de uso só com contagens (`ferramentas/supabase-metricas.sql`) e painel em `/painel.html` restrito aos administradores.
 - Catálogo por cidade sob demanda: o app carrega só o índice `dados/cidades.js` e baixa `dados/cidades/<cidade>.js` das cidades das viagens. O service worker `sw.js` guarda o app e esses dados para abrir sem internet (clima, rotas, endereços e conta sempre pela rede). Depois de regenerar o catálogo, rodar `node ferramentas/dividir-cidades.mjs` e subir `CITY_PACK_VERSION` no `script.js`.
-- Catálogo: atrações de 250 cidades (todas as capitais, litorais e serras do Sul e Sudeste, principais destinos do Brasil e do mundo) (Wikidata/Wikipedia/Commons e OpenStreetMap), sem avaliações nem preços. Ver README para a lista de arquivos.
+- Catálogo: atrações de 313 cidades (todas as capitais, litorais e serras do Sul e Sudeste, principais destinos do Brasil e do mundo) (Wikidata/Wikipedia/Commons e OpenStreetMap), sem avaliações nem preços. Ver README para a lista de arquivos.
 
 ## Regras de trabalho
 - Antes de mudar, ler os arquivos e preservar os dados já salvos no `localStorage` (usar migração, nunca apagar a chave).
