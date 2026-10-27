@@ -1544,3 +1544,15 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .bau-polaroid.is-featured .bau-photo img { width: auto; max-width: calc(min(100vw, 520px) - 72px); }
 .bau-polaroid.is-featured .bau-featured-title, .bau-polaroid.is-featured .bau-featured-text, .bau-polaroid.is-featured .bau-place { min-width: 200px; max-width: none; }
 .bau-album-pages.is-solo .bau-stack, .bau-few.count-3, .bau-featured { justify-items: center; }
+/* Destaque com largura estável (corrige moldura sumindo no iPhone): cheia por padrão, mais estreita para foto em pé */
+.bau-polaroid.is-featured { display: block !important; width: 100% !important; max-width: 340px; margin-inline: auto; grid-template-columns: none; }
+.bau-polaroid.is-featured.is-portrait { max-width: 250px; }
+.bau-polaroid.is-featured .bau-photo { display: block; }
+.bau-polaroid.is-featured .bau-photo img { display: block; width: 100% !important; max-width: 100%; height: auto; max-height: none; min-height: 120px; object-fit: cover; }
+.bau-polaroid.is-featured .bau-featured-title, .bau-polaroid.is-featured .bau-featured-text, .bau-polaroid.is-featured .bau-place { min-width: 0; }
+.bau-featured { display: block; }
+.bau-few.count-3 > .is-featured { width: 100% !important; }
+/* justify-self em bloco comum encolhe o destaque (Chrome e Safari novos): volta a ocupar a largura */
+.bau-featured { justify-self: stretch; width: auto; }
+.bau-few.count-3 > :first-child { justify-self: stretch; }
+.bau-album-pages.is-solo .bau-stack, .bau-few.count-3 { justify-items: stretch; }

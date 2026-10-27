@@ -4262,6 +4262,12 @@ function renderMemories() {
     <div class="bau-album-pages is-${layout}">${layout === "few" ? fewHtml : shownDates.map(daySection).join("")}</div>
     <p class="bau-private-pill">${icon("lock")} ${escapeHtml(memoriesPrivacyText())}. Compartilhar é sempre escolha sua.${backupOld ? ` <button class="link-btn" type="button" data-open-settings>Fazer backup</button>` : ""}</p>`;
   hydratePhotos(container);
+  // Foto em pé no destaque: a moldura fica mais estreita, mas só depois que a foto carrega (nunca some).
+  container.querySelectorAll(".is-featured .bau-photo img").forEach((img) => {
+    const mark = () => { if (img.naturalHeight > img.naturalWidth * 1.1) img.closest(".is-featured")?.classList.add("is-portrait"); };
+    if (img.complete && img.naturalWidth) mark();
+    else img.addEventListener("load", mark, { once: true });
+  });
 }
 
 // "Criar álbum ou vídeo": as ferramentas que já existem na retrospectiva.
