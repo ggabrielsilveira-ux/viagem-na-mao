@@ -7,6 +7,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Viagem na Mão">
+    <!-- Sem login guardado neste aparelho, abre direto nas boas-vindas (antes de desenhar, para a Home não piscar). Ver conta.js. -->
+    <script>try { if (!localStorage.getItem("sb-nbabmcctrncfguoedhiz-auth-token")) document.documentElement.classList.add("sem-conta"); } catch (e) { document.documentElement.classList.add("sem-conta"); }</script>
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="marca/viagem-na-mao-icon.svg" type="image/svg+xml">
     <link rel="icon" href="marca/icone-32.png" sizes="32x32" type="image/png">
@@ -16,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=71">
+    <link rel="stylesheet" href="styles.css?v=72">
     <script src="icones.js?v=28" defer></script>
     <script src="dados/fontes-abertas.js?v=25" defer></script>
     <script src="dados/cidades.js?v=6" defer></script>
@@ -25,9 +27,28 @@
     <script src="dados/inspiracao.js?v=1" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
     <script src="script.js?v=63" defer></script>
-    <script src="conta.js?v=33" defer></script>
+    <script src="conta.js?v=34" defer></script>
   </head>
   <body>
+    <!-- Boas-vindas: primeira tela de quem ainda não entrou na conta (conta.js) -->
+    <section class="welcome" id="welcome" aria-labelledby="welcome-title">
+      <div class="welcome-inner">
+        <header class="welcome-brand">
+          <span class="brand brand-dark"><img class="brand-mark" src="marca/viagem-na-mao-icon.svg" alt="" width="48" height="48"><span class="brand-word">viagem <span class="brand-na">na</span> <span class="brand-mao">mão</span></span></span>
+        </header>
+        <div class="welcome-art"><img src="imagens/boas-vindas/fundo.jpg" width="941" height="1672" alt="Polaroides de amigos viajando: o Pão de Açúcar no Rio, uma rua de Roma e um brinde ao pôr do sol" loading="lazy" decoding="async"></div>
+        <div class="welcome-copy">
+          <h1 id="welcome-title">Toda viagem começa com um sonho.</h1>
+          <p>Planeje, descubra, viva e guarde suas melhores histórias.</p>
+          <div class="welcome-actions">
+            <button class="btn btn-primary btn-block" type="button" data-welcome="criar">Começar minha jornada</button>
+            <button class="btn btn-outline btn-block" type="button" data-welcome="entrar">Já tenho uma conta</button>
+          </div>
+          <p class="welcome-note">Crie sua conta gratuitamente.</p>
+        </div>
+      </div>
+    </section>
+
     <div class="app" id="app">
 
       <!-- Início -->

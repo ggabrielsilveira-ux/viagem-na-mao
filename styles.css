@@ -1649,3 +1649,26 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 @media (max-width: 389px) { .invite-card { --invite-art: 92px; --invite-art-w: 232px; } .invite-card p { font-size: 15px; } .invite-card p::before { width: 74px; height: 40px; } }
 /* Tela estreita: sem polaroides, o texto usa a largura toda */
 @media (max-width: 349px) { .invite-card { background-image: none; } .invite-card p::before { display: none; } .invite-actions { gap: 6px; } .invite-actions .btn { padding: 0 12px; font-size: 13.5px; } .invite-actions .link-btn { font-size: 13.5px; } }
+
+/* Boas-vindas (sem conta): arte aprovada em imagens/boas-vindas/fundo.jpg sobre o mesmo papel creme */
+.welcome { display: none; }
+html.sem-conta .welcome { display: block; position: fixed; inset: 0; z-index: 40; overflow-y: auto; -webkit-overflow-scrolling: touch; background: #f3ead8; }
+html.sem-conta .screen { display: none !important; }
+html.sem-conta body { overflow: hidden; }
+.welcome-inner { display: flex; flex-direction: column; min-height: 100%; max-width: 480px; margin: 0 auto; padding-bottom: calc(22px + env(safe-area-inset-bottom)); }
+.welcome-brand { display: flex; justify-content: center; padding: calc(14px + env(safe-area-inset-top)) 16px 0; }
+.welcome-brand .brand-dark { font-size: 26px; gap: 11px; }
+.welcome-brand .brand-mark { width: 48px; height: 48px; border-radius: 13px; }
+/* Mostra da faixa de papel acima das fotos até logo abaixo da última polaroide (y 140–1280 de 1672).
+   Em tela baixa a arte encolhe inteira (sem cortar rostos) e o papel continua dos lados. */
+.welcome-art { width: min(100%, max(calc((100svh - 372px) * 0.8254), 250px)); aspect-ratio: 941 / 1140; margin: 0 auto; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%); }
+.welcome-art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 26.3%; }
+.welcome-copy { display: flex; flex: 1; flex-direction: column; justify-content: center; gap: 6px; padding: 4px 24px 0; text-align: center; }
+.welcome-copy h1 { color: var(--brand-deep); font-family: var(--font-display); font-size: clamp(24px, 7vw, 30px); font-weight: 800; letter-spacing: -0.6px; line-height: 1.15; }
+.welcome-copy > p { color: var(--ink-2); font-size: 16px; line-height: 1.45; }
+.welcome-actions { display: grid; gap: 10px; margin-top: 12px; }
+.welcome-actions .btn { min-height: 52px; font-size: 16px; }
+.btn-outline { color: var(--brand); background: transparent; border: 1.5px solid var(--brand); }
+.btn-outline:hover:not(:disabled) { background: rgba(21, 86, 63, 0.06); }
+.welcome-note { margin-top: 4px; color: var(--muted); font-size: 13.5px; }
+.auth-section { margin-top: 4px; }

@@ -194,12 +194,21 @@ window.contaAtiva = () => Boolean(supabaseClient);
 window.contaLogada = () => Boolean(conta.user);
 
 // Primeiro login neste aparelho: decide o que fazer com as viagens daqui e as da nuvem.
+// Cópia das viagens deste aparelho antes de juntá-las com a conta (uma por conta, nunca apagada pelo app).
+function backupLocalState(userId) {
+  const key = `viagem-na-mao-v1-antes-da-conta-${userId}`;
+  try { if (!window.localStorage.getItem(key)) window.localStorage.setItem(key, JSON.stringify(state)); } catch { /* sem espaço: os dados seguem no estado principal */ }
+}
+
 async function firstSync() {
-  const remote = await fetchRemote();
   const hasLocal = state.trips.length > 0;
+  if (hasLocal) backupLocalState(conta.user.id);
+  const remote = await fetchRemote();
   if (!remote) {
+    // Marca como pendente antes: se falhar (sem internet), tenta de novo quando a conexão voltar.
+    writeSync({ dirty: true });
     await syncNow();
-    if (hasLocal) toast("Suas viagens foram guardadas na conta");
+    if (hasLocal) toast(readSync().dirty ? "Suas viagens estão salvas neste aparelho; envio para a conta assim que der." : "Suas viagens foram guardadas na conta");
     return;
   }
   if (!hasLocal) {
@@ -211,9 +220,8 @@ async function firstSync() {
   }
   openSheet(`${sheetTitle("Juntar viagens")}
     <p class="sheet-text">Este aparelho tem ${state.trips.length} ${state.trips.length === 1 ? "viagem" : "viagens"} e a sua conta tem ${(remote.dados.trips || []).length}. O que fazer?</p>
-    <button class="btn btn-primary btn-block" type="button" id="sync-merge">${icon("check")} Juntar as duas (recomendado)</button>
-    <button class="btn btn-secondary btn-block" type="button" id="sync-remote">Usar só as da conta</button>
-    <p class="muted">Juntar mantém tudo: as viagens que faltam entram e as memórias se somam.</p>`, (root) => {
+    <button class="btn btn-primary btn-block" type="button" id="sync-merge">${icon("check")} Juntar as duas</button>
+    <p class="muted">Nada se perde: as viagens que faltam entram e as memórias se somam.</p>`, (root) => {
     sheetGuard = () => false;
     const finish = async (data) => {
       sheetGuard = null;
@@ -223,7 +231,6 @@ async function firstSync() {
       await syncNow({ silent: false });
     };
     root.querySelector("#sync-merge").addEventListener("click", () => finish(mergeStates(state, remote.dados)));
-    root.querySelector("#sync-remote").addEventListener("click", () => finish(remote.dados));
   });
 }
 
@@ -392,11 +399,14 @@ window.renderHomeFeedback?.();
 
 let accountRoot = null;
 let pendingEmail = "";
+let authMode = ""; // "criar" ou "entrar" quando o login abre pela tela de boas-vindas
 
 function paintAccount() {
   if (!accountRoot?.isConnected) return;
   if (!supabaseClient) {
-    accountRoot.innerHTML = `<h3>${icon("user")} Sua conta</h3><p class="muted">As contas estão sendo preparadas. Por enquanto, tudo fica neste aparelho.</p>`;
+    accountRoot.innerHTML = authMode
+      ? `<p class="muted">Sem conexão com as contas agora. Confira a internet e tente de novo.</p>`
+      : `<h3>${icon("user")} Sua conta</h3><p class="muted">As contas estão sendo preparadas. Por enquanto, tudo fica neste aparelho.</p>`;
     return;
   }
   const sync = readSync();
@@ -418,8 +428,12 @@ function paintAccount() {
     };
     return;
   }
-  accountRoot.innerHTML = `<h3>${icon("user")} Sua conta</h3>
-    <p class="muted">Crie sua conta de testador com o seu e-mail: suas viagens e memórias ficam guardadas na nuvem e você pode usar em outro celular. Não precisa de senha: chega um código no e-mail.</p>
+  const intro = {
+    criar: "Digite o seu e-mail. Enviamos um código de 6 dígitos para você entrar, sem senha. Suas viagens e memórias ficam guardadas na sua conta.",
+    entrar: "Digite o e-mail da sua conta. Enviamos um código de 6 dígitos para você entrar."
+  }[authMode];
+  accountRoot.innerHTML = `${intro ? `<p class="muted">${intro}</p>` : `<h3>${icon("user")} Sua conta</h3>
+    <p class="muted">Crie sua conta de testador com o seu e-mail: suas viagens e memórias ficam guardadas na nuvem e você pode usar em outro celular. Não precisa de senha: chega um código no e-mail.</p>`}
     ${pendingEmail
       ? `<label class="field">Código enviado para ${escapeHtml(pendingEmail)}<input id="account-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Código de 6 dígitos"></label>
          <div class="row-actions"><button class="btn btn-secondary" type="button" id="account-back">Trocar e-mail</button><button class="btn btn-primary" type="button" id="account-verify">Entrar</button></div>`
@@ -437,7 +451,7 @@ function paintAccount() {
     const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
     if (error) {
       button.disabled = false;
-      status.textContent = /rate|seconds/i.test(error.message) ? "Espere um pouco antes de pedir outro código." : "Não consegui enviar agora. Tente de novo em instantes.";
+      status.textContent = /rate|seconds/i.test(error.message) ? "Espere um pouco antes de pedir outro código." : navigator.onLine ? "Não consegui enviar agora. Tente de novo em instantes." : "Sem internet. Conecte-se para receber o código.";
       return;
     }
     pendingEmail = email;
@@ -461,7 +475,40 @@ function paintAccount() {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Boas-vindas (#welcome no index.html): sem conta, o app abre nela e só segue depois do login.
+// O index.html já marca <html class="sem-conta"> antes de desenhar, se não houver login guardado.
+// Sem internet, quem já entrou continua entrando: só volta para cá se o login sumir do aparelho
+// (saiu da conta ou a sessão foi encerrada no servidor). Os dados do aparelho nunca são apagados.
+// ---------------------------------------------------------------------------
+
+const AUTH_STORAGE_KEY = "sb-nbabmcctrncfguoedhiz-auth-token";
+
+function hasStoredLogin() {
+  try { return Boolean(window.localStorage.getItem(AUTH_STORAGE_KEY)); } catch { return false; }
+}
+
+function setWelcome(show) {
+  document.documentElement.classList.toggle("sem-conta", show);
+  if (show) window.scrollTo(0, 0);
+}
+
+function openAuthSheet(mode) {
+  openSheet(`${sheetTitle(mode === "entrar" ? "Entrar na sua conta" : "Criar sua conta")}<section class="settings-section auth-section" id="account-section"></section>`, (root) => {
+    authMode = mode;
+    accountRoot = root.querySelector("#account-section");
+    paintAccount();
+    root.querySelector("#account-email")?.focus();
+  });
+}
+
+document.querySelector("#welcome")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-welcome]");
+  if (button) openAuthSheet(button.dataset.welcome);
+});
+
 window.contaUI = (root) => {
+  authMode = "";
   // "Ajude no desenvolvimento": opinião para a equipe (logo depois da conta).
   if (supabaseClient) {
     window.setTimeout(() => {
@@ -480,8 +527,20 @@ if (supabaseClient) {
   supabaseClient.auth.onAuthStateChange((event, session) => {
     const before = conta.user?.id;
     conta.user = session?.user || null;
-    if (!conta.user) { conta.plano = null; conta.perfil = null; paintAccount(); window.renderHomeAccount?.(); return; }
+    if (!conta.user) {
+      conta.plano = null; conta.perfil = null; paintAccount(); window.renderHomeAccount?.();
+      if (!hasStoredLogin()) setWelcome(true);
+      return;
+    }
+    if (document.documentElement.classList.contains("sem-conta")) {
+      setWelcome(false);
+      if (authMode && accountRoot?.closest("#sheet")) closeSheet({ force: true });
+      authMode = "";
+      render({ scroll: false });
+    }
     if (before === conta.user.id) return;
+    // Conta nova neste aparelho: guarda a cópia das viagens locais antes de qualquer sincronização.
+    if (event === "SIGNED_IN" && readSync().userId !== conta.user.id && state.trips.length) backupLocalState(conta.user.id);
     // Deixa o evento terminar antes de chamar o banco (recomendação do Supabase).
     window.setTimeout(async () => {
       await loadPlan().catch(() => {});
