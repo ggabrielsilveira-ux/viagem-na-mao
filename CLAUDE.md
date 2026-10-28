@@ -16,7 +16,7 @@ App de planejamento de viagens para o público brasileiro. Interface e documenta
 - Catálogo: atrações de 338 cidades (todas as capitais, litorais e serras do Sul e Sudeste, principais destinos do Brasil e do mundo) (Wikidata/Wikipedia/Commons e OpenStreetMap), sem avaliações nem preços. Ver README para a lista de arquivos.
 
 ## Regras de trabalho
-- Antes de mudar, ler os arquivos e preservar os dados já salvos no `localStorage` (usar migração, nunca apagar a chave).
+- Antes de mudar, ler os arquivos e preservar os dados já salvos no `localStorage` (usar migração, nunca apagar a chave). Exceção aprovada: ao tocar em "Sair da conta", depois de confirmar que estado e fotos estão na nuvem, as viagens saem do aparelho (a chave fica, vazia); viagens de outra conta ficam à parte (`viagem-na-mao-v1-conta-<id>`) e nunca se juntam com a conta que entra.
 - Alterações pequenas e pontuais. Manter estático enquanto fizer sentido.
 - Nunca apresentar dado de demonstração como real. Nunca inventar nota, preço ou horário.
 - Chaves secretas nunca no JavaScript do navegador: só em função serverless/backend (Vercel). Exceção aprovada: a Publishable key do Supabase (`sb_publishable_...`), que é pública por natureza; a proteção dos dados vem das regras RLS de cada tabela, obrigatórias em toda tabela nova.

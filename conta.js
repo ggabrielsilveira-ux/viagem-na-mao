@@ -122,6 +122,71 @@ async function pushState() {
   writeSync({ lastPulledAt: atualizado_em, lastSyncAt: atualizado_em, dirty: false });
 }
 
+// Para sair da conta: envia tudo e confere se nada ficou para trás (estado e todas as fotos das memórias).
+async function syncEverything() {
+  if (!supabaseClient || !conta.user || !navigator.onLine) return false;
+  for (let i = 0; conta.syncing && i < 120; i++) await wait(500);
+  if (conta.syncing) return false;
+  conta.syncing = true;
+  try {
+    await pushState();
+    await syncPhotos();
+  } catch (error) {
+    console.error("Falha ao sincronizar antes de sair.", error);
+    return false;
+  } finally {
+    conta.syncing = false;
+  }
+  const sent = new Set(readSync().fotosEnviadas || []);
+  const local = new Set(await listPhotoIds().catch(() => []));
+  return !readSync().dirty && allMemoryPhotoIds().every((id) => !local.has(id) || sent.has(id));
+}
+
+// Sair da conta: só depois de tudo guardado na nuvem, as viagens, memórias e fotos saem deste aparelho
+// (voltam ao entrar de novo, aqui ou em outro aparelho). Se algo não subiu, nada é apagado e a pessoa continua dentro.
+async function signOutSafely() {
+  const uid = conta.user?.id;
+  if (!uid) return { ok: true };
+  if (!(await syncEverything())) return { ok: false };
+  const photoIds = await listPhotoIds().catch(() => []);
+  await deletePhotos(photoIds).catch(() => {});
+  photoIds.forEach((id) => forgetPhotoUrl(id));
+  replaceState(emptyState());
+  try {
+    window.localStorage.removeItem(`viagem-na-mao-v1-antes-da-conta-${uid}`);
+    window.localStorage.removeItem(PENDING_SIGNUP_KEY);
+  } catch { /* segue */ }
+  writeSync({ userId: "", lastPulledAt: "", fotosEnviadas: [], dirty: false });
+  await supabaseClient.auth.signOut();
+  return { ok: true };
+}
+
+function openSignOutSheet() {
+  openSheet(`${sheetTitle("Sair da conta?")}
+    <p class="sheet-text">Suas viagens, memórias e fotos ficam guardadas na sua conta e saem deste aparelho. Para ver de novo, é só entrar com um código novo no e-mail.</p>
+    <p class="form-status" id="signout-status" role="status" aria-live="polite"></p>
+    <div class="row-actions"><button class="btn btn-secondary" type="button" data-close-sheet>Cancelar</button><button class="btn btn-primary" type="button" id="signout-confirm">Sair</button></div>`, (root) => {
+    const status = root.querySelector("#signout-status");
+    root.querySelector("#signout-confirm").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      sheetGuard = () => false;
+      status.textContent = "Guardando tudo na sua conta…";
+      const { ok } = await signOutSafely();
+      sheetGuard = null;
+      button.disabled = false;
+      if (!ok) {
+        status.textContent = navigator.onLine
+          ? "Ainda tem coisa que não foi para a nuvem. Tente sair de novo em instantes; nada foi apagado."
+          : "Sem internet: suas últimas mudanças ainda não foram para a nuvem. Saia quando estiver conectado; nada foi apagado.";
+        return;
+      }
+      closeSheet({ force: true });
+      toast("Você saiu. Suas viagens estão guardadas na sua conta.");
+    });
+  });
+}
+
 async function syncNow({ silent = true } = {}) {
   if (!supabaseClient || !conta.user || conta.syncing || !navigator.onLine) return;
   conta.syncing = true;
@@ -230,10 +295,54 @@ function backupLocalState(userId) {
   try { if (!window.localStorage.getItem(key)) window.localStorage.setItem(key, JSON.stringify(state)); } catch { /* sem espaço: os dados seguem no estado principal */ }
 }
 
-async function firstSync() {
+// Estado vazio do aparelho (como na primeira vez que o app abre).
+function emptyState() {
+  return { trips: [], currentTripId: null, hideAmounts: false, displayCurrency: "BRL", displayCurrencyRate: 1, messageHistory: {}, flags: {}, lastBackupAt: null, reminders: "app", invites: {}, profile: { name: "" }, deletedTrips: [] };
+}
+
+function replaceState(data) {
+  conta.applyingRemote = true;
+  Object.keys(state).forEach((key) => { delete state[key]; });
+  Object.assign(state, data, { trips: (data.trips || []).map(migrateTrip) });
+  saveState();
+  conta.applyingRemote = false;
+  render({ scroll: false });
+}
+
+// Viagens que ficaram no aparelho de outra conta (a sessão dela acabou sem "Sair"): vão para um canto
+// separado e voltam quando essa conta entrar de novo. Nunca se misturam com a conta que está entrando.
+const accountStashKey = (userId) => `viagem-na-mao-v1-conta-${userId}`;
+function stashAccountState(userId) {
+  try { window.localStorage.setItem(accountStashKey(userId), JSON.stringify(state)); } catch { return false; }
+  replaceState(emptyState());
+  return true;
+}
+function takeAccountStash(userId) {
+  try {
+    const value = JSON.parse(window.localStorage.getItem(accountStashKey(userId)) || "null");
+    if (value) window.localStorage.removeItem(accountStashKey(userId));
+    return value;
+  } catch { return null; }
+}
+
+async function firstSync(previousOwner = "") {
+  if (previousOwner && previousOwner !== conta.user.id && state.trips.length && !stashAccountState(previousOwner)) {
+    // Sem espaço para separar: não junta viagens de outra conta; elas continuam só neste aparelho.
+    toast("Não consegui separar as viagens da outra conta neste aparelho.");
+    return;
+  }
+  // Esta conta tinha viagens guardadas à parte neste aparelho: voltam e se juntam com as da nuvem sem perguntar.
+  const stash = takeAccountStash(conta.user.id);
+  if (stash) replaceState(mergeStates(stash, state));
   const hasLocal = state.trips.length > 0;
-  if (hasLocal) backupLocalState(conta.user.id);
+  if (hasLocal && !stash) backupLocalState(conta.user.id);
   const remote = await fetchRemote();
+  if (stash && remote) {
+    applyRemoteState(mergeStates(state, remote.dados));
+    writeSync({ lastPulledAt: remote.atualizado_em, dirty: true });
+    await syncNow();
+    return;
+  }
   if (!remote) {
     // Marca como pendente antes: se falhar (sem internet), tenta de novo quando a conexão voltar.
     writeSync({ dirty: true });
@@ -457,11 +566,17 @@ function openPerfilSheet({ first = false, required = false } = {}) {
     if (required) {
       // Não fecha tocando fora, arrastando nem com o voltar: só salvando ou saindo da conta.
       sheetGuard = () => false;
-      root.querySelector("#perfil-sair").addEventListener("click", async () => {
+      root.querySelector("#perfil-sair").addEventListener("click", async (event) => {
+        event.currentTarget.disabled = true;
+        status.textContent = "Saindo…";
+        const { ok } = await signOutSafely();
+        if (!ok) {
+          event.currentTarget.disabled = false;
+          status.textContent = "Não consegui guardar tudo na nuvem agora. Confira a internet e tente de novo.";
+          return;
+        }
         closeSheet({ force: true });
-        await syncNow().catch(() => {});
-        await supabaseClient.auth.signOut();
-        toast("Você saiu da conta. As viagens continuam neste aparelho.");
+        toast("Você saiu da conta.");
       });
     }
     wirePerfilFields(root);
@@ -591,14 +706,10 @@ function paintAccount() {
       <p class="settings-meta">${icon("shield-check")} Plano: ${escapeHtml(PLAN_LABELS[conta.plano?.plano] || "Teste gratuito")} · viagens e memórias guardadas na nuvem, só você vê.</p>
       <p class="settings-meta">${icon("clock")} Última sincronização: ${escapeHtml(when)}${conta.status ? ` · ${escapeHtml(conta.status)}` : ""}</p>
       <button class="btn btn-secondary btn-block" type="button" id="account-perfil">${icon("pencil")} ${conta.perfil ? "Editar cadastro" : "Completar cadastro"}</button>
-      <div class="row-actions"><button class="btn btn-secondary" type="button" id="account-sync"${conta.syncing ? " disabled" : ""}>${icon("download")} Sincronizar</button><button class="btn btn-secondary" type="button" id="account-logout">Sair</button></div>`;
+      <div class="row-actions"><button class="btn btn-secondary" type="button" id="account-sync"${conta.syncing ? " disabled" : ""}>${icon("download")} Sincronizar</button><button class="btn btn-secondary" type="button" id="account-logout">${icon("log-out")} Sair da conta</button></div>`;
     accountRoot.querySelector("#account-sync").onclick = () => syncNow({ silent: false });
     accountRoot.querySelector("#account-perfil").onclick = () => openPerfilSheet({ first: !conta.perfil });
-    accountRoot.querySelector("#account-logout").onclick = async () => {
-      await syncNow();
-      await supabaseClient.auth.signOut();
-      toast("Você saiu da conta. As viagens continuam neste aparelho.");
-    };
+    accountRoot.querySelector("#account-logout").onclick = openSignOutSheet;
     return;
   }
   // Criar conta: o cadastro completo vem antes do código; o código só sai com tudo preenchido.
@@ -727,6 +838,7 @@ window.contaUI = (root) => {
 if (supabaseClient) {
   supabaseClient.auth.onAuthStateChange((event, session) => {
     const before = conta.user?.id;
+    const previousOwner = readSync().userId || "";
     conta.user = session?.user || null;
     if (!conta.user) {
       conta.plano = null; conta.perfil = null; paintAccount(); window.renderHomeAccount?.();
@@ -741,7 +853,8 @@ if (supabaseClient) {
     }
     if (before === conta.user.id) return;
     // Conta nova neste aparelho: guarda a cópia das viagens locais antes de qualquer sincronização.
-    if (event === "SIGNED_IN" && readSync().userId !== conta.user.id && state.trips.length) backupLocalState(conta.user.id);
+    // Só para viagens feitas sem conta: as de outra conta vão para um canto separado no firstSync.
+    if (event === "SIGNED_IN" && !previousOwner && state.trips.length) backupLocalState(conta.user.id);
     // Deixa o evento terminar antes de chamar o banco (recomendação do Supabase).
     window.setTimeout(async () => {
       await loadPlan().catch(() => {});
@@ -749,7 +862,7 @@ if (supabaseClient) {
       paintAccount();
       if (event === "SIGNED_IN" && readSync().userId !== conta.user.id) {
         writeSync({ userId: conta.user.id, lastPulledAt: "", fotosEnviadas: [] });
-        await firstSync().catch((error) => console.error("Falha no primeiro login.", error));
+        await firstSync(previousOwner).catch((error) => console.error("Falha no primeiro login.", error));
       } else await pullIfNewer();
       paintAccount();
       window.renderHomeAccount?.();
