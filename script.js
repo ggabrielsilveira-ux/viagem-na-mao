@@ -374,6 +374,16 @@ function migrateDestination(value) {
 }
 
 const DISCOVER_RADII = [5, 10, 25, null];
+// Tipos de lugar do Descobrir, pelas categorias do catálogo (Wikidata e OpenStreetMap usam as mesmas).
+const DISCOVER_TYPES = [
+  { key: "cultura", label: "Museus e cultura", icon: "landmark", categories: ["Cultura", "Arte"] },
+  { key: "natureza", label: "Parques e natureza", icon: "trees", categories: ["Natureza", "Aventura"] },
+  { key: "praia", label: "Praias", icon: "waves", categories: ["Praia"] },
+  { key: "diversao", label: "Diversão", icon: "sparkles", categories: ["Diversão"] },
+  { key: "passeio", label: "Praças e pontos turísticos", icon: "footprints", categories: ["Passeio urbano", "Passeio"] },
+  { key: "comida", label: "Restaurantes e cafés", icon: "utensils", categories: ["Gastronomia"] },
+  { key: "compras", label: "Compras", icon: "shopping-bag", categories: ["Compras"] }
+];
 
 function migrateTrip(value) {
   const trip = { ...blankTrip(), ...(value || {}) };
@@ -392,6 +402,7 @@ function migrateTrip(value) {
   trip.closureDismissed = Boolean(trip.closureDismissed);
   const radius = trip.discoverRadius && typeof trip.discoverRadius === "object" ? trip.discoverRadius : {};
   trip.discoverRadius = { km: DISCOVER_RADII.includes(radius.km) ? radius.km : null, from: radius.from === "hospedagem" ? "hospedagem" : "centro" };
+  trip.discoverTypes = Array.isArray(trip.discoverTypes) ? trip.discoverTypes.filter((key) => DISCOVER_TYPES.some((type) => type.key === key)) : [];
   return trip;
 }
 
@@ -1621,11 +1632,21 @@ function withinDiscoverRadius(trip, activity) {
   });
 }
 
+function discoverTypeOf(activity) {
+  return DISCOVER_TYPES.find((type) => type.categories.includes(activity.category))?.key || "passeio";
+}
+
+// Com tipos escolhidos, valem só eles (e deixam de valer os interesses da viagem: a pessoa pediu aquilo).
+function matchesDiscoverChoice(trip, activity) {
+  if (trip.discoverTypes?.length) return trip.discoverTypes.includes(discoverTypeOf(activity));
+  return trip.interests.length === 0 || activity.interests.some((interest) => trip.interests.includes(interest));
+}
+
 function getDiscoverableActivities(trip, city = deckCity) {
   return activities.filter((activity) => {
     const inTrip = trip.destinations.some((destination) => activityMatchesCity(activity, destination.name)) && withinDiscoverRadius(trip, activity);
     const matchesCity = city === "all" || activityMatchesCity(activity, city);
-    const matchesInterest = trip.interests.length === 0 || activity.interests.some((interest) => trip.interests.includes(interest));
+    const matchesInterest = matchesDiscoverChoice(trip, activity);
     const handled = trip.saved.some((item) => item.id === activity.id)
       || trip.maybe.some((item) => item.id === activity.id)
       || trip.dismissed.includes(activity.id);
@@ -1637,7 +1658,7 @@ function discoveryStats(trip, city = deckCity) {
   const pool = activities.filter((activity) => trip.destinations.some((destination) => activityMatchesCity(activity, destination.name))
     && withinDiscoverRadius(trip, activity)
     && (city === "all" || activityMatchesCity(activity, city))
-    && (trip.interests.length === 0 || activity.interests.some((interest) => trip.interests.includes(interest))));
+    && matchesDiscoverChoice(trip, activity));
   const remaining = getDiscoverableActivities(trip, city);
   return { total: pool.length, remaining: remaining.length, evaluated: pool.length - remaining.length, next: remaining[0] || null, pool };
 }
@@ -1668,7 +1689,26 @@ function renderDiscoverRadius(trip, target = "#discover-radius") {
   $(target).innerHTML = `<p class="radius-context">${icon("compass")} ${escapeHtml(context)}</p><div class="radius-row"><span class="radius-label">${icon("map-pin")} Até</span>
     <div class="radius-options" role="group" aria-label="Distância máxima dos lugares">${DISCOVER_RADII.map((value) => `<button type="button" class="radius-option${value === km ? " is-active" : ""}" data-discover-radius="${value || "tudo"}" aria-pressed="${value === km}">${value ? `${value} km` : "Tudo"}</button>`).join("")}</div></div>
     ${located ? `<label class="radius-from">a partir ${km ? "" : "(quando escolher a distância) "}<select data-discover-from><option value="centro"${from === "centro" ? " selected" : ""}>do centro da cidade</option><option value="hospedagem"${from === "hospedagem" ? " selected" : ""}>da hospedagem</option></select></label>`
-      : compact ? "" : `<p class="radius-from">a partir do centro da cidade${km ? "" : " (cadastre a hospedagem para medir dela)"}</p>`}`;
+      : compact ? "" : `<p class="radius-from">a partir do centro da cidade${km ? "" : " (cadastre a hospedagem para medir dela)"}</p>`}
+    ${discoverTypesHtml(trip)}`;
+}
+
+// Só aparecem os tipos que existem nas cidades e na distância escolhidas.
+function discoverTypesHtml(trip) {
+  const chosen = trip.discoverTypes || [];
+  const counts = {};
+  activities.forEach((activity) => {
+    if (!trip.destinations.some((destination) => activityMatchesCity(activity, destination.name))) return;
+    if ((deckCity !== "all" && !activityMatchesCity(activity, deckCity)) || !withinDiscoverRadius(trip, activity)) return;
+    const key = discoverTypeOf(activity);
+    counts[key] = (counts[key] || 0) + 1;
+  });
+  const types = DISCOVER_TYPES.filter((type) => counts[type.key] || chosen.includes(type.key));
+  if (types.length < 2) return "";
+  return `<div class="type-filter h-scroll" role="group" aria-label="Tipo de lugar">
+    <button type="button" class="type-chip${chosen.length ? "" : " is-active"}" data-discover-type="todos" aria-pressed="${!chosen.length}">Tudo</button>
+    ${types.map((type) => `<button type="button" class="type-chip${chosen.includes(type.key) ? " is-active" : ""}" data-discover-type="${type.key}" aria-pressed="${chosen.includes(type.key)}">${icon(type.icon)} ${escapeHtml(type.label)}</button>`).join("")}
+  </div>`;
 }
 
 function refreshDiscovery() {
@@ -1702,7 +1742,7 @@ function renderDiscoverTab() {
     </div>
     <div class="spot-body">
       <h3>${escapeHtml(place)}</h3>
-      <p>${stats.remaining ? `Próximo: ${escapeHtml(stats.next.name)}` : stats.total ? "Reveja o que ficou em Talvez ou troque de cidade." : trip.discoverRadius.km ? `Nenhum lugar até ${trip.discoverRadius.km} km para os seus interesses. Aumente a distância acima.` : "Ainda não há lugares para os seus interesses aqui. Ajuste os interesses ao editar a viagem."}</p>
+      <p>${stats.remaining ? `Próximo: ${escapeHtml(stats.next.name)}` : stats.total ? "Reveja o que ficou em Talvez ou troque de cidade." : trip.discoverTypes?.length ? "Nenhum lugar desse tipo por aqui. Escolha outro tipo ou aumente a distância." : trip.discoverRadius.km ? `Nenhum lugar até ${trip.discoverRadius.km} km para os seus interesses. Aumente a distância acima.` : "Ainda não há lugares para os seus interesses aqui. Ajuste os interesses ao editar a viagem."}</p>
       ${action ? `<button class="btn btn-primary btn-block" type="button" data-open-deck>${escapeHtml(action)} ${icon("arrow-right")}</button>` : `<button class="btn btn-secondary btn-block" type="button" data-open-list="maybe-preview-list">${icon("bookmark")} Ver Talvez</button>`}
     </div>`;
   const liked = trip.saved.filter((item) => getActivity(item.id) && (deckCity === "all" || activityMatchesCity(getActivity(item.id), deckCity))).length;
@@ -1816,7 +1856,7 @@ function renderDeck() {
   $("#deck-title").textContent = "Descobrir";
   const stage = $("#activity-stage");
   if (!ideas.length) {
-    stage.innerHTML = `<div class="deck-empty">${icon("compass")}<h2>Você viu todas as ideias${deckCity === "all" ? "" : ` de ${escapeHtml(deckCity)}`}.</h2><p>Troque de cidade ou reveja o que ficou em “Talvez depois”.</p><button class="btn btn-secondary" type="button" data-back>Ver minhas ideias</button></div>`;
+    stage.innerHTML = `<div class="deck-empty">${icon("compass")}<h2>Você viu todas as ideias${deckCity === "all" ? "" : ` de ${escapeHtml(deckCity)}`}.</h2><p>${trip.discoverTypes?.length ? "Escolha outro tipo de lugar acima, troque de cidade" : "Troque de cidade"} ou reveja o que ficou em “Talvez depois”.</p>${trip.discoverTypes?.length ? `<button class="btn btn-primary" type="button" data-discover-type="todos">Ver todos os tipos</button>` : ""}<button class="btn btn-secondary" type="button" data-back>Ver minhas ideias</button></div>`;
     return;
   }
   stage.innerHTML = (ideas[1] ? placeCardHtml(ideas[1], trip, "is-back") : "") + placeCardHtml(ideas[0], trip);
@@ -6472,6 +6512,19 @@ document.addEventListener("click", (event) => {
   const openTripButton = event.target.closest("[data-open-trip]");
   if (openTripButton) {
     openTrip(openTripButton.dataset.openTrip);
+    return;
+  }
+  const typeButton = event.target.closest("[data-discover-type]");
+  if (typeButton) {
+    const trip = getCurrentTrip();
+    const key = typeButton.dataset.discoverType;
+    const chosen = new Set(trip.discoverTypes || []);
+    if (key === "todos") chosen.clear();
+    else if (chosen.has(key)) chosen.delete(key);
+    else chosen.add(key);
+    trip.discoverTypes = [...chosen];
+    saveState();
+    refreshDiscovery();
     return;
   }
   const radiusButton = event.target.closest("[data-discover-radius]");

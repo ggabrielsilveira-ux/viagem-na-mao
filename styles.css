@@ -1259,6 +1259,14 @@ html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: n
 .deck-radius { margin: 0 16px 6px; }
 .deck-radius .radius-option { min-height: 30px; }
 .deck-radius .radius-from { margin-top: 4px; }
+/* Tipo de lugar no Descobrir: uma linha que rola para o lado */
+.type-filter { display: flex; gap: 6px; margin: 10px -16px 0; padding: 2px 16px; overflow-x: auto; scrollbar-width: none; }
+.type-filter::-webkit-scrollbar { display: none; }
+.type-chip { display: inline-flex; flex: none; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-2); background: var(--surface); font: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+.type-chip .icon { width: 15px; height: 15px; color: var(--brand-2); }
+.type-chip.is-active { border-color: var(--brand-2); color: #fff; background: var(--brand-2); }
+.type-chip.is-active .icon { color: #fff; }
+.deck-radius .type-filter { margin-top: 6px; }
 
 /* Convite para criar a conta de testador */
 .account-invite { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-bottom: 14px; padding: 14px; border: 1px solid rgba(31, 107, 80, 0.25); border-radius: var(--radius-lg); background: var(--brand-soft); }
