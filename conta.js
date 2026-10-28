@@ -276,6 +276,12 @@ async function loadPerfil() {
   const { data, error } = await supabaseClient.from("perfis").select("nome, whatsapp, aniversario, aceita_novidades").eq("user_id", conta.user.id).maybeSingle();
   if (error) throw error;
   conta.perfil = data || null;
+  // Acabou de criar a conta: grava o cadastro preenchido antes do código (antes de decidir se pede a ficha).
+  const pending = readPendingSignup();
+  if (pending && pending.email === conta.user.email) {
+    const { nome, whatsapp, aniversario, aceita_novidades } = pending;
+    if (!(await savePerfil({ nome, whatsapp, aniversario, aceita_novidades }))) writePendingSignup(null);
+  }
   // Só com a resposta do banco dá para saber que falta o cadastro (sem internet, não cobra).
   conta.perfilConferido = true;
   // O primeiro nome vira a saudação da tela inicial (a pessoa ainda pode trocar em Ajustes).
@@ -359,26 +365,90 @@ function formatWhatsapp(digits) {
   return country === "55" ? whatsappLocal(d) : `+${country} ${whatsappLocal(d)}`;
 }
 
-// required: cadastro obrigatório para usar o app (sem fechar; a saída é salvar ou sair da conta).
-function openPerfilSheet({ first = false, required = false } = {}) {
-  const perfil = conta.perfil || {};
+// Campos do cadastro de testador: usados na criação da conta (com o e-mail) e na ficha depois do login.
+function perfilFieldsHtml(perfil = {}, { email = null } = {}) {
   const [day, month] = (perfil.aniversario || "/").split("/");
-  openSheet(`${required ? `<div class="sheet-title"><h2>Complete seu cadastro</h2></div>` : sheetTitle(first ? "Complete seu cadastro" : "Seu cadastro")}
-    <p class="muted">${required ? "Para usar o Viagem na Mão na fase de testes, precisamos do seu nome e WhatsApp. Assim sabemos quem está testando e podemos falar com você sobre o app." : first ? "Falta pouco: assim sabemos quem está testando e podemos falar com você sobre o app." : "Seus dados de testador. Só a equipe do Viagem na Mão vê."}</p>
-    <label class="field">Nome completo<input id="perfil-nome" maxlength="120" autocomplete="name" value="${escapeHtml(perfil.nome || "")}" placeholder="Ex.: Maria da Silva"></label>
+  return `<label class="field">Nome completo<input id="perfil-nome" maxlength="120" autocomplete="name" value="${escapeHtml(perfil.nome || "")}" placeholder="Ex.: Maria da Silva"></label>
+    ${email === null ? "" : `<label class="field">E-mail<input id="account-email" type="email" autocomplete="email" value="${escapeHtml(email)}" placeholder="voce@exemplo.com"></label>`}
     <div class="field"><span>WhatsApp</span>
       <div class="perfil-phone">
         <select id="perfil-ddi" aria-label="País do número">${PHONE_COUNTRIES.map(([code, name]) => `<option value="${code}"${code === whatsappCountry(perfil.whatsapp) ? " selected" : ""}>${escapeHtml(name)} +${code}</option>`).join("")}</select>
         <input id="perfil-whatsapp" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="24" aria-label="Número do WhatsApp" value="${escapeHtml(whatsappLocal(perfil.whatsapp))}" placeholder="(48) 99999-9999">
       </div>
     </div>
-    <div class="field"><span>Aniversário (opcional, sem o ano)</span>
+    <div class="field"><span>Aniversário (dia e mês)</span>
       <div class="perfil-birthday">
         <select id="perfil-dia" aria-label="Dia do aniversário"><option value="">Dia</option>${Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0")).map((d) => `<option value="${d}"${d === day ? " selected" : ""}>${Number(d)}</option>`).join("")}</select>
         <select id="perfil-mes" aria-label="Mês do aniversário"><option value="">Mês</option>${MONTHS_PT.map((name, i) => { const m = String(i + 1).padStart(2, "0"); return `<option value="${m}"${m === month ? " selected" : ""}>${name}</option>`; }).join("")}</select>
       </div>
     </div>
-    <label class="check-item perfil-optin"><input type="checkbox" id="perfil-novidades"${perfil.aceita_novidades ? " checked" : ""}><span><strong>Quero receber novidades e ofertas</strong><small>Pelo WhatsApp e por e-mail. Você pode desistir quando quiser.</small></span></label>
+    <label class="check-item perfil-optin"><input type="checkbox" id="perfil-novidades"${perfil.aceita_novidades ? " checked" : ""}><span><strong>Quero receber novidades e ofertas</strong><small>Pelo WhatsApp e por e-mail. Você pode desistir quando quiser.</small></span></label>`;
+}
+
+function wirePerfilFields(root) {
+  const ddi = root.querySelector("#perfil-ddi");
+  const phone = root.querySelector("#perfil-whatsapp");
+  const paintPhone = () => { phone.placeholder = ddi.value === "55" ? "(48) 99999-9999" : "Número"; };
+  paintPhone();
+  ddi.addEventListener("change", paintPhone);
+}
+
+// Lê e confere os campos: { error } com a mensagem para a pessoa, ou { data } pronto para gravar.
+function readPerfilFields(root) {
+  const nome = root.querySelector("#perfil-nome").value.trim().replace(/\s+/g, " ");
+  const ddi = root.querySelector("#perfil-ddi").value;
+  const whatsapp = normalizeWhatsapp(root.querySelector("#perfil-whatsapp").value, ddi);
+  const dia = root.querySelector("#perfil-dia").value;
+  const mes = root.querySelector("#perfil-mes").value;
+  if (nome.split(" ").length < 2) return { error: "Escreva o nome completo (nome e sobrenome)." };
+  const localDigits = whatsapp.slice(whatsappCountry(whatsapp).length).length;
+  if (whatsappCountry(whatsapp) === "55" ? localDigits < 10 || localDigits > 11 : whatsapp.length < 10 || whatsapp.length > 15) {
+    return { error: ddi === "55" ? "Confira o WhatsApp: número com DDD." : "Confira o WhatsApp: número completo, com o código de área." };
+  }
+  if (!dia || !mes) return { error: "Escolha o dia e o mês do seu aniversário." };
+  return { data: { nome, whatsapp, aniversario: `${dia}/${mes}`, aceita_novidades: root.querySelector("#perfil-novidades").checked } };
+}
+
+async function savePerfil(data) {
+  const now = new Date().toISOString();
+  const row = {
+    user_id: conta.user.id, ...data, atualizado_em: now,
+    ...(data.aceita_novidades && !conta.perfil?.aceita_novidades ? { aceite_novidades_em: now } : {})
+  };
+  const { error } = await supabaseClient.from("perfis").upsert(row);
+  if (error) return error;
+  conta.perfil = { ...data };
+  const firstName = data.nome.split(" ")[0];
+  if (!(state.profile?.name || "").trim() || state.profile.name !== firstName) {
+    state.profile = { ...(state.profile || {}), name: firstName };
+    saveState();
+  }
+  return null;
+}
+
+// Cadastro feito na criação da conta: fica no aparelho até a pessoa digitar o código
+// (o banco só aceita depois do login). Se a página recarregar no meio, o formulário volta preenchido.
+const PENDING_SIGNUP_KEY = "viagem-na-mao-cadastro-pendente";
+function readPendingSignup() {
+  try {
+    const value = JSON.parse(window.localStorage.getItem(PENDING_SIGNUP_KEY) || "null");
+    return value && Date.now() - (value.em || 0) < 7 * 86400000 ? value : null;
+  } catch { return null; }
+}
+function writePendingSignup(value) {
+  try {
+    if (value) window.localStorage.setItem(PENDING_SIGNUP_KEY, JSON.stringify({ ...value, em: Date.now() }));
+    else window.localStorage.removeItem(PENDING_SIGNUP_KEY);
+  } catch { /* sem espaço: a ficha pede de novo depois do login */ }
+}
+
+// required: cadastro obrigatório para usar o app (sem fechar; a saída é salvar ou sair da conta).
+function openPerfilSheet({ first = false, required = false } = {}) {
+  const pending = readPendingSignup();
+  const perfil = conta.perfil || (pending?.email === conta.user?.email ? pending : {}) || {};
+  openSheet(`${required ? `<div class="sheet-title"><h2>Complete seu cadastro</h2></div>` : sheetTitle(first ? "Complete seu cadastro" : "Seu cadastro")}
+    <p class="muted">${required ? "Para usar o Viagem na Mão na fase de testes, precisamos do seu nome, WhatsApp e aniversário. Assim sabemos quem está testando e podemos falar com você sobre o app." : first ? "Falta pouco: assim sabemos quem está testando e podemos falar com você sobre o app." : "Seus dados de testador. Só a equipe do Viagem na Mão vê."}</p>
+    ${perfilFieldsHtml(perfil)}
     <p class="form-status" id="perfil-status" role="status" aria-live="polite"></p>
     <button class="btn btn-primary btn-block" type="button" id="perfil-salvar">${icon("check")} Salvar cadastro</button>
     ${required ? `<button class="link-btn perfil-sair" type="button" id="perfil-sair">Agora não, sair da conta</button>` : ""}
@@ -394,41 +464,18 @@ function openPerfilSheet({ first = false, required = false } = {}) {
         toast("Você saiu da conta. As viagens continuam neste aparelho.");
       });
     }
-    const ddi = root.querySelector("#perfil-ddi");
-    const phone = root.querySelector("#perfil-whatsapp");
-    const paintPhone = () => { phone.placeholder = ddi.value === "55" ? "(48) 99999-9999" : "Número"; };
-    paintPhone();
-    ddi.addEventListener("change", paintPhone);
+    wirePerfilFields(root);
     root.querySelector("#perfil-salvar").addEventListener("click", async (event) => {
       const button = event.currentTarget;
-      const nome = root.querySelector("#perfil-nome").value.trim().replace(/\s+/g, " ");
-      const whatsapp = normalizeWhatsapp(phone.value, ddi.value);
-      const dia = root.querySelector("#perfil-dia").value;
-      const mes = root.querySelector("#perfil-mes").value;
-      const novidades = root.querySelector("#perfil-novidades").checked;
-      if (nome.split(" ").length < 2) { status.textContent = "Escreva o nome completo (nome e sobrenome)."; return; }
-      const localDigits = whatsapp.slice(whatsappCountry(whatsapp).length).length;
-      if (whatsappCountry(whatsapp) === "55" ? localDigits < 10 || localDigits > 11 : whatsapp.length < 10 || whatsapp.length > 15) {
-        status.textContent = ddi.value === "55" ? "Confira o WhatsApp: número com DDD." : "Confira o WhatsApp: número completo, com o código de área.";
-        return;
-      }
-      if (Boolean(dia) !== Boolean(mes)) { status.textContent = "Escolha o dia e o mês do aniversário, ou deixe os dois em branco."; return; }
+      const { error: invalid, data } = readPerfilFields(root);
+      if (invalid) { status.textContent = invalid; return; }
       button.disabled = true;
       status.textContent = "Salvando…";
-      const row = {
-        user_id: conta.user.id, nome, whatsapp, aniversario: dia ? `${dia}/${mes}` : null,
-        aceita_novidades: novidades, atualizado_em: new Date().toISOString(),
-        ...(novidades && !conta.perfil?.aceita_novidades ? { aceite_novidades_em: new Date().toISOString() } : {})
-      };
-      const { error } = await supabaseClient.from("perfis").upsert(row);
+      const error = await savePerfil(data);
       button.disabled = false;
       if (error) { status.textContent = "Não consegui salvar agora. Tente de novo em instantes."; return; }
-      const firstName = nome.split(" ")[0];
-      if (first || !(state.profile?.name || "").trim()) {
-        state.profile = { ...(state.profile || {}), name: firstName };
-        saveState();
-      }
-      conta.perfil = { nome, whatsapp, aniversario: row.aniversario, aceita_novidades: novidades };
+      writePendingSignup(null);
+      const firstName = data.nome.split(" ")[0];
       closeSheet({ force: true });
       if (route.screen === "home") renderHome();
       toast(first ? `Tudo pronto, ${firstName}! Boas viagens.` : "Cadastro atualizado");
@@ -554,20 +601,25 @@ function paintAccount() {
     };
     return;
   }
+  // Criar conta: o cadastro completo vem antes do código; o código só sai com tudo preenchido.
+  const signup = authMode === "criar";
+  const pending = signup ? readPendingSignup() : null;
   const intro = {
-    criar: "Digite o seu e-mail. Enviamos um código de 6 dígitos para você entrar, sem senha. Suas viagens e memórias ficam guardadas na sua conta.",
+    criar: pendingEmail ? "" : "Preencha seus dados de testador. Depois enviamos um código de 6 dígitos para o seu e-mail: é só digitar para entrar, sem senha.",
     entrar: "Digite o e-mail da sua conta. Enviamos um código de 6 dígitos para você entrar."
   }[authMode];
-  accountRoot.innerHTML = `${intro ? `<p class="muted">${intro}</p>` : `<h3>${icon("user")} Sua conta</h3>
+  accountRoot.innerHTML = `${intro ? `<p class="muted">${intro}</p>` : authMode ? "" : `<h3>${icon("user")} Sua conta</h3>
     <p class="muted">Crie sua conta de testador com o seu e-mail: suas viagens e memórias ficam guardadas na nuvem e você pode usar em outro celular. Não precisa de senha: chega um código no e-mail.</p>`}
     ${pendingEmail
-      ? `<label class="field">Código enviado para ${escapeHtml(pendingEmail)}<input id="account-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Código de 6 dígitos"></label>
-         <div class="row-actions"><button class="btn btn-secondary" type="button" id="account-back">Trocar e-mail</button><button class="btn btn-primary" type="button" id="account-verify">Entrar</button></div>`
-      : `<label class="field">Seu e-mail<input id="account-email" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label>
+      ? `<p class="muted">Enviamos um código de 6 dígitos para <strong>${escapeHtml(pendingEmail)}</strong>. Se não chegar em 2 minutos, olhe também no spam.</p>
+         <label class="field">Código do e-mail<input id="account-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Código de 6 dígitos"></label>
+         <div class="row-actions"><button class="btn btn-secondary" type="button" id="account-back">${signup ? "Corrigir dados" : "Trocar e-mail"}</button><button class="btn btn-primary" type="button" id="account-verify">Entrar</button></div>`
+      : `${signup ? perfilFieldsHtml(pending || {}, { email: pending?.email || "" }) : `<label class="field">Seu e-mail<input id="account-email" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label>`}
          <button class="btn btn-primary btn-block" type="button" id="account-send">Receber código por e-mail</button>
          <p class="account-terms">Ao continuar, você concorda com os <a href="https://viagemnamao.com/termos" target="_blank" rel="noopener noreferrer">Termos de uso</a> e a <a href="https://viagemnamao.com/privacidade" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</p>`}
     <p class="form-status" id="account-status" role="status" aria-live="polite"></p>`;
   const status = accountRoot.querySelector("#account-status");
+  if (signup && !pendingEmail) wirePerfilFields(accountRoot);
   // E-mail com cara de erro de digitação (gmail.comh, hotmial.com): pergunta antes de mandar o código.
   let typoChecked = "";
   status.addEventListener("click", (event) => {
@@ -584,6 +636,9 @@ function paintAccount() {
   });
   accountRoot.querySelector("#account-send")?.addEventListener("click", async (event) => {
     const email = accountRoot.querySelector("#account-email").value.trim().toLowerCase();
+    // Criar conta: confere nome, WhatsApp e aniversário antes do e-mail (o código só sai com tudo certo).
+    const fields = signup ? readPerfilFields(accountRoot) : null;
+    if (fields?.error) { status.textContent = fields.error; return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { status.textContent = "Confira o e-mail digitado."; return; }
     const suggestion = emailSuggestion(email);
     if (suggestion && typoChecked !== email) {
@@ -593,6 +648,7 @@ function paintAccount() {
     const button = event.currentTarget;
     button.disabled = true;
     status.textContent = "Enviando…";
+    if (fields) writePendingSignup({ email, ...fields.data });
     const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
     if (error) {
       button.disabled = false;
