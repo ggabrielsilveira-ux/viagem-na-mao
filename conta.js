@@ -251,8 +251,11 @@ async function firstSync() {
 const MONTHS_PT = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 
 async function loadPerfil() {
-  const { data } = await supabaseClient.from("perfis").select("nome, whatsapp, aniversario, aceita_novidades").eq("user_id", conta.user.id).maybeSingle();
+  const { data, error } = await supabaseClient.from("perfis").select("nome, whatsapp, aniversario, aceita_novidades").eq("user_id", conta.user.id).maybeSingle();
+  if (error) throw error;
   conta.perfil = data || null;
+  // Só com a resposta do banco dá para saber que falta o cadastro (sem internet, não cobra).
+  conta.perfilConferido = true;
   // O primeiro nome vira a saudação da tela inicial (a pessoa ainda pode trocar em Ajustes).
   if (conta.perfil?.nome && !(state.profile?.name || "").trim()) {
     state.profile = { ...(state.profile || {}), name: conta.perfil.nome.trim().split(/\s+/)[0] };
@@ -304,11 +307,12 @@ function formatWhatsapp(digits) {
   return country === "55" ? whatsappLocal(d) : `+${country} ${whatsappLocal(d)}`;
 }
 
-function openPerfilSheet({ first = false } = {}) {
+// required: cadastro obrigatório para usar o app (sem fechar; a saída é salvar ou sair da conta).
+function openPerfilSheet({ first = false, required = false } = {}) {
   const perfil = conta.perfil || {};
   const [day, month] = (perfil.aniversario || "/").split("/");
-  openSheet(`${sheetTitle(first ? "Complete seu cadastro" : "Seu cadastro")}
-    <p class="muted">${first ? "Falta pouco: assim sabemos quem está testando e podemos falar com você sobre o app." : "Seus dados de testador. Só a equipe do Viagem na Mão vê."}</p>
+  openSheet(`${required ? `<div class="sheet-title"><h2>Complete seu cadastro</h2></div>` : sheetTitle(first ? "Complete seu cadastro" : "Seu cadastro")}
+    <p class="muted">${required ? "Para usar o Viagem na Mão na fase de testes, precisamos do seu nome e WhatsApp. Assim sabemos quem está testando e podemos falar com você sobre o app." : first ? "Falta pouco: assim sabemos quem está testando e podemos falar com você sobre o app." : "Seus dados de testador. Só a equipe do Viagem na Mão vê."}</p>
     <label class="field">Nome completo<input id="perfil-nome" maxlength="120" autocomplete="name" value="${escapeHtml(perfil.nome || "")}" placeholder="Ex.: Maria da Silva"></label>
     <div class="field"><span>WhatsApp</span>
       <div class="perfil-phone">
@@ -325,8 +329,19 @@ function openPerfilSheet({ first = false } = {}) {
     <label class="check-item perfil-optin"><input type="checkbox" id="perfil-novidades"${perfil.aceita_novidades ? " checked" : ""}><span><strong>Quero receber novidades e ofertas</strong><small>Pelo WhatsApp e por e-mail. Você pode desistir quando quiser.</small></span></label>
     <p class="form-status" id="perfil-status" role="status" aria-live="polite"></p>
     <button class="btn btn-primary btn-block" type="button" id="perfil-salvar">${icon("check")} Salvar cadastro</button>
+    ${required ? `<button class="link-btn perfil-sair" type="button" id="perfil-sair">Agora não, sair da conta</button>` : ""}
     <p class="account-terms">Usamos estes dados só para o teste do Viagem na Mão, como explica a <a href="https://viagemnamao.com/privacidade" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</p>`, (root) => {
     const status = root.querySelector("#perfil-status");
+    if (required) {
+      // Não fecha tocando fora, arrastando nem com o voltar: só salvando ou saindo da conta.
+      sheetGuard = () => false;
+      root.querySelector("#perfil-sair").addEventListener("click", async () => {
+        closeSheet({ force: true });
+        await syncNow().catch(() => {});
+        await supabaseClient.auth.signOut();
+        toast("Você saiu da conta. As viagens continuam neste aparelho.");
+      });
+    }
     const ddi = root.querySelector("#perfil-ddi");
     const phone = root.querySelector("#perfil-whatsapp");
     const paintPhone = () => { phone.placeholder = ddi.value === "55" ? "(48) 99999-9999" : "Número"; };
@@ -369,6 +384,16 @@ function openPerfilSheet({ first = false } = {}) {
   });
 }
 window.openPerfilSheet = openPerfilSheet;
+
+// Cadastro obrigatório: abre a ficha assim que não houver outra janela aberta, e de novo se ela sumir
+// sem ter sido salva (outra janela pode ocupar o lugar dela).
+function askPerfil() {
+  if (!conta.user || conta.perfil || !conta.perfilConferido) return;
+  const sheetEl = document.querySelector("#sheet");
+  if (sheetEl?.open) return;
+  openPerfilSheet({ first: true, required: true });
+}
+document.querySelector("#sheet")?.addEventListener("close", () => window.setTimeout(askPerfil, 350));
 
 
 // ---------------------------------------------------------------------------
@@ -602,11 +627,8 @@ if (supabaseClient) {
       paintAccount();
       window.renderHomeAccount?.();
       registrarUso().catch(() => {});
-      // Sem cadastro ainda: pede nome e WhatsApp (uma vez por abertura do app).
-      if (!conta.perfil && !conta.perfilPedido && !document.querySelector("#sheet")?.open) {
-        conta.perfilPedido = true;
-        openPerfilSheet({ first: true });
-      }
+      // Sem cadastro: pede nome e WhatsApp, obrigatório. Se outra janela estiver aberta, espera ela fechar.
+      if (conta.perfilConferido && !conta.perfil) askPerfil();
     }, 0);
   });
 }

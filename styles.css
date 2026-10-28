@@ -145,6 +145,7 @@ img { display: block; max-width: 100%; }
 .icon-btn-glass { border-color: rgba(255, 255, 255, 0.35); color: #fff; background: rgba(255, 255, 255, 0.16); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 
 .link-btn { padding: 6px 0; border: 0; color: var(--brand-2); background: none; font-size: 14px; font-weight: 700; }
+.perfil-sair { justify-self: center; color: var(--muted); font-weight: 600; }
 
 /* Barra superior padrão */
 .app-bar {
