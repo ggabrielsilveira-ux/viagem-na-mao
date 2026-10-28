@@ -173,20 +173,28 @@ async function registrarUso({ force = false } = {}) {
   if (!supabaseClient || !navigator.onLine || location.hostname !== "app.viagemnamao.com") return;
   const usage = readUsage();
   const today = new Date().toISOString().slice(0, 10);
-  if (!force && usage.dia === today && usage.conta === (conta.user?.id || "")) return;
-  const aparelho = usage.aparelho || (crypto.randomUUID ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (c ^ (Math.random() * 16) >> (c / 4)).toString(16)));
   const cidades = new Set(state.trips.flatMap((trip) => trip.destinations.map((destination) => slugify(destination.name || ""))).filter(Boolean)).size;
+  const counts = {
+    viagens: state.trips.length,
+    cidades,
+    memorias: state.trips.reduce((total, trip) => total + (trip.memories || []).length, 0),
+    gastos: state.trips.reduce((total, trip) => total + (trip.expenses || []).length, 0)
+  };
+  // No mesmo dia só manda de novo se os números mudaram (a viagem criada depois de abrir o app também conta).
+  const sameCounts = JSON.stringify(usage.numeros || null) === JSON.stringify(counts);
+  if (!force && usage.dia === today && usage.conta === (conta.user?.id || "") && sameCounts) return;
+  const aparelho = usage.aparelho || (crypto.randomUUID ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (c ^ (Math.random() * 16) >> (c / 4)).toString(16)));
   const { error } = await supabaseClient.rpc("registrar_uso", {
     p_aparelho: aparelho,
-    p_viagens: state.trips.length,
-    p_cidades: cidades,
-    p_memorias: state.trips.reduce((total, trip) => total + (trip.memories || []).length, 0),
-    p_gastos: state.trips.reduce((total, trip) => total + (trip.expenses || []).length, 0),
+    p_viagens: counts.viagens,
+    p_cidades: counts.cidades,
+    p_memorias: counts.memorias,
+    p_gastos: counts.gastos,
     p_instalado: window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true,
     p_versao: (document.querySelector('script[src^="script.js"]')?.getAttribute("src") || "").split("v=")[1] || ""
   });
   if (error) return;
-  try { window.localStorage.setItem(USAGE_KEY, JSON.stringify({ aparelho, dia: today, conta: conta.user?.id || "" })); } catch { /* segue */ }
+  try { window.localStorage.setItem(USAGE_KEY, JSON.stringify({ aparelho, dia: today, conta: conta.user?.id || "", numeros: counts })); } catch { /* segue */ }
 }
 
 // A tela inicial convida a criar a conta de testador (script.js usa estas duas).
@@ -605,3 +613,10 @@ if (supabaseClient) {
 
 // Sem conta, o aparelho também conta no teste (só os números). Com conta, conta junto com o e-mail.
 if (supabaseClient) window.setTimeout(() => { registrarUso().catch(() => {}); flushFeedbackQueue().catch(() => {}); }, 4000);
+// Criou viagem, memória ou gasto: atualiza os números um minuto depois (junta várias mudanças num envio só).
+let usageTimer = null;
+window.addEventListener("estado-salvo", () => {
+  if (!supabaseClient) return;
+  window.clearTimeout(usageTimer);
+  usageTimer = window.setTimeout(() => registrarUso().catch(() => {}), 60000);
+});
