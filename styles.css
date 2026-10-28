@@ -146,6 +146,8 @@ img { display: block; max-width: 100%; }
 
 .link-btn { padding: 6px 0; border: 0; color: var(--brand-2); background: none; font-size: 14px; font-weight: 700; }
 .perfil-sair { justify-self: center; color: var(--muted); font-weight: 600; }
+.email-fix { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.email-fix .btn { flex: 1 1 140px; }
 
 /* Barra superior padrão */
 .app-bar {

@@ -32,6 +32,9 @@
       td.n { text-align: right; }
       .nota { margin-top: 16px; color: var(--tinta-2); font-size: 13px; }
       .ativo { color: var(--verde); font-weight: 700; }
+      .etiqueta { display: inline-block; margin-top: 4px; padding: 2px 8px; border-radius: 999px; background: #eef3ef; color: var(--verde); font-size: 12px; font-weight: 700; }
+      .etiqueta.alerta { background: #fdecea; color: #b3412e; }
+      .aviso-sql { margin: 10px 0 0; color: #6b6b6b; font-size: 13px; }
     </style>
   </head>
   <body>
@@ -97,16 +100,23 @@
           }
           const r = resumo.data;
           const linhas = lista.data || [];
+          // Com supabase-painel-confirmacao.sql rodado, a lista diz quem digitou o código do e-mail.
+          const temConfirmacao = linhas.some((l) => "email_confirmado" in l);
+          const situacao = (l) => !temConfirmacao ? "" : !l.email_confirmado ? '<span class="etiqueta alerta">não confirmou o código</span>' : !l.nome ? '<span class="etiqueta">entrou, falta a ficha</span>' : "";
+          const naoConfirmaram = linhas.filter((l) => temConfirmacao && !l.email_confirmado).length;
+          const semFicha = linhas.filter((l) => temConfirmacao && l.email_confirmado && !l.nome).length;
           const numeros = [
             [r.contas, "contas de testadores"], [r.contas_7_dias, "contas novas (7 dias)"], [r.aparelhos, "aparelhos usando"],
             [r.ativos_hoje, "ativos hoje"], [r.ativos_7_dias, "ativos (7 dias)"], [r.ativos_30_dias, "ativos (30 dias)"],
             [r.sem_conta, "usando sem conta"], [r.com_viagem, "aparelhos com viagem"], [r.viagens, "viagens criadas"],
-            [r.memorias, "memórias guardadas"], [r.instalados, "com o app na tela inicial"], [r.lista_espera, "na lista de espera do site"], [r.opinioes ?? 0, "opiniões recebidas"], [r.opinioes_7_dias ?? 0, "opiniões (7 dias)"]
+            [r.memorias, "memórias guardadas"], [r.instalados, "com o app na tela inicial"], [r.lista_espera, "na lista de espera do site"], [r.opinioes ?? 0, "opiniões recebidas"], [r.opinioes_7_dias ?? 0, "opiniões (7 dias)"],
+            ...(temConfirmacao ? [[naoConfirmaram, "pediram o código e não entraram"], [semFicha, "entraram sem preencher a ficha"]] : [])
           ];
           app.innerHTML = `<div class="numeros">${numeros.map(([n, t]) => `<div class="cartao numero"><strong>${esc(n)}</strong><span>${esc(t)}</span></div>`).join("")}</div>
             <div class="acoes"><button class="secundario" id="atualizar">Atualizar</button><button class="secundario" id="csv">Baixar planilha (CSV)</button><button class="secundario" id="sair">Sair</button></div>
             <div class="cartao tabela"><table><thead><tr><th>Testador</th><th>WhatsApp</th><th>Aniversário</th><th>Novidades</th><th>Conta criada</th><th>Último uso</th><th>Dias de uso</th><th>Viagens</th><th>Cidades</th><th>Memórias</th><th>Gastos</th><th>Opiniões</th><th>App instalado</th></tr></thead>
-            <tbody>${linhas.map((l) => `<tr><td><strong>${esc(l.nome || "(sem cadastro)")}</strong><br><small>${esc(l.email)}</small></td><td>${l.whatsapp ? `<a href="https://wa.me/${esc(l.whatsapp)}" target="_blank" rel="noopener">${esc(zap(l.whatsapp))}</a>` : "—"}</td><td>${esc(l.aniversario || "—")}</td><td>${l.aceita_novidades ? "sim" : "não"}</td><td>${data(l.conta_criada)}</td><td class="${recente(l.ultimo_uso) ? "ativo" : ""}">${data(l.ultimo_uso)}</td><td class="n">${l.dias_de_uso}</td><td class="n">${l.viagens}</td><td class="n">${l.cidades}</td><td class="n">${l.memorias}</td><td class="n">${l.gastos}</td><td class="n">${l.opinioes ?? 0}</td><td>${l.instalado ? "sim" : "não"}</td></tr>`).join("") || '<tr><td colspan="13">Ninguém criou conta ainda.</td></tr>'}</tbody></table></div>
+            <tbody>${linhas.map((l) => `<tr><td><strong>${esc(l.nome || "(sem cadastro)")}</strong><br><small>${esc(l.email)}</small>${situacao(l) ? `<br>${situacao(l)}` : ""}</td><td>${l.whatsapp ? `<a href="https://wa.me/${esc(l.whatsapp)}" target="_blank" rel="noopener">${esc(zap(l.whatsapp))}</a>` : "—"}</td><td>${esc(l.aniversario || "—")}</td><td>${l.aceita_novidades ? "sim" : "não"}</td><td>${data(l.conta_criada)}</td><td class="${recente(l.ultimo_uso) ? "ativo" : ""}">${data(l.ultimo_uso)}</td><td class="n">${l.dias_de_uso}</td><td class="n">${l.viagens}</td><td class="n">${l.cidades}</td><td class="n">${l.memorias}</td><td class="n">${l.gastos}</td><td class="n">${l.opinioes ?? 0}</td><td>${l.instalado ? "sim" : "não"}</td></tr>`).join("") || '<tr><td colspan="13">Ninguém criou conta ainda.</td></tr>'}</tbody></table></div>
+            ${temConfirmacao || !linhas.length ? "" : '<p class="aviso-sql">Para ver quem pediu o código e não entrou, rode no Supabase o arquivo ferramentas/supabase-painel-confirmacao.sql.</p>'}
             <h2 style="margin:28px 0 10px;font-size:18px">Opiniões dos testadores</h2>
             <div class="cartao tabela"><table><thead><tr><th>Quando</th><th>Tipo</th><th>Opinião</th><th>Quem</th><th>Tela</th></tr></thead>
             <tbody>${(ops.data || []).map((o) => `<tr><td>${data(o.criado_em)}</td><td>${esc(o.tipo)}</td><td style="white-space:normal;min-width:280px">${esc(o.texto)}</td><td>${esc(o.nome || o.email || "sem conta")}</td><td>${esc(o.tela || "")}</td></tr>`).join("") || '<tr><td colspan="5">Nenhuma opinião ainda.</td></tr>'}</tbody></table></div>
@@ -114,7 +124,7 @@
           app.querySelector("#atualizar").onclick = carregar;
           app.querySelector("#sair").onclick = async () => { await sb.auth.signOut(); telaEntrar(); };
           app.querySelector("#csv").onclick = () => {
-            const cab = ["nome", "email", "whatsapp", "aniversario", "aceita_novidades", "conta_criada", "ultimo_uso", "dias_de_uso", "viagens", "cidades", "memorias", "gastos", "opinioes", "instalado"];
+            const cab = ["nome", "email", "whatsapp", "aniversario", "aceita_novidades", "conta_criada", "email_confirmado", "ultimo_uso", "dias_de_uso", "viagens", "cidades", "memorias", "gastos", "opinioes", "instalado"];
             const csv = [cab.join(";"), ...linhas.map((l) => cab.map((c) => String(l[c] ?? "").replace(/;/g, ",")).join(";"))].join("\n");
             const a = document.createElement("a");
             a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));

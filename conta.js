@@ -265,6 +265,36 @@ async function loadPerfil() {
   }
 }
 
+// Provedores de e-mail mais usados no Brasil: um domínio parecido (até 2 letras de diferença) vira sugestão.
+const EMAIL_DOMAINS = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "yahoo.com.br", "icloud.com", "live.com", "msn.com", "me.com",
+  "hotmail.com.br", "outlook.com.br", "bol.com.br", "uol.com.br", "terra.com.br", "globo.com", "ig.com.br", "proton.me", "protonmail.com"];
+
+function editDistance(a, b) {
+  const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let previous = row[0];
+    row[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const current = row[j];
+      row[j] = Math.min(row[j] + 1, row[j - 1] + 1, previous + (a[i - 1] === b[j - 1] ? 0 : 1));
+      previous = current;
+    }
+  }
+  return row[b.length];
+}
+
+function emailSuggestion(email) {
+  const [user, domain] = email.split("@");
+  if (!user || !domain || EMAIL_DOMAINS.includes(domain)) return "";
+  let best = "";
+  let bestDistance = 3;
+  for (const known of EMAIL_DOMAINS) {
+    const distance = editDistance(domain, known);
+    if (distance < bestDistance) { best = known; bestDistance = distance; }
+  }
+  return best ? `${user}@${best}` : "";
+}
+
 // Código do país (DDI) do WhatsApp: Brasil por padrão; quem mora fora escolhe o país.
 const PHONE_COUNTRIES = [
   ["55", "Brasil"], ["351", "Portugal"], ["1", "Estados Unidos e Canadá"], ["34", "Espanha"], ["39", "Itália"], ["33", "França"],
@@ -516,9 +546,28 @@ function paintAccount() {
          <p class="account-terms">Ao continuar, você concorda com os <a href="https://viagemnamao.com/termos" target="_blank" rel="noopener noreferrer">Termos de uso</a> e a <a href="https://viagemnamao.com/privacidade" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</p>`}
     <p class="form-status" id="account-status" role="status" aria-live="polite"></p>`;
   const status = accountRoot.querySelector("#account-status");
+  // E-mail com cara de erro de digitação (gmail.comh, hotmial.com): pergunta antes de mandar o código.
+  let typoChecked = "";
+  status.addEventListener("click", (event) => {
+    const use = event.target.closest("[data-email-fix]");
+    if (use) {
+      accountRoot.querySelector("#account-email").value = use.dataset.emailFix;
+      typoChecked = use.dataset.emailFix;
+      accountRoot.querySelector("#account-send").click();
+    }
+    if (event.target.closest("[data-email-keep]")) {
+      typoChecked = accountRoot.querySelector("#account-email").value.trim().toLowerCase();
+      accountRoot.querySelector("#account-send").click();
+    }
+  });
   accountRoot.querySelector("#account-send")?.addEventListener("click", async (event) => {
     const email = accountRoot.querySelector("#account-email").value.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { status.textContent = "Confira o e-mail digitado."; return; }
+    const suggestion = emailSuggestion(email);
+    if (suggestion && typoChecked !== email) {
+      status.innerHTML = `Você quis dizer <strong>${escapeHtml(suggestion)}</strong>?<span class="email-fix"><button class="btn btn-primary" type="button" data-email-fix="${escapeHtml(suggestion)}">Sim, usar este</button><button class="btn btn-secondary" type="button" data-email-keep>Não, está certo</button></span>`;
+      return;
+    }
     const button = event.currentTarget;
     button.disabled = true;
     status.textContent = "Enviando…";
