@@ -9,8 +9,30 @@ const SUPABASE_CONFIG = {
 const SYNC_KEY = "viagem-na-mao-sync-v1";
 const SYNC_DELAY_MS = 2500;
 
+// Trava da sessão só dentro desta página. A trava padrão (navigator.locks) pode ficar presa no iPhone quando o app
+// vai para segundo plano (abrir o e-mail para copiar o código), e aí todo pedido ao banco espera para sempre.
+const authQueue = new Map();
+function pageLock(name, _acquireTimeout, fn) {
+  const run = (authQueue.get(name) || Promise.resolve()).catch(() => {}).then(fn);
+  authQueue.set(name, run.catch(() => {}));
+  return run;
+}
+
+// Nenhum pedido fica pendurado: sem resposta no prazo, vira erro e a tela mostra "tente de novo".
+// Envio de fotos tem prazo maior.
+function fetchWithTimeout(input, init = {}) {
+  const url = String(input?.url || input);
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), /\/storage\//.test(url) ? 90000 : 20000);
+  init.signal?.addEventListener("abort", () => controller.abort());
+  return fetch(input, { ...init, signal: controller.signal }).finally(() => window.clearTimeout(timer));
+}
+
 const supabaseClient = SUPABASE_CONFIG.publishableKey && window.supabase
-  ? window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.publishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } })
+  ? window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.publishableKey, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, lock: pageLock },
+    global: { fetch: fetchWithTimeout }
+  })
   : null;
 
 const conta = { user: null, plano: null, perfil: null, status: "", syncing: false, timer: null, applyingRemote: false };
